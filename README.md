@@ -2,6 +2,8 @@
 
 <div align="center">
 
+## **By: [Prof_MAN](https://www.youtube.com/@ProfMAN9)**
+
 **Control your browser with plain English. Free, open-source, no subscriptions.**
 
 [![Version](https://img.shields.io/badge/version-3.2.6-00ff88?style=flat-square)](https://github.com/Prof-MAN9/OpenBrowser/releases)
@@ -12,6 +14,18 @@
 </div>
 
 ---
+## **Contents**
+
+- **[What is OpenBrowser?](https://github.com/Prof-MAN9/OpenBrowser?tab=readme-ov-file#what-is-openbrowser)**
+- **[Features](https://github.com/Prof-MAN9/OpenBrowser?tab=readme-ov-file#features)**
+- **[Built-In Tools](https://github.com/Prof-MAN9/OpenBrowser?tab=readme-ov-file#-50-built-in-agent-tools)**
+- **[Setup](https://github.com/Prof-MAN9/OpenBrowser?tab=readme-ov-file#setup)**
+- **[Usage](https://github.com/Prof-MAN9/OpenBrowser?tab=readme-ov-file#usage)**
+- **[Contributing](https://github.com/Prof-MAN9/OpenBrowser?tab=readme-ov-file#contributing)**
+- **[What is OpenBrowser?](https://github.com/Prof-MAN9/OpenBrowser?tab=readme-ov-file#what-is-openbrowser)**
+- **[Acknowledgements](https://github.com/Prof-MAN9/OpenBrowser?tab=readme-ov-file#Acknowledgements)**
+
+
 
 ## What is OpenBrowser?
 
