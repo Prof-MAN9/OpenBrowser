@@ -1,0 +1,90 @@
+{
+  "manifest_version": 3,
+  "name": "OpenBrowser — AI Agent",
+  "version": "3.2.6",
+  "description": "Free open-source AI browser automation. Streaming, voice, themes, VFS, Mermaid, templates. v3.2.6",
+  "permissions": [
+    "sidePanel",
+    "storage",
+    "debugger",
+    "tabs",
+    "activeTab",
+    "scripting",
+    "alarms",
+    "bookmarks",
+    "contextMenus"
+  ],
+  "optional_permissions": [
+    "clipboardRead",
+    "clipboardWrite",
+    "history",
+    "topSites",
+    "tabGroups"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "action": {
+    "default_title": "OpenBrowser",
+    "default_icon": {
+      "16": "icons/16.png",
+      "48": "icons/48.png",
+      "128": "icons/128.png",
+      "32": "icons/32.png"
+    },
+    "32": "icons/32.png"
+  },
+  "icons": {
+    "16": "icons/16.png",
+    "48": "icons/48.png",
+    "128": "icons/128.png",
+    "32": "icons/32.png"
+  },
+  "commands": {
+    "toggle-sidebar": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Y",
+        "mac": "Command+Shift+Y"
+      },
+      "description": "Toggle OpenBrowser sidebar"
+    },
+    "quick-command": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+P",
+        "mac": "Command+Shift+P"
+      },
+      "description": "Open OpenBrowser quick command on active page"
+    }
+  },
+  "content_security_policy": {
+    "sandbox": "sandbox allow-scripts allow-forms allow-popups allow-modals; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: http:; child-src 'self' blob:"
+  },
+  "content_scripts": [],
+  "omnibox": {
+    "keyword": "ob"
+  },
+  "sandbox": {
+    "pages": [
+      "sandbox.html"
+    ]
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "sandbox.html",
+        "content-scripts/content.js",
+        "welcome.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ]
+}

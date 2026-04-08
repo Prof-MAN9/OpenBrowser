@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>CTRL Sandbox</title>
+  <script>
+    window.addEventListener('message', async (event) => {
+      if (!event.data || event.data.type !== 'execute') return;
+
+      const { code, id } = event.data;
+      let result, error;
+
+      try {
+        const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+        const fn = new AsyncFunction(code);
+        result = await fn();
+        if (result === undefined) result = null;
+        result = JSON.stringify(result, null, 2);
+      } catch (e) {
+        error = e.message;
+      }
+
+      event.source.postMessage({ type: 'result', id, result, error }, event.origin || '*');
+    });
+  </script>
+</head>
+<body></body>
+</html>
