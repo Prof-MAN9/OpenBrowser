@@ -245,8 +245,8 @@ const TOOLS = [
   },
   {
     name: 'wait',
-    description: 'Wait for a page to load or for a timed delay. Maximum 10 seconds.',
-    parameters: { ms: { type: 'number', description: 'Milliseconds to wait (default 1000, max 10000)' } }
+    description: 'Wait for a page to load or for a timed delay.',
+    parameters: { ms: { type: 'number', description: 'Milliseconds to wait (max 5000)' } }
   },
   {
     name: 'extract_data',
@@ -542,11 +542,7 @@ function md(text) {
     .replace(/\n{2,}/g, '</p><p>')
     .replace(/^([^<\n].+)$/gm, m => m.startsWith('<') ? m : `<p>${m}</p>`)
     .replace(/<p><\/p>/g, '')
-    .replace(/(https?:\/\/[^\s<"]+)/g, (url) => {
-      // Strip trailing punctuation that was accidentally captured (periods, commas, etc.)
-      const stripped = url.replace(/[.,;:!?)\]]+$/, '');
-      return `<a href="${stripped}" target="_blank">${stripped}</a>`;
-    });
+    .replace(/(https?:\/\/[^\s<"]+)/g,'<a href="$1" target="_blank">$1</a>');
 
   if (hasMermaid) {
     // Defer mermaid rendering until DOM is updated
@@ -781,14 +777,11 @@ async function renderFileTree() {
       const f = await VFS.read(btn.dataset.path);
       if (!f) return;
       const blob = new Blob([f.content], { type: 'text/plain' });
-      const dlUrl = URL.createObjectURL(blob);
       const a = Object.assign(document.createElement('a'), {
-        href: dlUrl, download: btn.dataset.path.split('/').pop()
+        href: URL.createObjectURL(blob),
+        download: btn.dataset.path.split('/').pop()
       });
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(dlUrl), 1000);
+      a.click(); URL.revokeObjectURL(a.href);
     });
   });
   container.querySelectorAll('.file-del-btn').forEach(btn => {
@@ -1297,6 +1290,13 @@ function buildProviderRequest(providerKey, modelId, apiKeyVal, baseUrlVal, accou
       tools: buildOpenAITools(TOOLS),
       tool_choice: 'auto'
     };
+    // Ollama: keep the model resident in memory between turns.
+    // Without this, Ollama unloads the model after 5 minutes of inactivity,
+    // causing the next request to stall for 30-120s while it reloads.
+    // -1 means "never unload while this panel is open".
+    if (providerKey === 'ollama') {
+      body.keep_alive = -1;
+    }
   }
   return { url, headers, body, format: pc.format };
 }
@@ -1496,7 +1496,9 @@ async function loadSmartBookmarks(filter = '') {
 async function discoverOllamaModels(baseUrl) {
   const root = (baseUrl || 'http://localhost:11434').replace(/\/v1\/.*$/, '').replace(/\/$/, '');
   try {
-    const res = await fetch(`${root}/api/tags`, { signal: AbortSignal.timeout(3000) });
+    // 8s timeout — /api/tags is a lightweight call but can be slow if Ollama
+    // is first starting up or if the system is under load.
+    const res = await fetch(`${root}/api/tags`, { signal: AbortSignal.timeout(8000) });
     if (!res.ok) return null;
     const data = await res.json();
     return (data.models || []).map(m => ({
@@ -1713,11 +1715,8 @@ function parseAIResponse(data, format) {
       : { type: 'text', text };
   }
 
-  // OpenAI-compatible (includes MiniMax chatcompletion_v2 which wraps in a 'data' envelope)
-  // MiniMax /v1/text/chatcompletion_v2 returns { base_resp: {...}, choices: [...] } at top level
-  // but also sometimes { data: { choices: [...] } } — unwrap if needed
-  const root = (data.choices ? data : data.data) || data;
-  const msg = root.choices?.[0]?.message;
+  // OpenAI
+  const msg = data.choices?.[0]?.message;
   if (!msg) throw new Error('Empty response from API');
   if (msg.tool_calls?.length) {
     return {
@@ -1995,14 +1994,11 @@ async function executeTool(name, input) {
       case 'download_csv': {
         const csv  = csvFromJSON(input.data);
         const blob = new Blob([csv], { type: 'text/csv' });
-        const url  = URL.createObjectURL(blob);
         const a    = Object.assign(document.createElement('a'), {
-          href: url, download: `${input.filename || 'export'}.csv`
+          href: URL.createObjectURL(blob),
+          download: `${input.filename || 'export'}.csv`
         });
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        a.click(); URL.revokeObjectURL(a.href);
         let count = 0;
         try { count = JSON.parse(input.data).length; } catch {}
         return { ok: true, result: `Downloaded ${input.filename || 'export'}.csv (${count} rows)` };
@@ -2226,12 +2222,9 @@ async function executeTool(name, input) {
               el.dispatchEvent(new Event('change', { bubbles: true }));
               return true;
             }
-            // For React/Vue inputs, trigger native input setter using the correct prototype
-            // Must use HTMLTextAreaElement.prototype for textareas, HTMLInputElement.prototype for inputs
-            const proto = el.tagName === 'TEXTAREA'
-              ? window.HTMLTextAreaElement.prototype
-              : window.HTMLInputElement.prototype;
-            const nativeSetter = Object.getOwnPropertyDescriptor(proto, 'value')?.set;
+            // For React/Vue inputs, trigger native input setter
+            const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set
+              || Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
             if (nativeSetter) {
               nativeSetter.call(el, value);
             } else {
@@ -2317,20 +2310,19 @@ async function executeTool(name, input) {
         renderDataTable(rows, name);
 
         // Trigger download
-        let blob, ext;
+        let blob, mime, ext;
         if (fmt === 'json') {
           blob = new Blob([JSON.stringify(rows, null, 2)], { type: 'application/json' });
-          ext = '.json';
+          mime = 'application/json'; ext = '.json';
         } else {
           blob = new Blob([csvFromJSON(JSON.stringify(rows))], { type: 'text/csv' });
-          ext = '.csv';
+          mime = 'text/csv'; ext = '.csv';
         }
-        const dlUrl = URL.createObjectURL(blob);
-        const a = Object.assign(document.createElement('a'), { href: dlUrl, download: name + ext });
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(() => URL.revokeObjectURL(dlUrl), 1000);
+        const a = Object.assign(document.createElement('a'), {
+          href: URL.createObjectURL(blob),
+          download: name + ext
+        });
+        a.click(); URL.revokeObjectURL(a.href);
         return { ok: true, result: `Exported ${rows.length} rows as "${name}${ext}" and displayed table in chat.` };
       }
 
@@ -2579,15 +2571,11 @@ async function executeTool(name, input) {
             content = state.citations.map((c,i) => `[${i+1}] ${c.formatted}`).join('\n');
           }
           const blob = new Blob([content], { type: 'text/plain' });
-          const dlUrl = URL.createObjectURL(blob);
           const a = Object.assign(document.createElement('a'), {
-            href: dlUrl,
+            href: URL.createObjectURL(blob),
             download: `citations.${efmt === 'bib' ? 'bib' : efmt === 'md' ? 'md' : 'txt'}`
           });
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          setTimeout(() => URL.revokeObjectURL(dlUrl), 1000);
+          a.click(); URL.revokeObjectURL(a.href);
         }
 
         return { ok: true, result: `Showing ${state.citations.length} citations.` };
@@ -2842,7 +2830,6 @@ async function runAgent(userMessage) {
             appendAssist(tool.input.answer);
             conv.messages.push({ role:'assistant', content: tool.input.answer });
             done = true;
-            break; // stop processing any further tools in this response
           }
         }
       }
@@ -3237,8 +3224,6 @@ function appendAssist(text) {
 
 // ── STREAMING ASSISTANT MESSAGE ──────────────────────────────────────────
 // Creates a live-updating bubble that streams tokens in character by character.
-// Uses lightweight text rendering during streaming (no mermaid side-effects),
-// then runs full md() once on finish().
 // Returns { el, update(chunk), finish(fullText) }
 function createStreamingBubble() {
   msgs().querySelector('.empty-state')?.remove();
@@ -3246,44 +3231,31 @@ function createStreamingBubble() {
   d.className = 'message message-assistant streaming-msg';
   d.innerHTML = `<div class="msg-bubble"><span class="stream-text"></span><span class="stream-cursor">▋</span></div>`;
   msgs().appendChild(d); scrollEnd();
-  const span   = d.querySelector('.stream-text');
+  const span = d.querySelector('.stream-text');
   const cursor = d.querySelector('.stream-cursor');
-  let rawText  = '';
-
-  // Lightweight renderer: basic inline markdown only, no mermaid/list transforms
-  // Prevents Mermaid CDN loads and document-wide querySelectorAll on every chunk
-  function renderLive(text) {
-    return esc(text)
-      .replace(/`([^`\n]+)`/g, '<code>$1</code>')
-      .replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*([^*\n]+)\*/g, '<em>$1</em>')
-      .replace(/\n/g, '<br>');
-  }
+  let rawText = '';
 
   return {
     el: d,
     update(chunk) {
       rawText += chunk;
-      span.innerHTML = renderLive(rawText);
+      // Update rendered markdown every chunk
+      span.innerHTML = md(rawText);
       scrollEnd();
     },
     finish(fullText) {
       rawText = fullText || rawText;
       cursor.remove();
-      // Now run the full markdown renderer (mermaid, tables, links, lists)
       span.innerHTML = md(rawText);
+      // Swap out streaming class, add copy button
       d.classList.remove('streaming-msg');
-      // Add copy button
       const actions = document.createElement('div');
       actions.className = 'msg-actions';
       const copyBtn = document.createElement('button');
       copyBtn.className = 'msg-action-btn copy-btn';
       copyBtn.textContent = 'Copy';
       copyBtn.addEventListener('click', function() {
-        navigator.clipboard.writeText(rawText).then(() => {
-          this.textContent = 'Copied!';
-          setTimeout(() => { this.textContent = 'Copy'; }, 1500);
-        });
+        navigator.clipboard.writeText(rawText).then(() => { this.textContent = 'Copied!'; setTimeout(() => this.textContent = 'Copy', 1500); });
       });
       actions.appendChild(copyBtn);
       d.querySelector('.msg-bubble').after(actions);
@@ -3341,16 +3313,25 @@ async function callAIStreaming(messages, sys, signal, onChunk) {
   const reader  = res.body.getReader();
   const decoder = new TextDecoder();
   let   buffer  = '';
+  let   rawBody = '';  // Raw accumulation — fallback if Ollama returns non-SSE JSON
   let   fullText = '';
   const toolCalls = [];    // For OpenAI streaming tool accumulation
   let   currentToolCall = null;
+
+  // UX: if Ollama takes > 6s with no tokens (model loading), update status bar
+  let firstTokenReceived = false;
+  const ollamaLoadingHint = (providerKey === 'ollama') ? setTimeout(() => {
+    if (!firstTokenReceived) setStatus('loading', 'Ollama is loading the model…');
+  }, 6000) : null;
 
   try {
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
 
-      buffer += decoder.decode(value, { stream: true });
+      const decoded = decoder.decode(value, { stream: true });
+      rawBody += decoded;          // accumulate everything for fallback
+      buffer  += decoded;
       const lines = buffer.split('\n');
       buffer = lines.pop() || '';
 
@@ -3368,6 +3349,7 @@ async function callAIStreaming(messages, sys, signal, onChunk) {
             if (chunk.delta?.type === 'text_delta') {
               const text = chunk.delta.text || '';
               fullText += text;
+              firstTokenReceived = true;
               onChunk(text);
             }
           } else if (chunk.type === 'content_block_start' && chunk.content_block?.type === 'tool_use') {
@@ -3385,9 +3367,11 @@ async function callAIStreaming(messages, sys, signal, onChunk) {
           if (!delta) continue;
           if (delta.content) {
             fullText += delta.content;
+            firstTokenReceived = true;
             onChunk(delta.content);
           }
           if (delta.tool_calls?.length) {
+            firstTokenReceived = true;
             for (const tc of delta.tool_calls) {
               const idx = tc.index ?? 0;
               if (!toolCalls[idx]) toolCalls[idx] = { id: '', name: '', inputRaw: '' };
@@ -3400,6 +3384,7 @@ async function callAIStreaming(messages, sys, signal, onChunk) {
       }
     }
   } finally {
+    clearTimeout(ollamaLoadingHint);
     reader.releaseLock();
   }
 
@@ -3421,6 +3406,26 @@ async function callAIStreaming(messages, sys, signal, onChunk) {
   if (fullText) {
     const xmlTools = detectXMLToolCalls(fullText);
     if (xmlTools) return { type: 'tool_use', tools: xmlTools, text: '' };
+  }
+
+  // ── Fallback: Ollama (and some providers) sometimes return plain JSON
+  // instead of SSE when stream:true is set but the model buffers the full
+  // response before sending (e.g. during initial model load). Try parsing
+  // the raw body as a standard chat completion response.
+  if (!fullText && !toolCalls.length && rawBody.trim()) {
+    try {
+      const fallbackData = JSON.parse(rawBody.trim());
+      return parseAIResponse(fallbackData, req.format);
+    } catch { /* not valid JSON — fall through to empty-response error */ }
+  }
+
+  // ── Empty stream: surface a clear error instead of silently returning
+  // blank text (which makes the agent stop with no user-visible output).
+  if (!fullText && !toolCalls.length) {
+    const hint = providerKey === 'ollama'
+      ? 'Ollama returned an empty response. The model may have been unloaded or does not support streaming with tool definitions. Try sending your message again — if the problem persists, try a different model (llama3.2 or qwen2.5 work best).'
+      : 'The AI returned an empty response. Please try again.';
+    throw new Error(hint);
   }
 
   return { type: 'text', text: fullText };
@@ -3505,14 +3510,6 @@ function renderHistory() {
     d.addEventListener('click', () => { state.convId = c.id; renderConv(c.id); switchView('chat'); });
     list.appendChild(d);
   });
-
-  // Re-apply any active search filter
-  const q = el('history-search')?.value?.toLowerCase().trim();
-  if (q) {
-    list.querySelectorAll('.history-item').forEach(item => {
-      item.style.display = item.textContent.toLowerCase().includes(q) ? '' : 'none';
-    });
-  }
 }
 
 // ── SETTINGS UI ────────────────────────────────────────────────────
@@ -3621,15 +3618,11 @@ function exportConversation() {
     }
   });
   const blob = new Blob([lines.join('\n')], { type: 'text/markdown' });
-  const dlUrl = URL.createObjectURL(blob);
   const a = Object.assign(document.createElement('a'), {
-    href: dlUrl,
+    href: URL.createObjectURL(blob),
     download: `${(conv.title || 'chat').replace(/[^a-z0-9]/gi,'_').substring(0,40)}.md`
   });
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(dlUrl), 1000);
+  a.click(); URL.revokeObjectURL(a.href);
   toast('Conversation exported ✓');
 }
 
@@ -3707,12 +3700,10 @@ async function boot() {
     // Rate limits
     s.rpmLimit = Math.max(0, parseInt(el('settings-rpm').value) || 0);
     s.rpdLimit = Math.max(0, parseInt(el('settings-rpd').value) || 0);
-    // Theme — always persist accentColor even if not currently in custom mode,
-    // so switching back to custom later restores the last chosen accent.
+    // Theme
     const activeThemeBtn = document.querySelector('.theme-btn.active');
     if (activeThemeBtn) s.theme = activeThemeBtn.dataset.theme;
-    const accentEl = el('settings-accent');
-    if (accentEl?.value) s.accentColor = accentEl.value;
+    if (s.theme === 'custom') s.accentColor = el('settings-accent')?.value || '#00ff88';
     applyTheme(s.theme, s.accentColor);
     await saveSettings();
     updateBadge(); checkBanner();
@@ -3769,6 +3760,14 @@ async function boot() {
 
   // Heartbeat
   setInterval(() => chrome.runtime.sendMessage({ type:'sidepanel-heartbeat' }).catch(()=>{}), 500);
+
+  // Memory view: clear all persistent memory
+  el('btn-clear-memory')?.addEventListener('click', async () => {
+    if (!confirm('Clear all saved memory? This cannot be undone.')) return;
+    state.memory = {};
+    await chrome.storage.local.remove('ob_memory');
+    toast('Memory cleared');
+  });
 
   // ── Macros tab ───────────────────────────────────────────────────────
   await loadMacros();
@@ -4087,6 +4086,13 @@ async function boot() {
         startRecording();
       }
     });
+
+    // Auto-stop after 30 seconds of silence (browser usually does this anyway)
+    setInterval(() => {
+      if (isRecording && recognition) {
+        // Browser manages this natively via recognition.onend
+      }
+    }, 30000);
   })();
 }
 
