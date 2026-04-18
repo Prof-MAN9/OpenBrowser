@@ -1499,6 +1499,9 @@ async function discoverOllamaModels(baseUrl) {
     // 8s timeout — /api/tags is a lightweight call but can be slow if Ollama
     // is first starting up or if the system is under load.
     const res = await fetch(`${root}/api/tags`, { signal: AbortSignal.timeout(8000) });
+    // 403 = Ollama is running but rejected the chrome-extension:// origin.
+    // Return a sentinel so the caller can give a CORS-specific error message.
+    if (res.status === 403) return { corsError: true };
     if (!res.ok) return null;
     const data = await res.json();
     return (data.models || []).map(m => ({
@@ -1582,6 +1585,18 @@ async function callAI(messages, sys, signal) {
     }
 
     const errText = await res.text().catch(() => '');
+    // Ollama-specific: 403 means the server rejected the chrome-extension:// origin.
+    // This is a CORS configuration issue, not a quota error — don't try the backup model.
+    if (res.status === 403 && s.provider === 'ollama') {
+      throw new Error(
+        'Ollama blocked this request (HTTP 403 — CORS).\n\n' +
+        'Ollama does not allow requests from browser extensions by default.\n\n' +
+        'Fix: restart Ollama with the OLLAMA_ORIGINS environment variable:\n\n' +
+        '  macOS/Linux:   OLLAMA_ORIGINS="chrome-extension://*" ollama serve\n' +
+        '  Windows (PS):  $env:OLLAMA_ORIGINS="chrome-extension://*"; ollama serve\n\n' +
+        'Then click "Test Connection" in Settings to confirm it worked.'
+      );
+    }
     // If it's a quota/rate-limit error AND backup is configured, fall through
     if (isQuotaError(res.status, errText) && s.backupProvider && s.backupModel && s.backupApiKey) {
       state.backupActive = true;
@@ -3301,6 +3316,18 @@ async function callAIStreaming(messages, sys, signal, onChunk) {
 
   if (!res.ok) {
     const errText = await res.text().catch(() => '');
+    // Ollama-specific: 403 means the server rejected the chrome-extension:// origin.
+    // This is a CORS configuration issue — don't fall through to backup model logic.
+    if (res.status === 403 && providerKey === 'ollama') {
+      throw new Error(
+        'Ollama blocked this request (HTTP 403 — CORS).\n\n' +
+        'Ollama does not allow requests from browser extensions by default.\n\n' +
+        'Fix: restart Ollama with the OLLAMA_ORIGINS environment variable:\n\n' +
+        '  macOS/Linux:   OLLAMA_ORIGINS="chrome-extension://*" ollama serve\n' +
+        '  Windows (PS):  $env:OLLAMA_ORIGINS="chrome-extension://*"; ollama serve\n\n' +
+        'Then click "Test Connection" in Settings to confirm it worked.'
+      );
+    }
     if (!state.backupActive && isQuotaError(res.status, errText) && s.backupProvider && s.backupModel && s.backupApiKey) {
       state.backupActive = true;
       addStep('error', '⚠️', 'Primary quota hit', `Switching to backup: ${s.backupModel}`);
@@ -3988,23 +4015,58 @@ async function boot() {
     const btn = el('btn-ollama-test');
     const baseUrl = el('settings-baseurl')?.value || 'http://localhost:11434';
     btn.textContent = 'Connecting…'; btn.disabled = true;
-    const models = await discoverOllamaModels(baseUrl);
+    const result = await discoverOllamaModels(baseUrl);
     btn.disabled = false;
-    if (models && models.length) {
-      // Inject discovered models into the model select
+
+    if (result?.corsError) {
+      // Ollama is running but blocked the chrome-extension:// origin (HTTP 403).
+      // The only fix is to set OLLAMA_ORIGINS on the server side.
+      btn.textContent = '✗ CORS blocked (403)';
+      btn.style.color = '#ff5555';
+      const msg = [
+        '🔒 Ollama is running but is blocking this extension (HTTP 403).',
+        '',
+        'Fix: set the OLLAMA_ORIGINS environment variable, then restart Ollama.',
+        '',
+        '  macOS / Linux:',
+        '    OLLAMA_ORIGINS="chrome-extension://*" ollama serve',
+        '',
+        '  Windows (PowerShell):',
+        '    $env:OLLAMA_ORIGINS="chrome-extension://*"; ollama serve',
+        '',
+        '  Windows (System env var):',
+        '    Add OLLAMA_ORIGINS = chrome-extension://* in',
+        '    System Properties → Environment Variables, then restart Ollama.',
+        '',
+        'After restarting, click "Test Connection" again.',
+      ].join('\n');
+      // Show in a modal-style overlay so the full instructions are readable
+      const overlay = document.createElement('div');
+      overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;padding:20px';
+      overlay.innerHTML = `
+        <div style="background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:12px;max-width:480px;width:100%;padding:24px;font-family:var(--font-mono,monospace)">
+          <div style="font-size:1rem;font-weight:700;color:var(--text-primary);margin-bottom:12px">🔒 Ollama CORS Setup Required</div>
+          <div style="font-size:0.78rem;color:var(--text-secondary);line-height:1.7;white-space:pre-wrap">${esc(msg.split('\n').slice(2).join('\n'))}</div>
+          <button id="cors-help-close" style="margin-top:18px;padding:8px 18px;background:var(--green-bright);color:#000;border:none;border-radius:6px;font-weight:700;cursor:pointer;font-size:0.8rem">Got it</button>
+        </div>`;
+      document.body.appendChild(overlay);
+      document.getElementById('cors-help-close').addEventListener('click', () => overlay.remove());
+      overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+    } else if (result && result.length) {
+      // Success — populate the model dropdown
       const sel = el('settings-model');
-      sel.innerHTML = models.map(m =>
+      sel.innerHTML = result.map(m =>
         `<option value="${m.id}">${m.label}</option>`
       ).join('');
-      btn.textContent = `✓ ${models.length} models found`;
+      btn.textContent = `✓ ${result.length} models found`;
       btn.style.color = 'var(--green-bright)';
-      toast(`Ollama connected — ${models.length} model${models.length !== 1 ? 's' : ''} available`);
+      toast(`Ollama connected — ${result.length} model${result.length !== 1 ? 's' : ''} available`);
     } else {
       btn.textContent = '✗ Not reachable';
       btn.style.color = '#ff5555';
-      toast('Cannot reach Ollama. Is it running? Try: ollama serve', true);
+      toast('Cannot reach Ollama. Is it running? Try: ollama serve');
     }
-    setTimeout(() => { btn.textContent = 'Test Connection'; btn.style.color = ''; }, 4000);
+    setTimeout(() => { btn.textContent = 'Test Connection'; btn.style.color = ''; }, 6000);
   });
 
   // Quick-action: bookmark
