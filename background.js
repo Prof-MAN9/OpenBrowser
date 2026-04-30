@@ -227,6 +227,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   // Execute JS string on tab — use scripting.executeScript with a wrapper that
   // receives code as an arg (no eval/new Function needed in the service worker itself)
   if (message.type === 'execute-script') {
+    // FIX: Validate that the message originates from the extension itself (sidepanel,
+    // background, popup) and NOT from a content script running on a web page.
+    // sender.tab is set when a message comes from a content script injected into a tab;
+    // extension-own pages (sidepanel.html, welcome.html) have no sender.tab.
+    // Without this guard, any content script on any page — or an XSS payload —
+    // could invoke arbitrary JS on any tab via the extension's <all_urls> permissions.
+    if (sender.id !== chrome.runtime.id || sender.tab != null) {
+      sendResponse({ error: 'Unauthorized: execute-script must originate from extension pages.' });
+      return true;
+    }
     const tabId = message.tabId;
     chrome.scripting.executeScript({
       target: { tabId },
@@ -278,8 +288,14 @@ chrome.omnibox.onInputStarted.addListener(async () => {
 
 chrome.omnibox.onInputChanged.addListener(async (text, suggest) => {
   if (!text.trim()) return;
-  // Could add suggestion logic here
-  suggest([{ content: text, description: `Run: ${text}` }]);
+  // FIX: The omnibox description field is parsed as XML by Chrome. Raw user input
+  // containing &, <, >, or " will produce broken or silently-dropped suggestions.
+  const safeText = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+  suggest([{ content: text, description: `Run: ${safeText}` }]);
 });
 
 chrome.omnibox.onInputEntered.addListener((text) => {
@@ -402,7 +418,12 @@ async function injectQuickCommandPalette(tabId) {
   try {
     await chrome.scripting.executeScript({
       target: { tabId },
-      world: 'MAIN',
+      // FIX: Use ISOLATED world instead of MAIN.
+      // ISOLATED world shares the page DOM (so overlay injection works identically)
+      // but runs in the extension's JS context, making chrome.runtime.sendMessage
+      // available. In MAIN world chrome.runtime is undefined, so the palette's
+      // submit button silently failed on every invocation.
+      world: 'ISOLATED',
       func: () => {
         // Prevent double-injection
         if (document.getElementById('__ob_palette__')) {
