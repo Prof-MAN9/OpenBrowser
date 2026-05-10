@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "OpenBrowser — AI Agent",
-  "version": "3.2.6",
-  "description": "Free open-source AI browser automation. Streaming, voice, themes, VFS, Mermaid, templates. v3.2.6",
+  "version": "3.3",
+  "description": "Free open-source AI browser automation. Streaming, voice, themes, VFS, Mermaid, templates. v3.3",
   "permissions": [
     "sidePanel",
     "storage",

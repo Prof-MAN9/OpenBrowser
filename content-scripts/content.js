@@ -1,12 +1,12 @@
-// OpenBrowser v3.2.6 — Content Script / DOM Interaction Layer
+// OpenBrowser v3.3 — Content Script / DOM Interaction Layer
 // https://github.com/Prof-MAN9/OpenBrowser
 
 (function() {
   'use strict';
 
   // Prevent double injection
-  if (window.__CTRL_BROWSER_INJECTED__) return;
-  window.__CTRL_BROWSER_INJECTED__ = true;
+  if (window.__OB_INJECTED__) return;
+  window.__OB_INJECTED__ = true;
 
   // Listen for messages from sidepanel via background
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -75,14 +75,18 @@
     // Try direct CSS selector
     try {
       const el = document.querySelector(query);
-      if (el) return { found: true, rect: el.getBoundingClientRect(), tagName: el.tagName };
+      // Spread DOMRect properties — DOMRect serialises to {} over sendResponse
+      if (el) {
+        const r = el.getBoundingClientRect();
+        return { found: true, rect: { top: r.top, left: r.left, width: r.width, height: r.height }, tagName: el.tagName };
+      }
     } catch {}
 
     // Try text search
     const elements = findByText(query);
     if (elements.length > 0) {
-      const el = elements[0];
-      return { found: true, rect: el.getBoundingClientRect(), tagName: el.tagName };
+      const r = elements[0].getBoundingClientRect();
+      return { found: true, rect: { top: r.top, left: r.left, width: r.width, height: r.height }, tagName: elements[0].tagName };
     }
 
     return { found: false };
@@ -97,12 +101,14 @@
 
     const matches = [];
     for (const el of allElements) {
-      const elText = (el.textContent || el.value || el.placeholder || el.ariaLabel || el.getAttribute('aria-label') || el.title || '').toLowerCase().trim();
+      // Prefer ariaLabel property but avoid fetching getAttribute twice
+      const ariaLabel = el.getAttribute('aria-label') || '';
+      const elText = (el.textContent || el.value || el.placeholder || ariaLabel || el.title || '').toLowerCase().trim();
       const elValue = el.getAttribute('value') || '';
       if (
         elText.includes(lowerText) ||
         elValue.toLowerCase().includes(lowerText) ||
-        el.getAttribute('aria-label')?.toLowerCase().includes(lowerText) ||
+        ariaLabel.toLowerCase().includes(lowerText) ||
         el.getAttribute('placeholder')?.toLowerCase().includes(lowerText)
       ) {
         matches.push(el);
@@ -287,7 +293,9 @@
       text: truncated,
       url: window.location.href,
       title: document.title,
-      html: root.innerHTML.substring(0, 50000)
+      // Use the cleaned clone's HTML, not root.innerHTML which still contains
+      // <script>/<style> tags and could include sensitive or bulky content.
+      html: clone.innerHTML.substring(0, 50000)
     };
   }
 
@@ -390,5 +398,5 @@
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  console.log('[CTRL Browser] Content script loaded on', window.location.hostname);
+  console.log('[OpenBrowser] Content script loaded on', window.location.hostname);
 })();

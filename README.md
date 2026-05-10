@@ -6,7 +6,7 @@
 
 **Control your browser with plain English. Free, open-source, no subscriptions.**
 
-[![Version](https://img.shields.io/badge/version-3.2.6-00ff88?style=flat-square)](https://github.com/Prof-MAN9/OpenBrowser/releases)
+[![Version](https://img.shields.io/badge/version-3.3-00ff88?style=flat-square)](https://github.com/Prof-MAN9/OpenBrowser/releases)
 [![License](https://img.shields.io/badge/license-MIT-00ff88?style=flat-square)](LICENSE)
 [![Chrome Extension](https://img.shields.io/badge/chrome-extension-00ff88?style=flat-square&logo=googlechrome)](https://github.com/Prof-MAN9/OpenBrowser)
 [![Stars](https://img.shields.io/github/stars/Prof-MAN9/OpenBrowser?style=flat-square&color=00ff88)](https://github.com/Prof-MAN9/OpenBrowser/stargazers)

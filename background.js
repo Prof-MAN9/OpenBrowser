@@ -1,9 +1,12 @@
-// OpenBrowser v3.2.6 — Background Service Worker
+// OpenBrowser v3.3 — Background Service Worker
 // https://github.com/Prof-MAN9/OpenBrowser
 
 const PENDING_OMNIBOX = { message: 'pendingOmniboxMessage', messageId: 'pendingOmniboxMessageId' };
 let sidepanelLastHeartbeat = 0;
 const HEARTBEAT_TIMEOUT = 1000;
+// Named timing constants (avoid magic numbers)
+const PANEL_OPEN_DELAY_MS = 400;
+const INPUT_FOCUS_DELAY_MS = 50;
 
 function isSidepanelOpen() {
   return Date.now() - sidepanelLastHeartbeat < HEARTBEAT_TIMEOUT;
@@ -30,8 +33,9 @@ chrome.runtime.onInstalled.addListener((details) => {
   });
 });
 
-// Enable side panel on action click
-chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => {});
+// NOTE: setPanelBehavior is called once inside onInstalled above.
+// A duplicate top-level call here was removed — it would race with the
+// onInstalled call and could fire before the API is ready in some edge cases.
 
 // ── Context menu click handler ───────────────────────────────────────────
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
@@ -60,7 +64,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     // Open the side panel
     await chrome.sidePanel.open({ tabId: tab.id }).catch(() => {});
     // Wait briefly for panel to load
-    await new Promise(r => setTimeout(r, 400));
+    await new Promise(r => setTimeout(r, PANEL_OPEN_DELAY_MS));
     // Store the prompt for the sidepanel to auto-run
     await chrome.storage.local.set({
       [PENDING_OMNIBOX.message]:   prompt,
@@ -77,7 +81,9 @@ let lastNotifiedUrl = '';
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status !== 'complete') return;
   if (!tab.active) return;
-  if (!tab.url || tab.url.startsWith('chrome') || tab.url.startsWith('chrome-extension')) return;
+  // Block browser-internal and non-http(s) URLs that a content script cannot access
+  const BLOCKED_SCHEMES = ['chrome', 'chrome-extension', 'about', 'data', 'devtools', 'javascript'];
+  if (!tab.url || BLOCKED_SCHEMES.some(s => tab.url.startsWith(s))) return;
   if (tab.url === lastNotifiedUrl) return;
   lastNotifiedUrl = tab.url;
 
@@ -127,7 +133,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           // No browser window at all — open a new tab then show the panel
           const tab = await chrome.tabs.create({ url: 'chrome://newtab', active: true });
           // Wait briefly for the new tab to register, then open panel
-          await new Promise(r => setTimeout(r, 400));
+          await new Promise(r => setTimeout(r, PANEL_OPEN_DELAY_MS));
           await chrome.sidePanel.open({ tabId: tab.id });
         }
       } catch (e) {
@@ -256,6 +262,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }).then(results => sendResponse({ results })).catch(e => sendResponse({ error: e.message }));
     return true;
   }
+
+  // Unrecognised message type — explicitly return false so Chrome knows
+  // there is no async response forthcoming on this channel.
+  return false;
 });
 
 // Commands handler
@@ -390,22 +400,31 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
     await chrome.storage.local.set({ ob_macros: macros });
 
     // Try to send the prompt to the side panel if it's open
-    chrome.runtime.sendMessage({
-      type: 'run-macro-prompt',
-      prompt: macro.prompt,
-      macroName: macro.name
-    }).catch(() => {
-      // Side panel not open — open it and try again after a short delay
-      chrome.windows.getLastFocused({ windowTypes: ['normal'] })
-        .then(win => chrome.sidePanel.open({ windowId: win.id }))
-        .then(() => new Promise(r => setTimeout(r, 1500)))
-        .then(() => chrome.runtime.sendMessage({
+    try {
+      await chrome.runtime.sendMessage({
+        type: 'run-macro-prompt',
+        prompt: macro.prompt,
+        macroName: macro.name
+      });
+    } catch {
+      // Side panel not open — open it and retry after a short delay
+      try {
+        const win = await chrome.windows.getLastFocused({ windowTypes: ['normal'] });
+        if (!win || win.id === chrome.windows.WINDOW_ID_NONE) {
+          console.warn('[OpenBrowser] Scheduled macro: no browser window available.');
+          return;
+        }
+        await chrome.sidePanel.open({ windowId: win.id });
+        await new Promise(r => setTimeout(r, 1500));
+        await chrome.runtime.sendMessage({
           type: 'run-macro-prompt',
           prompt: macro.prompt,
           macroName: macro.name
-        }))
-        .catch(e => console.warn('[OpenBrowser] Scheduled macro failed:', e.message));
-    });
+        });
+      } catch (e) {
+        console.warn('[OpenBrowser] Scheduled macro failed:', e.message);
+      }
+    }
   } catch (e) {
     console.warn('[OpenBrowser] Alarm handler error:', e.message);
   }
@@ -546,7 +565,18 @@ async function injectQuickCommandPalette(tabId) {
             const row = document.createElement('div');
             row.className = 'ob-pal-suggestion';
             row.dataset.idx = i;
-            row.innerHTML = `<span class="ob-sug-icon">${s.icon}</span><span class="ob-sug-text">${s.text}</span><span class="ob-sug-tag">${s.tag}</span>`;
+            // Build DOM nodes safely instead of innerHTML to prevent XSS
+            // if suggestion data ever comes from a dynamic/external source.
+            const iconEl = document.createElement('span');
+            iconEl.className = 'ob-sug-icon';
+            iconEl.textContent = s.icon;
+            const textEl = document.createElement('span');
+            textEl.className = 'ob-sug-text';
+            textEl.textContent = s.text;
+            const tagEl = document.createElement('span');
+            tagEl.className = 'ob-sug-tag';
+            tagEl.textContent = s.tag;
+            row.append(iconEl, textEl, tagEl);
             row.addEventListener('mouseenter', () => setActive(i));
             row.addEventListener('click', () => submitPrompt(s.text));
             sugList.appendChild(row);
@@ -618,6 +648,9 @@ async function injectQuickCommandPalette(tabId) {
         document.body.appendChild(overlay);
 
         renderSuggestions('');
+        // NOTE: INPUT_FOCUS_DELAY_MS is defined in the service-worker scope and is NOT
+        // accessible inside this injected ISOLATED-world function. The value (50 ms)
+        // is inlined here to avoid it resolving to `undefined` at runtime.
         setTimeout(() => input.focus(), 50);
       }
     });
@@ -626,4 +659,4 @@ async function injectQuickCommandPalette(tabId) {
   }
 }
 
-console.log('[OpenBrowser] v3.2.6 Background worker initialized');
+console.log('[OpenBrowser] v3.3 Background worker initialized');

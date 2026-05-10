@@ -1,4 +1,4 @@
-// OpenBrowser v3.2.6 — Welcome Page Script
+// OpenBrowser v3.3 — Welcome Page Script
 // https://github.com/Prof-MAN9/OpenBrowser
 // External script (required — inline scripts are blocked by MV3 CSP)
 'use strict';

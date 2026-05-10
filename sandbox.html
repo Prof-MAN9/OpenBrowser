@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>CTRL Sandbox</title>
+  <title>OpenBrowser Sandbox</title>
   <script>
     window.addEventListener('message', async (event) => {
       if (!event.data || event.data.type !== 'execute') return;
@@ -20,7 +20,11 @@
         error = e.message;
       }
 
-      event.source.postMessage({ type: 'result', id, result, error }, event.origin || '*');
+      // FIX: event.origin can be an empty string (falsy) for blob: or file: origins,
+      // which would cause `event.origin || '*'` to fall back to '*', posting to any
+      // origin. Use a ternary to explicitly handle the empty-string case.
+      const targetOrigin = event.origin !== '' ? event.origin : '*';
+      event.source.postMessage({ type: 'result', id, result, error }, targetOrigin);
     });
   </script>
 </head>
