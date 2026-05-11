@@ -193,14 +193,14 @@ const TOOLS = [
   },
   {
     name: 'click',
-    description: 'Click an element on the page. Use visible text content for best results.',
-    parameters: { target: { type: 'string', description: 'Visible text, CSS selector, or aria-label of the element to click' } }
+    description: 'Click an element on the page. Use visible text content, CSS selector, or a spatial grid ID (e.g., "12") for best results.',
+    parameters: { target: { type: 'string', description: 'Visible text, CSS selector, aria-label, or spatial grid ID of the element to click' } }
   },
   {
     name: 'type',
     description: 'Type text into a focused input field, search box, or textarea.',
     parameters: {
-      target: { type: 'string', description: 'Label text, placeholder, or CSS selector of the input field' },
+      target: { type: 'string', description: 'Label text, placeholder, CSS selector, or spatial grid ID of the input field' },
       text: { type: 'string', description: 'Text to type into the field' },
       submit: { type: 'boolean', description: 'If true, press Enter after typing to submit the form' }
     }
@@ -217,6 +217,13 @@ const TOOLS = [
     name: 'screenshot',
     description: 'Capture a screenshot of the current page to visually verify its state.',
     parameters: {}
+  },
+  {
+    name: 'toggle_spatial_grid',
+    description: 'Show or hide a spatial UI grid that overlays numbered badges on all interactive elements. Use this before taking a screenshot to easily identify elements by number. You can then pass the number to the click or type tools.',
+    parameters: {
+      action: { type: 'string', enum: ['show', 'hide'], description: 'Whether to show or hide the grid' }
+    }
   },
   {
     name: 'get_page_content',
@@ -240,8 +247,24 @@ const TOOLS = [
   },
   {
     name: 'list_tabs',
-    description: 'List all open tabs in the current browser window.',
+    description: 'List all open tabs in the current browser window, including their IDs, titles, URLs, and any tab group they belong to.',
     parameters: {}
+  },
+  {
+    name: 'group_tabs',
+    description: 'Group multiple tabs together with a title and color. Use list_tabs first to find the tab IDs.',
+    parameters: {
+      tabIds: { type: 'array', items: { type: 'number' }, description: 'Array of tab IDs to group' },
+      title: { type: 'string', description: 'Title for the tab group' },
+      color: { type: 'string', enum: ['grey', 'blue', 'red', 'yellow', 'green', 'pink', 'purple', 'cyan', 'orange'], description: 'Color for the group (optional)' }
+    }
+  },
+  {
+    name: 'close_tabs',
+    description: 'Close one or more open tabs by their IDs.',
+    parameters: {
+      tabIds: { type: 'array', items: { type: 'number' }, description: 'Array of tab IDs to close' }
+    }
   },
   {
     name: 'wait',
@@ -422,6 +445,19 @@ const TOOLS = [
     name: 'delete_file',
     description: 'Delete a file from the virtual filesystem.',
     parameters: { path: { type: 'string', description: 'File path to delete' } }
+  },
+  {
+    name: 'index_current_page',
+    description: 'Index the current page into your local knowledge base for semantic retrieval later.',
+    parameters: {}
+  },
+  {
+    name: 'semantic_search_memory',
+    description: 'Search your local knowledge base for information using natural language.',
+    parameters: {
+      query: { type: 'string', description: 'The search query or question to answer from memory' },
+      limit: { type: 'number', description: 'Maximum number of results to return (optional, default 3)' }
+    }
   }
 ];
 
@@ -466,6 +502,8 @@ const state = {
   rateLog: [],           // timestamps of recent API calls (last 24h kept)
   citations: [],         // collected citations [{ url, title, author, date, note, format }]
   bookmarks: [],         // session smart bookmarks
+  ragWorker: null,       // Web Worker for Transformers.js
+  ragReady: false
 };
 
 // ── UTILS ──────────────────────────────────────────────────────────
@@ -753,6 +791,83 @@ const VFS = {
       tx.objectStore('files').delete(path);
       tx.oncomplete = resolve; tx.onerror = () => reject(tx.error);
     });
+  }
+};
+
+// ── RAG SYSTEM ────────────────────────────────────────────────────────────
+const RAG = {
+  db: null,
+  async initDB() {
+    if (this.db) return;
+    this.db = await new Promise((resolve, reject) => {
+      const req = indexedDB.open('ob_rag', 1);
+      req.onupgradeneeded = e => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains('chunks')) {
+          const store = db.createObjectStore('chunks', { keyPath: 'id', autoIncrement: true });
+          store.createIndex('url', 'url', { unique: false });
+        }
+      };
+      req.onsuccess = e => resolve(e.target.result);
+      req.onerror = () => reject(req.error);
+    });
+  },
+  async initWorker() {
+    if (state.ragWorker) return;
+    state.ragWorker = new Worker('lib/rag-worker.js', { type: 'module' });
+    state.ragWorker.onmessage = (e) => {
+      const { type, id, embedding, error } = e.data;
+      if (type === 'embed-result' && this.pendingEmbeds[id]) {
+        this.pendingEmbeds[id].resolve(embedding);
+        delete this.pendingEmbeds[id];
+      } else if (type === 'error' && this.pendingEmbeds[id]) {
+        this.pendingEmbeds[id].reject(new Error(error));
+        delete this.pendingEmbeds[id];
+      }
+    };
+    state.ragReady = true;
+  },
+  pendingEmbeds: {},
+  async getEmbedding(text) {
+    await this.initWorker();
+    const id = uid();
+    return new Promise((resolve, reject) => {
+      this.pendingEmbeds[id] = { resolve, reject };
+      state.ragWorker.postMessage({ type: 'embed', id, text });
+    });
+  },
+  async saveChunk(url, title, text, embedding) {
+    await this.initDB();
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction('chunks', 'readwrite');
+      tx.objectStore('chunks').add({ url, title, text, embedding, createdAt: Date.now() });
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  },
+  async search(queryVector, limit = 3) {
+    await this.initDB();
+    return new Promise((resolve) => {
+      const req = this.db.transaction('chunks', 'readonly').objectStore('chunks').getAll();
+      req.onsuccess = () => {
+        const chunks = req.result;
+        const results = chunks.map(chunk => ({
+          ...chunk,
+          score: this.cosineSimilarity(queryVector, chunk.embedding)
+        }));
+        results.sort((a, b) => b.score - a.score);
+        resolve(results.slice(0, limit));
+      };
+    });
+  },
+  cosineSimilarity(v1, v2) {
+    let dot = 0, mag1 = 0, mag2 = 0;
+    for (let i = 0; i < v1.length; i++) {
+      dot += v1[i] * v2[i];
+      mag1 += v1[i] * v1[i];
+      mag2 += v2[i] * v2[i];
+    }
+    return dot / (Math.sqrt(mag1) * Math.sqrt(mag2));
   }
 };
 
@@ -1904,6 +2019,63 @@ async function executeTool(name, input) {
         return { ok: true, result: 'Screenshot taken.', screenshot: r.data };
       }
 
+      case 'toggle_spatial_grid': {
+        const tab = await activeTab();
+        const r = await injectAndRun(tab.id, (action) => {
+          if (action === 'hide') {
+            const existing = document.getElementById('ob-spatial-grid');
+            if (existing) existing.remove();
+            delete window.__ob_spatial_map;
+            return { ok: true, result: 'Spatial grid hidden.' };
+          }
+
+          const existing = document.getElementById('ob-spatial-grid');
+          if (existing) existing.remove();
+
+          const grid = document.createElement('div');
+          grid.id = 'ob-spatial-grid';
+          grid.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2147483647; overflow: hidden;';
+
+          const elements = document.querySelectorAll('button, a, input, select, textarea, [role="button"], [role="link"], [role="tab"], [role="menuitem"], [contenteditable="true"]');
+          
+          window.__ob_spatial_map = {};
+          let count = 1;
+          for (const el of elements) {
+            const rect = el.getBoundingClientRect();
+            if (rect.width === 0 || rect.height === 0) continue;
+            
+            const style = window.getComputedStyle(el);
+            if (style.visibility === 'hidden' || style.opacity === '0' || style.display === 'none') continue;
+
+            window.__ob_spatial_map[count] = el;
+
+            const badge = document.createElement('div');
+            badge.textContent = count;
+            badge.style.cssText = `
+              position: absolute;
+              top: ${window.scrollY + rect.top - 8}px;
+              left: ${window.scrollX + rect.left - 8}px;
+              background: #ffaa22;
+              color: #000;
+              font-size: 11px;
+              font-family: monospace;
+              font-weight: bold;
+              padding: 2px 4px;
+              border-radius: 4px;
+              border: 1px solid #000;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+              z-index: 2147483647;
+            `;
+            grid.appendChild(badge);
+            count++;
+          }
+
+          document.body.appendChild(grid);
+          return { ok: true, result: `Spatial grid shown with ${count - 1} interactive elements.` };
+        }, [input.action]);
+        return r || { ok: false, result: 'Failed to toggle spatial grid.' };
+      }
+
       case 'get_page_content': {
         const tab = await activeTab();
         const r = await injectAndRun(tab.id, (sel) => {
@@ -1928,8 +2100,12 @@ async function executeTool(name, input) {
             return null;
           }
           let el = null;
-          try { el = document.querySelector(q); } catch { }
-          if (!el) el = find(q);
+          if (/^\d+$/.test(q) && window.__ob_spatial_map && window.__ob_spatial_map[q]) {
+            el = window.__ob_spatial_map[q];
+          } else {
+            try { el = document.querySelector(q); } catch { }
+            if (!el) el = find(q);
+          }
           if (!el) return { ok: false, error: 'Not found: ' + q };
           el.scrollIntoView({ behavior: 'smooth', block: 'center' });
           await new Promise(r => setTimeout(r, 150));
@@ -1955,7 +2131,12 @@ async function executeTool(name, input) {
             }
             return document.activeElement !== document.body ? document.activeElement : null;
           }
-          const el = findInput(target);
+          let el = null;
+          if (/^\d+$/.test(target) && window.__ob_spatial_map && window.__ob_spatial_map[target]) {
+            el = window.__ob_spatial_map[target];
+          } else {
+            el = findInput(target);
+          }
           if (!el) return { ok: false, error: 'Input not found: ' + target };
           el.scrollIntoView({ behavior: 'smooth', block: 'center' });
           el.focus();
@@ -2031,7 +2212,43 @@ async function executeTool(name, input) {
 
       case 'list_tabs': {
         const tabs = await chrome.tabs.query({ currentWindow: true });
-        return { ok: true, result: tabs.map(t => `[${t.id}] ${t.title} — ${t.url}`).join('\n') };
+        const groups = await chrome.tabGroups.query({ windowId: chrome.windows.WINDOW_ID_CURRENT }).catch(() => []);
+        const groupMap = Object.fromEntries(groups.map(g => [g.id, g]));
+        
+        return { ok: true, result: tabs.map(t => {
+          let str = `[${t.id}] ${t.title} — ${t.url}`;
+          if (t.groupId !== chrome.tabGroups.TAB_GROUP_ID_NONE && groupMap[t.groupId]) {
+            const g = groupMap[t.groupId];
+            str += ` (Group: ${g.title || 'Untitled'}, Color: ${g.color})`;
+          }
+          return str;
+        }).join('\n') };
+      }
+
+      case 'group_tabs': {
+        if (!input.tabIds || !input.tabIds.length) return { ok: false, result: 'No tabIds provided.' };
+        try {
+          const groupId = await chrome.tabs.group({ tabIds: input.tabIds.map(Number) });
+          const updateOpts = {};
+          if (input.title) updateOpts.title = input.title;
+          if (input.color) updateOpts.color = input.color;
+          if (Object.keys(updateOpts).length > 0) {
+            await chrome.tabGroups.update(groupId, updateOpts);
+          }
+          return { ok: true, result: `Successfully grouped ${input.tabIds.length} tabs into group "${input.title || 'Untitled'}".` };
+        } catch (e) {
+          return { ok: false, result: 'Failed to group tabs: ' + e.message };
+        }
+      }
+
+      case 'close_tabs': {
+        if (!input.tabIds || !input.tabIds.length) return { ok: false, result: 'No tabIds provided.' };
+        try {
+          await chrome.tabs.remove(input.tabIds.map(Number));
+          return { ok: true, result: `Successfully closed ${input.tabIds.length} tabs.` };
+        } catch (e) {
+          return { ok: false, result: 'Failed to close tabs: ' + e.message };
+        }
       }
 
       case 'wait': {
@@ -2715,6 +2932,52 @@ async function executeTool(name, input) {
         await VFS.delete(path);
         renderFileTree();
         return { ok: true, result: `Deleted "${path}"` };
+      }
+
+      // ── RAG TOOLS ────────────────────────────────────────────────
+      case 'index_current_page': {
+        const tab = await activeTab();
+        const r = await injectAndRun(tab.id, () => {
+          const body = (document.body?.innerText || '').replace(/\s+/g, ' ').trim();
+          return { text: body, title: document.title, url: location.href };
+        });
+        if (!r || !r.text) return { ok: false, result: 'Could not read page content.' };
+        
+        toast('Indexing page into local memory...');
+        
+        // Improved chunking: Overlapping windows for better semantic retrieval
+        const chunks = [];
+        const chunkSize = 800;
+        const overlap = 200;
+        for (let i = 0; i < r.text.length; i += (chunkSize - overlap)) {
+          chunks.push(r.text.substring(i, i + chunkSize));
+          if (chunks.length >= 10) break; // Cap to first 10 chunks to avoid quota issues
+        }
+
+        let completed = 0;
+        for (const chunk of chunks) {
+          try {
+            const vector = await RAG.getEmbedding(chunk);
+            await RAG.saveChunk(r.url, r.title, chunk, vector);
+            completed++;
+          } catch (e) {
+            console.error('[RAG] Chunk failed:', e.message);
+          }
+        }
+        return { ok: true, result: `Successfully indexed "${r.title}" (${completed} segments). It is now searchable in your local knowledge base.` };
+      }
+
+      case 'semantic_search_memory': {
+        if (!input.query) return { ok: false, result: 'query is required' };
+        toast('Searching memory...');
+        const queryVector = await RAG.getEmbedding(input.query);
+        const results = await RAG.search(queryVector, input.limit || 3);
+        if (!results.length) return { ok: true, result: 'No relevant memories found.' };
+
+        const formatted = results.map((r, i) => 
+          `**Result ${i+1}** (Score: ${r.score.toFixed(3)})\nSource: [${r.title}](${r.url})\n"${r.text.substring(0, 300)}..."`
+        ).join('\n\n---\n\n');
+        return { ok: true, result: `Found ${results.length} relevant results:\n\n${formatted}` };
       }
 
       default: return { ok: false, result: `Unknown tool: ${name}` };
