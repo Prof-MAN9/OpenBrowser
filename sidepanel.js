@@ -9,11 +9,11 @@ const PROVIDERS = {
   anthropic: {
     name: 'Anthropic', baseUrl: 'https://api.anthropic.com/v1/messages',
     models: [
-      { id: 'claude-opus-4-5',            label: 'Claude Opus 4.5' },
-      { id: 'claude-sonnet-4-5',          label: 'Claude Sonnet 4.5' },
-      { id: 'claude-haiku-4-5',           label: 'Claude Haiku 4.5' },
+      { id: 'claude-opus-4-5', label: 'Claude Opus 4.5' },
+      { id: 'claude-sonnet-4-5', label: 'Claude Sonnet 4.5' },
+      { id: 'claude-haiku-4-5', label: 'Claude Haiku 4.5' },
       { id: 'claude-3-5-sonnet-20241022', label: 'Claude 3.5 Sonnet' },
-      { id: 'claude-3-haiku-20240307',    label: 'Claude 3 Haiku' }
+      { id: 'claude-3-haiku-20240307', label: 'Claude 3 Haiku' }
     ],
     format: 'anthropic', requiresKey: true,
     keyPlaceholder: 'sk-ant-api03-…',
@@ -22,11 +22,11 @@ const PROVIDERS = {
   openai: {
     name: 'OpenAI', baseUrl: 'https://api.openai.com/v1/chat/completions',
     models: [
-      { id: 'gpt-4o',       label: 'GPT-4o' },
-      { id: 'gpt-4o-mini',  label: 'GPT-4o Mini' },
-      { id: 'gpt-4.1',      label: 'GPT-4.1' },
+      { id: 'gpt-4o', label: 'GPT-4o' },
+      { id: 'gpt-4o-mini', label: 'GPT-4o Mini' },
+      { id: 'gpt-4.1', label: 'GPT-4.1' },
       { id: 'gpt-4.1-mini', label: 'GPT-4.1 Mini' },
-      { id: 'o4-mini',      label: 'o4-mini (Reasoning)' }
+      { id: 'o4-mini', label: 'o4-mini (Reasoning)' }
     ],
     format: 'openai', requiresKey: true,
     keyPlaceholder: 'sk-…',
@@ -36,10 +36,10 @@ const PROVIDERS = {
     name: 'Google Gemini',
     baseUrl: 'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent',
     models: [
-      { id: 'gemini-2.0-flash',      label: 'Gemini 2.0 Flash' },
+      { id: 'gemini-2.0-flash', label: 'Gemini 2.0 Flash' },
       { id: 'gemini-2.0-flash-lite', label: 'Gemini 2.0 Flash Lite' },
-      { id: 'gemini-1.5-pro',        label: 'Gemini 1.5 Pro' },
-      { id: 'gemini-1.5-flash',      label: 'Gemini 1.5 Flash' }
+      { id: 'gemini-1.5-pro', label: 'Gemini 1.5 Pro' },
+      { id: 'gemini-1.5-flash', label: 'Gemini 1.5 Flash' }
     ],
     format: 'gemini', requiresKey: true,
     keyPlaceholder: 'AIza…',
@@ -49,9 +49,9 @@ const PROVIDERS = {
     name: 'Groq', baseUrl: 'https://api.groq.com/openai/v1/chat/completions',
     models: [
       { id: 'llama-3.3-70b-versatile', label: 'Llama 3.3 70B' },
-      { id: 'llama-3.1-8b-instant',    label: 'Llama 3.1 8B Instant' },
-      { id: 'mixtral-8x7b-32768',      label: 'Mixtral 8x7B' },
-      { id: 'gemma2-9b-it',            label: 'Gemma 2 9B' }
+      { id: 'llama-3.1-8b-instant', label: 'Llama 3.1 8B Instant' },
+      { id: 'mixtral-8x7b-32768', label: 'Mixtral 8x7B' },
+      { id: 'gemma2-9b-it', label: 'Gemma 2 9B' }
     ],
     format: 'openai', requiresKey: true,
     keyPlaceholder: 'gsk_…',
@@ -60,11 +60,11 @@ const PROVIDERS = {
   ollama: {
     name: 'Ollama (Local)', baseUrl: 'http://localhost:11434/v1/chat/completions',
     models: [
-      { id: 'llama3.2',    label: 'Llama 3.2' },
-      { id: 'llama3.1',    label: 'Llama 3.1' },
-      { id: 'mistral',     label: 'Mistral 7B' },
-      { id: 'codellama',   label: 'Code Llama' },
-      { id: 'qwen2.5',     label: 'Qwen 2.5' },
+      { id: 'llama3.2', label: 'Llama 3.2' },
+      { id: 'llama3.1', label: 'Llama 3.1' },
+      { id: 'mistral', label: 'Mistral 7B' },
+      { id: 'codellama', label: 'Code Llama' },
+      { id: 'qwen2.5', label: 'Qwen 2.5' },
       { id: 'deepseek-r1', label: 'DeepSeek R1' }
     ],
     format: 'openai', requiresKey: false,
@@ -74,12 +74,12 @@ const PROVIDERS = {
   openrouter: {
     name: 'OpenRouter', baseUrl: 'https://openrouter.ai/api/v1/chat/completions',
     models: [
-      { id: 'anthropic/claude-3.5-sonnet',       label: 'Claude 3.5 Sonnet' },
-      { id: 'google/gemini-pro-1.5',             label: 'Gemini Pro 1.5' },
+      { id: 'anthropic/claude-3.5-sonnet', label: 'Claude 3.5 Sonnet' },
+      { id: 'google/gemini-pro-1.5', label: 'Gemini Pro 1.5' },
       { id: 'meta-llama/llama-3.1-70b-instruct', label: 'Llama 3.1 70B' },
-      { id: 'mistralai/mistral-large',            label: 'Mistral Large' },
-      { id: 'openai/gpt-4o',                      label: 'GPT-4o' },
-      { id: 'deepseek/deepseek-chat',             label: 'DeepSeek Chat' }
+      { id: 'mistralai/mistral-large', label: 'Mistral Large' },
+      { id: 'openai/gpt-4o', label: 'GPT-4o' },
+      { id: 'deepseek/deepseek-chat', label: 'DeepSeek Chat' }
     ],
     format: 'openai', requiresKey: true,
     keyPlaceholder: 'sk-or-v1-…',
@@ -89,9 +89,9 @@ const PROVIDERS = {
     name: 'Cloudflare Workers AI',
     baseUrl: 'https://api.cloudflare.com/client/v4/accounts/{accountId}/ai/v1/chat/completions',
     models: [
-      { id: '@cf/meta/llama-3.1-8b-instruct',          label: 'Llama 3.1 8B' },
+      { id: '@cf/meta/llama-3.1-8b-instruct', label: 'Llama 3.1 8B' },
       { id: '@cf/meta/llama-3.3-70b-instruct-fp8-fast', label: 'Llama 3.3 70B' },
-      { id: '@cf/mistral/mistral-7b-instruct-v0.1',      label: 'Mistral 7B' }
+      { id: '@cf/mistral/mistral-7b-instruct-v0.1', label: 'Mistral 7B' }
     ],
     format: 'openai', requiresKey: true, requiresAccountId: true,
     keyPlaceholder: 'Cloudflare API Token',
@@ -101,8 +101,8 @@ const PROVIDERS = {
     name: 'HuggingFace', baseUrl: 'https://api-inference.huggingface.co/v1/chat/completions',
     models: [
       { id: 'meta-llama/Llama-3.2-11B-Vision-Instruct', label: 'Llama 3.2 11B' },
-      { id: 'Qwen/Qwen2.5-72B-Instruct',                 label: 'Qwen 2.5 72B' },
-      { id: 'mistralai/Mistral-7B-Instruct-v0.3',         label: 'Mistral 7B' }
+      { id: 'Qwen/Qwen2.5-72B-Instruct', label: 'Qwen 2.5 72B' },
+      { id: 'mistralai/Mistral-7B-Instruct-v0.3', label: 'Mistral 7B' }
     ],
     format: 'openai', requiresKey: true,
     keyPlaceholder: 'hf_…',
@@ -112,7 +112,7 @@ const PROVIDERS = {
     name: 'MiniMax', baseUrl: 'https://api.minimax.chat/v1/text/chatcompletion_v2',
     models: [
       { id: 'MiniMax-Text-01', label: 'MiniMax Text-01' },
-      { id: 'abab6.5s-chat',   label: 'ABAB 6.5s' }
+      { id: 'abab6.5s-chat', label: 'ABAB 6.5s' }
     ],
     format: 'openai', requiresKey: true,
     keyPlaceholder: 'MiniMax API key',
@@ -122,8 +122,8 @@ const PROVIDERS = {
     name: 'Moonshot (Kimi)', baseUrl: 'https://api.moonshot.cn/v1/chat/completions',
     models: [
       { id: 'moonshot-v1-128k', label: 'Moonshot 128K' },
-      { id: 'moonshot-v1-32k',  label: 'Moonshot 32K' },
-      { id: 'moonshot-v1-8k',   label: 'Moonshot 8K' }
+      { id: 'moonshot-v1-32k', label: 'Moonshot 32K' },
+      { id: 'moonshot-v1-8k', label: 'Moonshot 8K' }
     ],
     format: 'openai', requiresKey: true,
     keyPlaceholder: 'sk-…',
@@ -133,9 +133,9 @@ const PROVIDERS = {
     name: 'Qwen (Alibaba)',
     baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
     models: [
-      { id: 'qwen-max',             label: 'Qwen Max' },
-      { id: 'qwen-plus',            label: 'Qwen Plus' },
-      { id: 'qwen-turbo',           label: 'Qwen Turbo' },
+      { id: 'qwen-max', label: 'Qwen Max' },
+      { id: 'qwen-plus', label: 'Qwen Plus' },
+      { id: 'qwen-turbo', label: 'Qwen Turbo' },
       { id: 'qwen2.5-72b-instruct', label: 'Qwen 2.5 72B' }
     ],
     format: 'openai', requiresKey: true,
@@ -178,10 +178,10 @@ const TOOLS = [
     name: 'save_bookmark',
     description: 'Save the current page (or a given URL) as a smart bookmark with AI-generated tags and a one-sentence summary.',
     parameters: {
-      url:     { type: 'string', description: 'URL to bookmark. Leave empty to use the current page.' },
-      tags:    { type: 'string', description: 'Comma-separated tags, e.g. "programming, tutorial, python". Leave empty to auto-generate.' },
+      url: { type: 'string', description: 'URL to bookmark. Leave empty to use the current page.' },
+      tags: { type: 'string', description: 'Comma-separated tags, e.g. "programming, tutorial, python". Leave empty to auto-generate.' },
       summary: { type: 'string', description: 'One-sentence summary. Leave empty to auto-generate from page content.' },
-      folder:  { type: 'string', description: 'Bookmark folder name (optional). Default: "OpenBrowser"' }
+      folder: { type: 'string', description: 'Bookmark folder name (optional). Default: "OpenBrowser"' }
     }
   },
   {
@@ -201,7 +201,7 @@ const TOOLS = [
     description: 'Type text into a focused input field, search box, or textarea.',
     parameters: {
       target: { type: 'string', description: 'Label text, placeholder, or CSS selector of the input field' },
-      text:   { type: 'string', description: 'Text to type into the field' },
+      text: { type: 'string', description: 'Text to type into the field' },
       submit: { type: 'boolean', description: 'If true, press Enter after typing to submit the form' }
     }
   },
@@ -209,8 +209,8 @@ const TOOLS = [
     name: 'scroll',
     description: 'Scroll the page in a direction.',
     parameters: {
-      direction: { type: 'string', enum: ['down','up','top','bottom'], description: 'Which direction to scroll' },
-      amount:    { type: 'number', description: 'Pixels to scroll (default 400, optional)' }
+      direction: { type: 'string', enum: ['down', 'up', 'top', 'bottom'], description: 'Which direction to scroll' },
+      amount: { type: 'number', description: 'Pixels to scroll (default 400, optional)' }
     }
   },
   {
@@ -258,7 +258,7 @@ const TOOLS = [
     description: 'Choose an option from a dropdown/select element.',
     parameters: {
       target: { type: 'string', description: 'CSS selector or label text of the select element' },
-      value:  { type: 'string', description: 'The option value or visible text to select' }
+      value: { type: 'string', description: 'The option value or visible text to select' }
     }
   },
   {
@@ -266,14 +266,14 @@ const TOOLS = [
     description: 'Create and download a CSV file from extracted data.',
     parameters: {
       filename: { type: 'string', description: 'File name without the .csv extension' },
-      data:     { type: 'string', description: 'JSON string of an array of objects or arrays representing the rows' }
+      data: { type: 'string', description: 'JSON string of an array of objects or arrays representing the rows' }
     }
   },
   {
     name: 'memorize',
     description: 'Save important information to remember for later in this session.',
     parameters: {
-      key:   { type: 'string', description: 'A short identifier for this piece of information' },
+      key: { type: 'string', description: 'A short identifier for this piece of information' },
       value: { type: 'string', description: 'The information to remember' }
     }
   },
@@ -286,9 +286,9 @@ const TOOLS = [
     name: 'reason',
     description: 'Think through a complex problem deeply before acting. Use this for multi-step planning, ambiguous situations, or when previous attempts have failed. Write out your full chain of thought.',
     parameters: {
-      problem:  { type: 'string', description: 'The specific problem or decision you need to reason about' },
+      problem: { type: 'string', description: 'The specific problem or decision you need to reason about' },
       thoughts: { type: 'string', description: 'Your detailed step-by-step reasoning, considering alternatives, risks, and the best path forward' },
-      plan:     { type: 'string', description: 'The concrete action plan you will execute based on your reasoning' }
+      plan: { type: 'string', description: 'The concrete action plan you will execute based on your reasoning' }
     }
   },
   {
@@ -300,9 +300,9 @@ const TOOLS = [
     name: 'scrape_page',
     description: 'Deep-scrape a page: extracts all text, links, images, tables, headings, and metadata in one structured call. Better than get_page_content for research tasks.',
     parameters: {
-      selector:      { type: 'string', description: 'CSS selector to limit extraction to a region (optional)' },
+      selector: { type: 'string', description: 'CSS selector to limit extraction to a region (optional)' },
       include_links: { type: 'boolean', description: 'Include all hyperlinks with their text and href (optional, default true)' },
-      include_tables:{ type: 'boolean', description: 'Include all table data as JSON (optional, default true)' }
+      include_tables: { type: 'boolean', description: 'Include all table data as JSON (optional, default true)' }
     }
   },
   {
@@ -334,17 +334,17 @@ const TOOLS = [
     description: 'Mark a step in the current task plan as done, in-progress, or failed.',
     parameters: {
       step_index: { type: 'number', description: 'Zero-based index of the step to update' },
-      status:     { type: 'string', description: 'New status: "done", "active", or "failed"' },
-      note:       { type: 'string', description: 'Optional short note to show next to the step (e.g. "Found flight for $312")' }
+      status: { type: 'string', description: 'New status: "done", "active", or "failed"' },
+      note: { type: 'string', description: 'Optional short note to show next to the step (e.g. "Found flight for $312")' }
     }
   },
   {
     name: 'export_data',
     description: 'Export structured data (array of objects) as a downloadable CSV or JSON file, and display it as a table in the chat.',
     parameters: {
-      data:     { type: 'string', description: 'JSON-encoded array of objects to export' },
+      data: { type: 'string', description: 'JSON-encoded array of objects to export' },
       filename: { type: 'string', description: 'Base filename without extension' },
-      format:   { type: 'string', description: '"csv" or "json" (default csv)' }
+      format: { type: 'string', description: '"csv" or "json" (default csv)' }
     }
   },
   // ── NEW v3.2.3 TOOLS ─────────────────────────────────────────────
@@ -353,23 +353,23 @@ const TOOLS = [
     description: 'Summarize all open browser tabs (or a specific subset) and return a structured digest. Great for "catch me up on all my open research" requests.',
     parameters: {
       tab_ids: { type: 'string', description: 'Optional JSON array of specific tab IDs to summarize (from list_tabs). Leave empty to summarize all tabs.' },
-      focus:   { type: 'string', description: 'Optional focus topic — e.g. "pricing" or "technical specs". Guides what to extract from each page.' }
+      focus: { type: 'string', description: 'Optional focus topic — e.g. "pricing" or "technical specs". Guides what to extract from each page.' }
     }
   },
   {
     name: 'cross_site_research',
     description: 'Compare information across multiple open tabs simultaneously. Use for "compare these laptops", "which of these services is cheapest", etc.',
     parameters: {
-      tab_ids:    { type: 'string', description: 'JSON array of tab IDs to compare (get IDs from list_tabs first)' },
+      tab_ids: { type: 'string', description: 'JSON array of tab IDs to compare (get IDs from list_tabs first)' },
       attributes: { type: 'string', description: 'JSON array of attributes to extract from each page, e.g. ["price","RAM","storage","display size"]' },
-      question:   { type: 'string', description: 'The comparison question to answer, e.g. "Which laptop has the best value under $1000?"' }
+      question: { type: 'string', description: 'The comparison question to answer, e.g. "Which laptop has the best value under $1000?"' }
     }
   },
   {
     name: 'auto_highlight',
     description: 'Highlight the most relevant parts of the current page based on a goal or keyword. Adds visible green highlights to matching text. Call remove_highlights to clear.',
     parameters: {
-      goal:       { type: 'string', description: 'What the user is looking for, e.g. "pricing information" or "side effects" or "installation steps"' },
+      goal: { type: 'string', description: 'What the user is looking for, e.g. "pricing information" or "side effects" or "installation steps"' },
       max_highlights: { type: 'number', description: 'Maximum number of passages to highlight (default 8, max 25)' }
     }
   },
@@ -382,8 +382,8 @@ const TOOLS = [
     name: 'add_citation',
     description: 'Save the current page (or a specific URL) as a citation. Automatically extracts title, author, date, and URL.',
     parameters: {
-      url:    { type: 'string', description: 'URL to cite. Leave empty to use the current page.' },
-      note:   { type: 'string', description: 'Optional personal note about why this source is relevant.' },
+      url: { type: 'string', description: 'URL to cite. Leave empty to use the current page.' },
+      note: { type: 'string', description: 'Optional personal note about why this source is relevant.' },
       format: { type: 'string', description: 'Citation format: "apa", "mla", "chicago", or "url" (default url)' }
     }
   },
@@ -404,7 +404,7 @@ const TOOLS = [
     name: 'write_file',
     description: 'Write content to a file in the virtual filesystem. Creates directories automatically. Use for saving code, data, notes, or any generated content.',
     parameters: {
-      path:    { type: 'string', description: 'File path, e.g. "scripts/hello.py" or "notes/ideas.md"' },
+      path: { type: 'string', description: 'File path, e.g. "scripts/hello.py" or "notes/ideas.md"' },
       content: { type: 'string', description: 'Full file content to write' }
     }
   },
@@ -449,12 +449,12 @@ const state = {
     theme: 'dark',          // 'dark' | 'light' | 'custom'
     accentColor: '#00ff88', // custom accent color (only used in 'custom' theme)
     promptTemplates: [      // user-editable prompt templates
-      { id: 'pt1', name: 'Summarize page',    prompt: 'Summarize the main content of this page in 3-5 bullet points.' },
-      { id: 'pt2', name: 'Extract data',      prompt: 'Extract all structured data (tables, lists, prices, specs) from this page and format as a table.' },
-      { id: 'pt3', name: 'Fill form',         prompt: 'Scan the form on this page and fill it intelligently. Ask me for any required info you don\'t know.' },
-      { id: 'pt4', name: 'Find prices',       prompt: 'Find all prices, costs, or fees mentioned on this page and list them clearly.' },
+      { id: 'pt1', name: 'Summarize page', prompt: 'Summarize the main content of this page in 3-5 bullet points.' },
+      { id: 'pt2', name: 'Extract data', prompt: 'Extract all structured data (tables, lists, prices, specs) from this page and format as a table.' },
+      { id: 'pt3', name: 'Fill form', prompt: 'Scan the form on this page and fill it intelligently. Ask me for any required info you don\'t know.' },
+      { id: 'pt4', name: 'Find prices', prompt: 'Find all prices, costs, or fees mentioned on this page and list them clearly.' },
       { id: 'pt5', name: 'Screenshot & describe', prompt: 'Take a screenshot of the current page and describe what you see in detail.' },
-      { id: 'pt6', name: 'Cite this page',    prompt: 'Save this page as a citation in APA format with tags.' },
+      { id: 'pt6', name: 'Cite this page', prompt: 'Save this page as a citation in APA format with tags.' },
     ]
   },
   running: false,
@@ -469,13 +469,13 @@ const state = {
 };
 
 // ── UTILS ──────────────────────────────────────────────────────────
-const uid  = () => crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2);
+const uid = () => crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2);
 const wait = ms => new Promise(r => setTimeout(r, ms));
 
 function esc(s) {
   return String(s)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 // ── MERMAID DIAGRAM RENDERER ─────────────────────────────────────────────
@@ -491,10 +491,13 @@ async function loadMermaid() {
     const s = document.createElement('script');
     s.src = 'https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.4.1/mermaid.min.js';
     s.onload = () => {
-      window.mermaid?.initialize({ startOnLoad: false, theme: 'dark',
-        themeVariables: { primaryColor: '#00ff88', primaryTextColor: '#e8f5ec',
+      window.mermaid?.initialize({
+        startOnLoad: false, theme: 'dark',
+        themeVariables: {
+          primaryColor: '#00ff88', primaryTextColor: '#e8f5ec',
           primaryBorderColor: '#00ff88', lineColor: '#00cc6a',
-          background: '#0d1410', mainBkg: '#151e18', nodeBorder: '#00ff88' }
+          background: '#0d1410', mainBkg: '#151e18', nodeBorder: '#00ff88'
+        }
       });
       mermaidLoaded = true; mermaidLoading = false;
       mermaidQueue.forEach(r => r()); mermaidQueue = [];
@@ -531,14 +534,14 @@ function md(text) {
       const id = 'mmd_pre_' + Math.random().toString(36).slice(2);
       return `<pre class="mermaid-pre" id="${id}">${esc(code.trim())}</pre>`;
     })
-    .replace(/```(\w*)\n?([\s\S]*?)```/g, (_,l,c) => `<pre><code>${esc(c.trim())}</code></pre>`)
+    .replace(/```(\w*)\n?([\s\S]*?)```/g, (_, l, c) => `<pre><code>${esc(c.trim())}</code></pre>`)
     .replace(/`([^`\n]+)`/g, '<code>$1</code>')
     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*([^*\n]+)\*/g,   '<em>$1</em>')
+    .replace(/\*([^*\n]+)\*/g, '<em>$1</em>')
     .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-    .replace(/^## (.+)$/gm,  '<h2>$1</h2>')
-    .replace(/^# (.+)$/gm,   '<h1>$1</h1>')
-    .replace(/^[-*] (.+)$/gm,'<li>$1</li>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+    .replace(/^[-*] (.+)$/gm, '<li>$1</li>')
     .replace(/(<li>.*<\/li>)/gs, m => `<ul>${m}</ul>`)
     .replace(/\n{2,}/g, '</p><p>')
     .replace(/^([^<\n].+)$/gm, m => m.startsWith('<') ? m : `<p>${m}</p>`)
@@ -569,46 +572,46 @@ function csvFromJSON(raw) {
   })();
   return data.map(r => r.map(c => {
     const s = String(c ?? '');
-    return /[,"\n]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s;
+    return /[,"\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   }).join(',')).join('\n');
 }
 
 // ── STORAGE ────────────────────────────────────────────────────────
 async function load() {
-  const d = await chrome.storage.local.get(['ob_settings','ob_conversations','ob_memory','ob_citations','ob_rateLog']);
-  if (d.ob_settings)      Object.assign(state.settings, d.ob_settings);
+  const d = await chrome.storage.local.get(['ob_settings', 'ob_conversations', 'ob_memory', 'ob_citations', 'ob_rateLog']);
+  if (d.ob_settings) Object.assign(state.settings, d.ob_settings);
   if (d.ob_conversations) state.conversations = d.ob_conversations;
-  if (d.ob_citations)     state.citations = d.ob_citations;
-  if (d.ob_rateLog)       state.rateLog = d.ob_rateLog;
-  
+  if (d.ob_citations) state.citations = d.ob_citations;
+  if (d.ob_rateLog) state.rateLog = d.ob_rateLog;
+
   // Restore persistent memory if feature is on
   if (d.ob_memory && state.settings.persistMemory) {
     Object.assign(state.memory, d.ob_memory);
   }
 }
 async function saveSettings() { await chrome.storage.local.set({ ob_settings: { ...state.settings } }); }
-async function saveConvs()    { await chrome.storage.local.set({ ob_conversations: state.conversations.slice(0,50) }); }
-async function saveMemory()   { await chrome.storage.local.set({ ob_memory: { ...state.memory } }); }
+async function saveConvs() { await chrome.storage.local.set({ ob_conversations: state.conversations.slice(0, 50) }); }
+async function saveMemory() { await chrome.storage.local.set({ ob_memory: { ...state.memory } }); }
 
 // ── THEME SYSTEM ─────────────────────────────────────────────────────────
 const THEMES = {
   dark: {
-    '--bg-primary':    '#080c0a', '--bg-secondary':  '#0d1410',
-    '--bg-tertiary':   '#121a15', '--bg-card':       '#151e18',
-    '--bg-input':      '#0f1812', '--bg-hover':      '#1a2620',
-    '--bg-panel':      '#0d1410', '--bg-active':     '#1e2e24',
-    '--text-primary':  '#e8f5ec', '--text-secondary':'#8aab96',
-    '--text-muted':    '#4a6b56', '--text-dim':      '#2a4034',
-    '--border-color':  'rgba(0,255,136,0.12)', '--border-subtle':'rgba(255,255,255,0.04)',
+    '--bg-primary': '#080c0a', '--bg-secondary': '#0d1410',
+    '--bg-tertiary': '#121a15', '--bg-card': '#151e18',
+    '--bg-input': '#0f1812', '--bg-hover': '#1a2620',
+    '--bg-panel': '#0d1410', '--bg-active': '#1e2e24',
+    '--text-primary': '#e8f5ec', '--text-secondary': '#8aab96',
+    '--text-muted': '#4a6b56', '--text-dim': '#2a4034',
+    '--border-color': 'rgba(0,255,136,0.12)', '--border-subtle': 'rgba(255,255,255,0.04)',
   },
   light: {
-    '--bg-primary':    '#f5f8f6', '--bg-secondary':  '#edf2ef',
-    '--bg-tertiary':   '#e4ece8', '--bg-card':       '#dce7e1',
-    '--bg-input':      '#eef5f1', '--bg-hover':      '#d8e8de',
-    '--bg-panel':      '#edf2ef', '--bg-active':     '#cfe0d7',
-    '--text-primary':  '#0f1f15', '--text-secondary':'#2d5540',
-    '--text-muted':    '#5a8a6a', '--text-dim':      '#8abaaa',
-    '--border-color':  'rgba(0,136,68,0.18)', '--border-subtle':'rgba(0,0,0,0.06)',
+    '--bg-primary': '#f5f8f6', '--bg-secondary': '#edf2ef',
+    '--bg-tertiary': '#e4ece8', '--bg-card': '#dce7e1',
+    '--bg-input': '#eef5f1', '--bg-hover': '#d8e8de',
+    '--bg-panel': '#edf2ef', '--bg-active': '#cfe0d7',
+    '--text-primary': '#0f1f15', '--text-secondary': '#2d5540',
+    '--text-muted': '#5a8a6a', '--text-dim': '#8abaaa',
+    '--border-color': 'rgba(0,136,68,0.18)', '--border-subtle': 'rgba(0,0,0,0.06)',
   },
 };
 
@@ -621,28 +624,28 @@ function applyTheme(themeName, accentHex) {
 
   // Apply accent color
   const accent = accentHex || (themeName === 'light' ? '#009944' : '#00ff88');
-  root.style.setProperty('--green-bright',  accent);
-  root.style.setProperty('--green-mid',     adjustBrightness(accent, -0.15));
-  root.style.setProperty('--green-dim',     adjustBrightness(accent, -0.35));
-  root.style.setProperty('--green-subtle',  hexToRgba(accent, 0.08));
-  root.style.setProperty('--green-border',  hexToRgba(accent, 0.18));
-  root.style.setProperty('--green-glow',    hexToRgba(accent, 0.25));
+  root.style.setProperty('--green-bright', accent);
+  root.style.setProperty('--green-mid', adjustBrightness(accent, -0.15));
+  root.style.setProperty('--green-dim', adjustBrightness(accent, -0.35));
+  root.style.setProperty('--green-subtle', hexToRgba(accent, 0.08));
+  root.style.setProperty('--green-border', hexToRgba(accent, 0.18));
+  root.style.setProperty('--green-glow', hexToRgba(accent, 0.25));
 
   // Mark theme on body for additional CSS hooks
   document.body.dataset.theme = themeName;
 }
 
 function hexToRgba(hex, alpha) {
-  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  const r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
   return `rgba(${r},${g},${b},${alpha})`;
 }
 
 function adjustBrightness(hex, factor) {
-  let r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  let r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
   r = Math.max(0, Math.min(255, Math.round(r * (1 + factor))));
   g = Math.max(0, Math.min(255, Math.round(g * (1 + factor))));
   b = Math.max(0, Math.min(255, Math.round(b * (1 + factor))));
-  return '#' + [r,g,b].map(x => x.toString(16).padStart(2,'0')).join('');
+  return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
 }
 
 // ── MEMORY DASHBOARD ─────────────────────────────────────────────────────
@@ -714,7 +717,7 @@ const VFS = {
         }
       };
       req.onsuccess = e => resolve(e.target.result);
-      req.onerror   = () => reject(req.error);
+      req.onerror = () => reject(req.error);
     });
   },
   async write(path, content) {
@@ -731,7 +734,7 @@ const VFS = {
       const tx = this.db.transaction('files', 'readonly');
       const req = tx.objectStore('files').get(path);
       req.onsuccess = () => resolve(req.result || null);
-      req.onerror   = () => reject(req.error);
+      req.onerror = () => reject(req.error);
     });
   },
   async list() {
@@ -740,7 +743,7 @@ const VFS = {
       const tx = this.db.transaction('files', 'readonly');
       const req = tx.objectStore('files').getAll();
       req.onsuccess = () => resolve(req.result || []);
-      req.onerror   = () => reject(req.error);
+      req.onerror = () => reject(req.error);
     });
   },
   async delete(path) {
@@ -765,9 +768,9 @@ async function renderFileTree() {
 
   // Group by directory
   const tree = {};
-  files.sort((a,b) => a.path.localeCompare(b.path)).forEach(f => {
+  files.sort((a, b) => a.path.localeCompare(b.path)).forEach(f => {
     const parts = f.path.split('/');
-    const dir   = parts.length > 1 ? parts.slice(0,-1).join('/') : '/';
+    const dir = parts.length > 1 ? parts.slice(0, -1).join('/') : '/';
     if (!tree[dir]) tree[dir] = [];
     tree[dir].push(f);
   });
@@ -776,12 +779,12 @@ async function renderFileTree() {
     <div class="file-group">
       ${dir !== '/' ? `<div class="file-dir">📁 ${esc(dir)}</div>` : ''}
       ${items.map(f => {
-        const name = f.path.split('/').pop();
-        const ext  = name.split('.').pop()?.toLowerCase() || '';
-        const icon = { js:'🟨', ts:'🔷', py:'🐍', css:'🎨', html:'🌐', json:'📋', md:'📝', txt:'📄', csv:'📊', sh:'⚙️' }[ext] || '📄';
-        const size = new Blob([f.content||'']).size;
-        const sizeStr = size > 1024 ? (size/1024).toFixed(1)+'KB' : size+'B';
-        return `<div class="file-row" data-path="${esc(f.path)}">
+    const name = f.path.split('/').pop();
+    const ext = name.split('.').pop()?.toLowerCase() || '';
+    const icon = { js: '🟨', ts: '🔷', py: '🐍', css: '🎨', html: '🌐', json: '📋', md: '📝', txt: '📄', csv: '📊', sh: '⚙️' }[ext] || '📄';
+    const size = new Blob([f.content || '']).size;
+    const sizeStr = size > 1024 ? (size / 1024).toFixed(1) + 'KB' : size + 'B';
+    return `<div class="file-row" data-path="${esc(f.path)}">
           <span class="file-icon">${icon}</span>
           <span class="file-name">${esc(name)}</span>
           <span class="file-size">${sizeStr}</span>
@@ -791,7 +794,7 @@ async function renderFileTree() {
             <button class="file-btn file-del-btn" data-path="${esc(f.path)}" title="Delete">✕</button>
           </div>
         </div>`;
-      }).join('')}
+  }).join('')}
     </div>`).join('');
 
   // Wire buttons
@@ -857,7 +860,7 @@ function renderPromptTemplates() {
     <div class="template-row" data-idx="${i}">
       <div class="template-info">
         <div class="template-name">${esc(t.name)}</div>
-        <div class="template-preview">${esc(t.prompt.substring(0,60))}…</div>
+        <div class="template-preview">${esc(t.prompt.substring(0, 60))}…</div>
       </div>
       <div class="template-actions">
         <button class="tmpl-use-btn" data-idx="${i}" title="Use this template">▶</button>
@@ -887,7 +890,7 @@ function renderPromptTemplates() {
     const tmplPrompt = prompt('Template prompt:');
     if (!tmplPrompt?.trim()) return;
     state.settings.promptTemplates = state.settings.promptTemplates || [];
-    state.settings.promptTemplates.push({ id: 'pt'+Date.now(), name: name.trim(), prompt: tmplPrompt.trim() });
+    state.settings.promptTemplates.push({ id: 'pt' + Date.now(), name: name.trim(), prompt: tmplPrompt.trim() });
     saveSettings().then(() => renderPromptTemplates());
   });
 }
@@ -897,8 +900,8 @@ function openModal(id) {
   if (!m) return;
   m.style.display = 'flex';
   if (id === 'templates-modal') renderPromptTemplates();
-  if (id === 'shortcuts-modal') {}  // static content
-  if (id === 'memory-modal')   renderMemoryDashboard();
+  if (id === 'shortcuts-modal') { }  // static content
+  if (id === 'memory-modal') renderMemoryDashboard();
 }
 
 function closeModal(id) {
@@ -909,20 +912,20 @@ function closeModal(id) {
 // ── KEYBOARD SHORTCUTS OVERLAY ────────────────────────────────────────────
 // Shown on Ctrl+? (or ? when input not focused)
 const SHORTCUTS = [
-  { group: 'Panel',   keys: 'Ctrl+Shift+Y', desc: 'Toggle side panel open/closed' },
-  { group: 'Panel',   keys: 'Ctrl+Shift+P', desc: 'Quick command palette (on page)' },
-  { group: 'Chat',    keys: 'Enter',         desc: 'Send message' },
-  { group: 'Chat',    keys: 'Shift+Enter',   desc: 'New line in input' },
-  { group: 'Chat',    keys: 'Escape',        desc: 'Stop the running agent' },
-  { group: 'Chat',    keys: 'Ctrl+?',        desc: 'Show keyboard shortcuts' },
-  { group: 'Nav',     keys: 'Alt+1',         desc: 'Switch to Chat view' },
-  { group: 'Nav',     keys: 'Alt+2',         desc: 'Switch to History view' },
-  { group: 'Nav',     keys: 'Alt+3',         desc: 'Switch to Files view' },
-  { group: 'Nav',     keys: 'Alt+4',         desc: 'Switch to Macros view' },
-  { group: 'Nav',     keys: 'Alt+5',         desc: 'Switch to Settings view' },
-  { group: 'Actions', keys: 'Ctrl+K',        desc: 'Open prompt templates' },
-  { group: 'Actions', keys: 'Ctrl+M',        desc: 'Open memory dashboard' },
-  { group: 'Actions', keys: 'Ctrl+N',        desc: 'New conversation' },
+  { group: 'Panel', keys: 'Ctrl+Shift+Y', desc: 'Toggle side panel open/closed' },
+  { group: 'Panel', keys: 'Ctrl+Shift+P', desc: 'Quick command palette (on page)' },
+  { group: 'Chat', keys: 'Enter', desc: 'Send message' },
+  { group: 'Chat', keys: 'Shift+Enter', desc: 'New line in input' },
+  { group: 'Chat', keys: 'Escape', desc: 'Stop the running agent' },
+  { group: 'Chat', keys: 'Ctrl+?', desc: 'Show keyboard shortcuts' },
+  { group: 'Nav', keys: 'Alt+1', desc: 'Switch to Chat view' },
+  { group: 'Nav', keys: 'Alt+2', desc: 'Switch to History view' },
+  { group: 'Nav', keys: 'Alt+3', desc: 'Switch to Files view' },
+  { group: 'Nav', keys: 'Alt+4', desc: 'Switch to Macros view' },
+  { group: 'Nav', keys: 'Alt+5', desc: 'Switch to Settings view' },
+  { group: 'Actions', keys: 'Ctrl+K', desc: 'Open prompt templates' },
+  { group: 'Actions', keys: 'Ctrl+M', desc: 'Open memory dashboard' },
+  { group: 'Actions', keys: 'Ctrl+N', desc: 'New conversation' },
 ];
 
 
@@ -951,7 +954,7 @@ async function deleteMacro(id) {
   state_macros = state_macros.filter(m => m.id !== id);
   await saveMacros();
   // Remove alarm if scheduled
-  chrome.alarms.clear(id).catch(() => {});
+  chrome.alarms.clear(id).catch(() => { });
   renderMacros();
   toast('Macro deleted');
 }
@@ -975,7 +978,7 @@ async function scheduleMacro(id, intervalMinutes) {
     chrome.alarms.create(id, { periodInMinutes: intervalMinutes });
   } else {
     macro.schedule = null;
-    chrome.alarms.clear(id).catch(() => {});
+    chrome.alarms.clear(id).catch(() => { });
   }
   await saveMacros();
   renderMacros();
@@ -1008,11 +1011,11 @@ function renderMacros() {
         <span>Last run: ${ago}</span>
         <span>Schedule: <select class="macro-schedule-sel" data-id="${m.id}">
           <option value="">manual${!m.schedule ? ' ✓' : ''}</option>
-          <option value="15"${m.schedule===15?' selected':''}>every 15m</option>
-          <option value="30"${m.schedule===30?' selected':''}>every 30m</option>
-          <option value="60"${m.schedule===60?' selected':''}>every 1h</option>
-          <option value="360"${m.schedule===360?' selected':''}>every 6h</option>
-          <option value="1440"${m.schedule===1440?' selected':''}>every day</option>
+          <option value="15"${m.schedule === 15 ? ' selected' : ''}>every 15m</option>
+          <option value="30"${m.schedule === 30 ? ' selected' : ''}>every 30m</option>
+          <option value="60"${m.schedule === 60 ? ' selected' : ''}>every 1h</option>
+          <option value="360"${m.schedule === 360 ? ' selected' : ''}>every 6h</option>
+          <option value="1440"${m.schedule === 1440 ? ' selected' : ''}>every day</option>
         </select></span>
       </div>
     </div>`;
@@ -1022,7 +1025,7 @@ function renderMacros() {
     b.addEventListener('click', () => runMacro(b.dataset.id)));
   list.querySelectorAll('.macro-del-btn').forEach(b =>
     b.addEventListener('click', () => {
-      if (confirm(`Delete macro "${state_macros.find(m=>m.id===b.dataset.id)?.name}"?`))
+      if (confirm(`Delete macro "${state_macros.find(m => m.id === b.dataset.id)?.name}"?`))
         deleteMacro(b.dataset.id);
     }));
   list.querySelectorAll('.macro-schedule-sel').forEach(sel =>
@@ -1032,13 +1035,13 @@ function renderMacros() {
 
 function timeSince(ts) {
   const s = Math.floor((Date.now() - ts) / 1000);
-  if (s < 60)   return s + 's';
-  if (s < 3600) return Math.floor(s/60) + 'm';
-  if (s < 86400) return Math.floor(s/3600) + 'h';
-  return Math.floor(s/86400) + 'd';
+  if (s < 60) return s + 's';
+  if (s < 3600) return Math.floor(s / 60) + 'm';
+  if (s < 86400) return Math.floor(s / 3600) + 'h';
+  return Math.floor(s / 86400) + 'd';
 }
 
-function getConv()  { return state.conversations.find(c => c.id === state.convId) || null; }
+function getConv() { return state.conversations.find(c => c.id === state.convId) || null; }
 
 function newConv() {
   const c = { id: uid(), title: 'New Conversation', messages: [], createdAt: Date.now(), updatedAt: Date.now() };
@@ -1075,10 +1078,10 @@ function buildAnthropicTools(tools) {
       const jsType = (v.type || 'string').toLowerCase();
       const prop = { description: v.description || '' };
 
-      if      (jsType === 'boolean') prop.type = 'boolean';
-      else if (jsType === 'number')  prop.type = 'number';   // NEVER convert to integer
-      else if (jsType === 'array')   { prop.type = 'array'; prop.items = { type: 'string' }; }
-      else                           prop.type = 'string';
+      if (jsType === 'boolean') prop.type = 'boolean';
+      else if (jsType === 'number') prop.type = 'number';   // NEVER convert to integer
+      else if (jsType === 'array') { prop.type = 'array'; prop.items = { type: 'string' }; }
+      else prop.type = 'string';
 
       if (v.enum) prop.enum = v.enum;
       properties[k] = prop;
@@ -1145,7 +1148,7 @@ function buildAnthropicMessages(messages) {
     const prev = merged[merged.length - 1];
     if (prev && prev.role === m.role) {
       const prevC = Array.isArray(prev.content) ? prev.content : [{ type: 'text', text: String(prev.content) }];
-      const curC  = Array.isArray(m.content)    ? m.content    : [{ type: 'text', text: String(m.content)   }];
+      const curC = Array.isArray(m.content) ? m.content : [{ type: 'text', text: String(m.content) }];
       merged[merged.length - 1] = { role: m.role, content: [...prevC, ...curC] };
     } else {
       merged.push({ ...m });
@@ -1167,17 +1170,17 @@ function buildOpenAITools(tools) {
         properties: Object.fromEntries(Object.entries(t.parameters).map(([k, v]) => {
           const jsType = (v.type || 'string').toLowerCase();
           const prop = { description: v.description || '' };
-          if      (jsType === 'boolean') prop.type = 'boolean';
-          else if (jsType === 'number')  prop.type = 'number';
-          else if (jsType === 'array')   { prop.type = 'array'; prop.items = { type: 'string' }; }
-          else                           prop.type = 'string';
+          if (jsType === 'boolean') prop.type = 'boolean';
+          else if (jsType === 'number') prop.type = 'number';
+          else if (jsType === 'array') { prop.type = 'array'; prop.items = { type: 'string' }; }
+          else prop.type = 'string';
           if (v.enum) prop.enum = v.enum;
           return [k, prop];
         })),
         required: Object.keys(t.parameters).filter(k =>
-          !['selector','amount','submit','ms','world','include_links','include_tables',
-            'clear_first','note','format','export_format','filename','tab_ids','focus',
-            'question','attributes','max_highlights','url','direction'].includes(k))
+          !['selector', 'amount', 'submit', 'ms', 'world', 'include_links', 'include_tables',
+            'clear_first', 'note', 'format', 'export_format', 'filename', 'tab_ids', 'focus',
+            'question', 'attributes', 'max_highlights', 'url', 'direction'].includes(k))
       }
     }
   }));
@@ -1190,7 +1193,7 @@ function buildOpenAIMessages(messages, sys) {
     if (m.type === 'tool_result') {
       const text = typeof m.content === 'string' ? m.content
         : Array.isArray(m.content) ? m.content.filter(p => p.type === 'text').map(p => p.text).join('\n')
-        : String(m.content);
+          : String(m.content);
       out.push({ role: 'tool', tool_call_id: m.tool_use_id, content: text });
     } else if (m.type === 'tool_use') {
       const prev = out[out.length - 1];
@@ -1209,13 +1212,13 @@ function buildOpenAIMessages(messages, sys) {
 
 // ── GEMINI ────────────────────────────────────────────────────────
 function toGeminiType(t) {
-  switch ((t||'string').toLowerCase()) {
+  switch ((t || 'string').toLowerCase()) {
     case 'boolean': return 'BOOLEAN';
-    case 'number':  return 'NUMBER';
+    case 'number': return 'NUMBER';
     case 'integer': return 'INTEGER';
-    case 'array':   return 'ARRAY';
-    case 'object':  return 'OBJECT';
-    default:        return 'STRING';
+    case 'array': return 'ARRAY';
+    case 'object': return 'OBJECT';
+    default: return 'STRING';
   }
 }
 
@@ -1226,12 +1229,12 @@ function buildGeminiTools(tools) {
       const fn = { name: t.name, description: t.description };
       if (entries.length > 0) {
         const props = {};
-        const req   = [];
+        const req = [];
         for (const [k, v] of entries) {
           const prop = { type: toGeminiType(v.type), description: v.description || '' };
-          if (v.enum)                       prop.enum = v.enum;
-          if (prop.type === 'ARRAY')        prop.items = { type: 'STRING' };
-          if (!['selector','amount','submit','ms'].includes(k)) req.push(k);
+          if (v.enum) prop.enum = v.enum;
+          if (prop.type === 'ARRAY') prop.items = { type: 'STRING' };
+          if (!['selector', 'amount', 'submit', 'ms'].includes(k)) req.push(k);
           props[k] = prop;
         }
         fn.parameters = { type: 'OBJECT', properties: props };
@@ -1248,9 +1251,9 @@ function buildGeminiContents(messages) {
     if (m.role === 'system') continue;
     if (m.type === 'tool_result') {
       const text = typeof m.content === 'string' ? m.content
-        : Array.isArray(m.content) ? m.content.filter(p => p.type==='text').map(p=>p.text).join('\n')
-        : String(m.content);
-      contents.push({ role: 'user', parts: [{ functionResponse: { name: m.toolName||'tool', response: { output: text } } }] });
+        : Array.isArray(m.content) ? m.content.filter(p => p.type === 'text').map(p => p.text).join('\n')
+          : String(m.content);
+      contents.push({ role: 'user', parts: [{ functionResponse: { name: m.toolName || 'tool', response: { output: text } } }] });
     } else if (m.type === 'tool_use') {
       contents.push({ role: 'model', parts: [{ functionCall: { name: m.name, args: m.input || {} } }] });
     } else {
@@ -1269,7 +1272,7 @@ function buildGeminiContents(messages) {
 
 function generateXMLToolsSchema() {
   const toolsXML = TOOLS.map(t => {
-    const props = Object.entries(t.parameters).map(([k, v]) => `  "${k}": "${v.type}"${!['selector','amount','submit','ms','world','include_links','include_tables','clear_first','note','format','export_format','filename','tab_ids','focus','question','attributes','max_highlights','url','direction'].includes(k) ? ' (required)' : ''}`).join(',\n');
+    const props = Object.entries(t.parameters).map(([k, v]) => `  "${k}": "${v.type}"${!['selector', 'amount', 'submit', 'ms', 'world', 'include_links', 'include_tables', 'clear_first', 'note', 'format', 'export_format', 'filename', 'tab_ids', 'focus', 'question', 'attributes', 'max_highlights', 'url', 'direction'].includes(k) ? ' (required)' : ''}`).join(',\n');
     return `Tool: ${t.name}\nDescription: ${t.description}\nInput JSON Schema:\n{\n${props}\n}`;
   }).join('\n\n');
   return `\n\n## Tools Available\nYou have access to the following tools. To use a tool, respond ONLY with the following exact format:\n<function=tool_name>{"arg_name": "arg_value"}</function>\n\n${toolsXML}`;
@@ -1283,7 +1286,7 @@ async function buildProviderRequest(providerKey, modelId, apiKeyVal, baseUrlVal,
   let url, headers, body;
 
   if (pc.format === 'anthropic') {
-    url     = pc.baseUrl;
+    url = pc.baseUrl;
     headers = {
       'Content-Type': 'application/json',
       'x-api-key': apiKeyVal,
@@ -1298,10 +1301,10 @@ async function buildProviderRequest(providerKey, modelId, apiKeyVal, baseUrlVal,
     };
   } else if (pc.format === 'gemini') {
     const mdl = modelId.includes('/') ? modelId.split('/').pop() : modelId;
-    url     = pc.baseUrl.replace('{model}', mdl) + (apiKeyVal ? `?key=${apiKeyVal}` : '');
+    url = pc.baseUrl.replace('{model}', mdl) + (apiKeyVal ? `?key=${apiKeyVal}` : '');
     // If it's going to stream (we detect this when called from callAIStreaming), we'll add ?alt=sse there
     headers = { 'Content-Type': 'application/json' };
-    body    = {
+    body = {
       contents: buildGeminiContents(messages),
       tools: buildGeminiTools(TOOLS),
       systemInstruction: { parts: [{ text: sys }] },
@@ -1317,10 +1320,10 @@ async function buildProviderRequest(providerKey, modelId, apiKeyVal, baseUrlVal,
         finalSysPrompt += generateXMLToolsSchema(); // Inject XML schema
       }
     }
-    
+
     let base = baseUrlVal || pc.baseUrl;
     if (providerKey === 'cloudflare' && accountIdVal) base = pc.baseUrl.replace('{accountId}', accountIdVal);
-    url     = base;
+    url = base;
     headers = { 'Content-Type': 'application/json' };
     if (apiKeyVal) headers['Authorization'] = `Bearer ${apiKeyVal}`;
     if (providerKey === 'openrouter') {
@@ -1350,10 +1353,10 @@ function isQuotaError(status, text) {
   if (status === 429) return true;                                 // rate limit
   if (status === 402) return true;                                 // payment required
   if (status === 529) return true;                                 // overloaded
-  if (text.toLowerCase().includes('quota'))         return true;
-  if (text.toLowerCase().includes('rate_limit'))    return true;
-  if (text.toLowerCase().includes('overloaded'))    return true;
-  if (text.toLowerCase().includes('capacity'))      return true;
+  if (text.toLowerCase().includes('quota')) return true;
+  if (text.toLowerCase().includes('rate_limit')) return true;
+  if (text.toLowerCase().includes('overloaded')) return true;
+  if (text.toLowerCase().includes('capacity')) return true;
   return false;
 }
 
@@ -1415,7 +1418,7 @@ function resolveNavigationTarget(raw) {
 
   // Partial match: "my gmail" → gmail
   for (const [k, v] of Object.entries(SITE_MAP)) {
-    if (target.includes(k) || k.includes(target.replace(/\s+/g,''))) return v;
+    if (target.includes(k) || k.includes(target.replace(/\s+/g, ''))) return v;
   }
 
   // Looks like a bare domain word (one word, no spaces)
@@ -1450,7 +1453,7 @@ function resolveIntentToUrl(intent) {
 
   // Research / information
   if (/what is|who is|explain|define|meaning|history/i.test(lower))
-    return 'https://en.wikipedia.org/w/index.php?search=' + encodeURIComponent(intent.replace(/^(what|who|why|how)\s+(is|are|was|were)\s+/i,''));
+    return 'https://en.wikipedia.org/w/index.php?search=' + encodeURIComponent(intent.replace(/^(what|who|why|how)\s+(is|are|was|were)\s+/i, ''));
 
   // Watching / streaming
   if (/watch|video|movie|show|episode|stream/i.test(lower)) {
@@ -1467,21 +1470,21 @@ function autoTagBookmark(url, title, summary) {
   const text = (url + ' ' + title + ' ' + summary).toLowerCase();
   const tagRules = [
     ['programming', /github|code|developer|api|npm|python|javascript|react|css|html|stackoverflow/],
-    ['ai',          /openai|claude|anthropic|llm|gpt|gemini|artificial intelligence|machine learning/],
-    ['news',        /news|bbc|cnn|reuters|times|nytimes|guardian|breaking/],
-    ['shopping',    /amazon|ebay|shop|store|buy|cart|product|price/],
-    ['video',       /youtube|twitch|vimeo|netflix|watch|video|stream/],
-    ['social',      /twitter|x\.com|reddit|linkedin|instagram|facebook|discord/],
-    ['tools',       /tool|app|dashboard|editor|playground|calculator/],
-    ['docs',        /docs|documentation|guide|reference|manual|readme/],
-    ['research',    /wikipedia|scholar|paper|study|research|science/],
-    ['finance',     /stock|crypto|finance|invest|bank|tax|money/],
-    ['design',      /figma|design|ux|ui|color|font|typography/],
-    ['travel',      /flight|hotel|trip|travel|booking|airbnb/],
+    ['ai', /openai|claude|anthropic|llm|gpt|gemini|artificial intelligence|machine learning/],
+    ['news', /news|bbc|cnn|reuters|times|nytimes|guardian|breaking/],
+    ['shopping', /amazon|ebay|shop|store|buy|cart|product|price/],
+    ['video', /youtube|twitch|vimeo|netflix|watch|video|stream/],
+    ['social', /twitter|x\.com|reddit|linkedin|instagram|facebook|discord/],
+    ['tools', /tool|app|dashboard|editor|playground|calculator/],
+    ['docs', /docs|documentation|guide|reference|manual|readme/],
+    ['research', /wikipedia|scholar|paper|study|research|science/],
+    ['finance', /stock|crypto|finance|invest|bank|tax|money/],
+    ['design', /figma|design|ux|ui|color|font|typography/],
+    ['travel', /flight|hotel|trip|travel|booking|airbnb/],
   ];
   const tags = tagRules.filter(([, re]) => re.test(text)).map(([t]) => t);
   // Add domain as a tag too
-  try { tags.unshift(new URL(url).hostname.replace(/^www\./, '').split('.')[0]); } catch {}
+  try { tags.unshift(new URL(url).hostname.replace(/^www\./, '').split('.')[0]); } catch { }
   return [...new Set(tags)].slice(0, 5).join(', ');
 }
 
@@ -1524,7 +1527,7 @@ async function loadSmartBookmarks(filter = '') {
       .filter(r => r.url)
       .map(r => ({
         url: r.url, title: r.title?.replace(/\s*\[[^\]]*\]\s*$/, ''),
-        tags: (r.title.match(/\[([^\]]+)\]/) || ['', ''])[1].split(',').map(t=>t.trim()).filter(Boolean),
+        tags: (r.title.match(/\[([^\]]+)\]/) || ['', ''])[1].split(',').map(t => t.trim()).filter(Boolean),
         summary: '', savedAt: r.dateAdded
       }));
     // Merge, dedupe by URL
@@ -1589,12 +1592,12 @@ function recordApiCall() {
   // Prune entries older than 24h to prevent unbounded growth
   const cutoff = now - 86_400_000;
   state.rateLog = state.rateLog.filter(t => t > cutoff);
-  chrome.storage.local.set({ ob_rateLog: state.rateLog }).catch(()=>{});
+  chrome.storage.local.set({ ob_rateLog: state.rateLog }).catch(() => { });
   updateRateDisplay();
 }
 
 function checkRateLimit() {
-  const s   = state.settings;
+  const s = state.settings;
   const now = Date.now();
   const BUFFER = 5; // stop this many calls before the limit
 
@@ -1616,14 +1619,14 @@ function updateRateDisplay() {
   const badge = document.getElementById('rate-badge');
   if (!badge) return;
   const now = Date.now();
-  const s   = state.settings;
+  const s = state.settings;
   const rpm = state.rateLog.filter(t => now - t < 60_000).length;
   const rpd = state.rateLog.filter(t => now - t < 86_400_000).length;
 
   const parts = [];
   if (s.rpmLimit > 0) parts.push(`${rpm}/${s.rpmLimit} rpm`);
   if (s.rpdLimit > 0) parts.push(`${rpd}/${s.rpdLimit} rpd`);
-  
+
   if (parts.length) {
     badge.textContent = parts.join(' · ');
     badge.style.display = 'inline';
@@ -1777,8 +1780,8 @@ function detectXMLToolCalls(text) {
 function parseAIResponse(data, format) {
   if (format === 'anthropic') {
     const blocks = data.content || [];
-    const text   = blocks.filter(b => b.type === 'text').map(b => b.text).join('\n');
-    const uses   = blocks.filter(b => b.type === 'tool_use');
+    const text = blocks.filter(b => b.type === 'text').map(b => b.text).join('\n');
+    const uses = blocks.filter(b => b.type === 'tool_use');
 
     // Check for XML fallback in text blocks
     const xmlTools = !uses.length && text ? detectXMLToolCalls(text) : null;
@@ -1791,8 +1794,8 @@ function parseAIResponse(data, format) {
 
   if (format === 'gemini') {
     const parts = data.candidates?.[0]?.content?.parts || [];
-    const text  = parts.filter(p => p.text).map(p => p.text).join('\n');
-    const fns   = parts.filter(p => p.functionCall);
+    const text = parts.filter(p => p.text).map(p => p.text).join('\n');
+    const fns = parts.filter(p => p.functionCall);
     const xmlTools = !fns.length && text ? detectXMLToolCalls(text) : null;
     if (xmlTools) return { type: 'tool_use', tools: xmlTools, text: '' };
     return fns.length
@@ -1808,7 +1811,7 @@ function parseAIResponse(data, format) {
       type: 'tool_use',
       tools: msg.tool_calls.map(tc => ({
         id: tc.id, name: tc.function.name,
-        input: (() => { try { return JSON.parse(tc.function.arguments||'{}'); } catch { return {}; } })()
+        input: (() => { try { return JSON.parse(tc.function.arguments || '{}'); } catch { return {}; } })()
       })),
       text: msg.content || ''
     };
@@ -1840,13 +1843,13 @@ async function executeTool(name, input) {
   setStatus('loading', name + '…');
   try {
     switch (name) {
-      case 'think':    return { ok: true,  result: 'Plan noted.' };
+      case 'think': return { ok: true, result: 'Plan noted.' };
       case 'memorize': {
         state.memory[input.key] = input.value;
-        if (state.settings.persistMemory) saveMemory().catch(()=>{});
+        if (state.settings.persistMemory) saveMemory().catch(() => { });
         return { ok: true, result: `Stored "${input.key}" = "${input.value}".` };
       }
-      case 'finish':   return { ok: true,  result: input.answer, final: true };
+      case 'finish': return { ok: true, result: input.answer, final: true };
 
       case 'navigate': {
         let url = (input.url || '').trim();
@@ -1875,9 +1878,9 @@ async function executeTool(name, input) {
           if (!summary) {
             const r = await injectAndRun(tab.id, () => {
               const desc = document.querySelector('meta[name=description]')?.content
-                        || document.querySelector('meta[property="og:description"]')?.content || '';
+                || document.querySelector('meta[property="og:description"]')?.content || '';
               const h1 = document.querySelector('h1')?.innerText?.trim() || '';
-              const body = (document.body?.innerText || '').replace(/\s+/g,' ').trim().substring(0, 500);
+              const body = (document.body?.innerText || '').replace(/\s+/g, ' ').trim().substring(0, 500);
               return { desc, h1, body, title: document.title };
             });
             if (r) { title = r.title || title; summary = r.desc || (r.h1 + '. ' + r.body).substring(0, 120); }
@@ -1885,7 +1888,7 @@ async function executeTool(name, input) {
         } else { title = url; }
         if (!tags) tags = autoTagBookmark(url, title, summary);
         await saveSmartBookmark({ url, title, summary, tags, folder });
-        renderBookmarkSaved({ url, title, summary, tags: tags.split(',').map(t=>t.trim()).filter(Boolean) });
+        renderBookmarkSaved({ url, title, summary, tags: tags.split(',').map(t => t.trim()).filter(Boolean) });
         return { ok: true, result: `Bookmarked: "${title}"\nTags: ${tags}\nSummary: ${summary}` };
       }
 
@@ -1905,10 +1908,10 @@ async function executeTool(name, input) {
         const tab = await activeTab();
         const r = await injectAndRun(tab.id, (sel) => {
           let root = document.body;
-          if (sel) { try { root = document.querySelector(sel) || root; } catch {} }
+          if (sel) { try { root = document.querySelector(sel) || root; } catch { } }
           const c = root.cloneNode(true);
           c.querySelectorAll('script,style,noscript').forEach(e => e.remove());
-          return { text: (c.innerText||'').replace(/\s+/g,' ').trim().substring(0,15000), title: document.title, url: location.href };
+          return { text: (c.innerText || '').replace(/\s+/g, ' ').trim().substring(0, 15000), title: document.title, url: location.href };
         }, [input.selector || null]);
         return r ? { ok: true, result: `${r.title}\n${r.url}\n\n${r.text}` } : { ok: false, result: 'Could not read page.' };
       }
@@ -1919,20 +1922,20 @@ async function executeTool(name, input) {
           function find(txt) {
             const lc = txt.toLowerCase().trim();
             for (const el of document.querySelectorAll('button,a,[role=button],[role=link],[role=tab],[role=menuitem],input,label,span,div,h1,h2,h3,li')) {
-              const t = (el.textContent||el.getAttribute('aria-label')||el.getAttribute('placeholder')||'').toLowerCase().trim();
+              const t = (el.textContent || el.getAttribute('aria-label') || el.getAttribute('placeholder') || '').toLowerCase().trim();
               if (t === lc || t.includes(lc)) return el;
             }
             return null;
           }
           let el = null;
-          try { el = document.querySelector(q); } catch {}
+          try { el = document.querySelector(q); } catch { }
           if (!el) el = find(q);
           if (!el) return { ok: false, error: 'Not found: ' + q };
-          el.scrollIntoView({ behavior:'smooth', block:'center' });
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
           await new Promise(r => setTimeout(r, 150));
           el.focus(); el.click();
-          el.dispatchEvent(new MouseEvent('click', { bubbles:true, cancelable:true }));
-          return { ok: true, tag: el.tagName, text: (el.textContent||'').trim().substring(0,80) };
+          el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+          return { ok: true, tag: el.tagName, text: (el.textContent || '').trim().substring(0, 80) };
         }, [input.target]);
         return r || { ok: false, result: 'Click failed.' };
       }
@@ -1941,7 +1944,7 @@ async function executeTool(name, input) {
         const tab = await activeTab();
         const r = await injectAndRun(tab.id, async (target, text, submit) => {
           function findInput(q) {
-            try { const e = document.querySelector(q); if (e) return e; } catch {}
+            try { const e = document.querySelector(q); if (e) return e; } catch { }
             const lq = q.toLowerCase();
             for (const el of document.querySelectorAll('input:not([type=hidden]):not([type=submit]):not([type=button]),textarea,[contenteditable=true]')) {
               const t = [
@@ -1954,7 +1957,7 @@ async function executeTool(name, input) {
           }
           const el = findInput(target);
           if (!el) return { ok: false, error: 'Input not found: ' + target };
-          el.scrollIntoView({ behavior:'smooth', block:'center' });
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
           el.focus();
           await new Promise(r => setTimeout(r, 60));
           const setter = Object.getOwnPropertyDescriptor(
@@ -1963,10 +1966,10 @@ async function executeTool(name, input) {
           if (setter && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) setter.call(el, text);
           else if (el.contentEditable === 'true') el.textContent = text;
           else el.value = text;
-          el.dispatchEvent(new Event('input',  { bubbles: true }));
+          el.dispatchEvent(new Event('input', { bubbles: true }));
           el.dispatchEvent(new Event('change', { bubbles: true }));
           if (submit) {
-            el.dispatchEvent(new KeyboardEvent('keydown', { key:'Enter', keyCode:13, bubbles:true }));
+            el.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', keyCode: 13, bubbles: true }));
             el.form?.requestSubmit?.();
           }
           return { ok: true, typed: text };
@@ -1978,10 +1981,12 @@ async function executeTool(name, input) {
         const tab = await activeTab();
         await injectAndRun(tab.id, (dir, amt) => {
           const a = amt || 400;
-          ({ down: () => window.scrollBy({top:a,behavior:'smooth'}),
-             up:   () => window.scrollBy({top:-a,behavior:'smooth'}),
-             top:  () => window.scrollTo({top:0,behavior:'smooth'}),
-             bottom: () => window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}) })[dir]?.();
+          ({
+            down: () => window.scrollBy({ top: a, behavior: 'smooth' }),
+            up: () => window.scrollBy({ top: -a, behavior: 'smooth' }),
+            top: () => window.scrollTo({ top: 0, behavior: 'smooth' }),
+            bottom: () => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
+          })[dir]?.();
         }, [input.direction, input.amount]);
         await wait(500);
         return { ok: true, result: `Scrolled ${input.direction}` };
@@ -2044,12 +2049,12 @@ async function executeTool(name, input) {
             const rows = [...tbl.querySelectorAll('tr')].map(r =>
               [...r.querySelectorAll('th,td')].map(c => c.innerText?.trim())
             );
-            if (rows.length) data.push({ type:'table', rows });
+            if (rows.length) data.push({ type: 'table', rows });
           });
           if (!data.length) {
             const items = [...root.querySelectorAll('li,[role=listitem]')]
               .map(e => e.innerText?.trim()).filter(Boolean);
-            if (items.length) data.push({ type:'list', items });
+            if (items.length) data.push({ type: 'list', items });
           }
           return { ok: true, data };
         }, [input.selector || null]);
@@ -2060,11 +2065,11 @@ async function executeTool(name, input) {
         const tab = await activeTab();
         const r = await injectAndRun(tab.id, (target, value) => {
           let el = null;
-          try { el = document.querySelector(target); } catch {}
+          try { el = document.querySelector(target); } catch { }
           if (!el) {
             const q = target.toLowerCase();
             for (const s of document.querySelectorAll('select')) {
-              const t = ((s.getAttribute('aria-label')||'')+(document.querySelector(`label[for="${s.id}"]`)?.textContent||'')).toLowerCase();
+              const t = ((s.getAttribute('aria-label') || '') + (document.querySelector(`label[for="${s.id}"]`)?.textContent || '')).toLowerCase();
               if (t.includes(q)) { el = s; break; }
             }
           }
@@ -2077,15 +2082,15 @@ async function executeTool(name, input) {
       }
 
       case 'download_csv': {
-        const csv  = csvFromJSON(input.data);
+        const csv = csvFromJSON(input.data);
         const blob = new Blob([csv], { type: 'text/csv' });
-        const a    = Object.assign(document.createElement('a'), {
+        const a = Object.assign(document.createElement('a'), {
           href: URL.createObjectURL(blob),
           download: `${input.filename || 'export'}.csv`
         });
         a.click(); URL.revokeObjectURL(a.href);
         let count = 0;
-        try { count = JSON.parse(input.data).length; } catch {}
+        try { count = JSON.parse(input.data).length; } catch { }
         return { ok: true, result: `Downloaded ${input.filename || 'export'}.csv (${count} rows)` };
       }
 
@@ -2102,7 +2107,7 @@ async function executeTool(name, input) {
         // Search for partial key match
         const matches = Object.entries(state.memory)
           .filter(([k]) => k.toLowerCase().includes(input.key.toLowerCase()))
-          .map(([k,v]) => `${k}: ${v}`);
+          .map(([k, v]) => `${k}: ${v}`);
         return matches.length
           ? { ok: true, result: matches.join('\n') }
           : { ok: false, result: `Nothing found for key "${input.key}". Known keys: ${Object.keys(state.memory).join(', ') || 'none'}` };
@@ -2127,19 +2132,19 @@ async function executeTool(name, input) {
           // Links
           const links = doLinks !== false
             ? [...root.querySelectorAll('a[href]')]
-                .map(a => ({ text: a.innerText?.trim().substring(0, 80), href: a.href }))
-                .filter(l => l.text && l.href && !l.href.startsWith('javascript'))
-                .slice(0, 100)
+              .map(a => ({ text: a.innerText?.trim().substring(0, 80), href: a.href }))
+              .filter(l => l.text && l.href && !l.href.startsWith('javascript'))
+              .slice(0, 100)
             : [];
 
           // Tables
           const tables = doTables !== false
             ? [...root.querySelectorAll('table')].map(tbl => ({
-                headers: [...(tbl.querySelector('thead tr') || tbl.querySelector('tr'))
-                  ?.querySelectorAll('th,td') || []].map(c => c.innerText?.trim()),
-                rows: [...tbl.querySelectorAll('tr')].slice(1, 51).map(r =>
-                  [...r.querySelectorAll('td')].map(c => c.innerText?.trim()))
-              }))
+              headers: [...(tbl.querySelector('thead tr') || tbl.querySelector('tr'))
+                ?.querySelectorAll('th,td') || []].map(c => c.innerText?.trim()),
+              rows: [...tbl.querySelectorAll('tr')].slice(1, 51).map(r =>
+                [...r.querySelectorAll('td')].map(c => c.innerText?.trim()))
+            }))
             : [];
 
           // Meta
@@ -2265,18 +2270,18 @@ async function executeTool(name, input) {
             // Semantic synonym map
             const synonyms = {
               'first name': ['given name', 'prénom', 'firstname', 'fname', 'forename'],
-              'last name':  ['family name', 'surname', 'lastname', 'lname', 'nom'],
-              'email':      ['e-mail', 'email address', 'courriel'],
-              'phone':      ['telephone', 'tel', 'mobile', 'cell', 'phone number'],
-              'address':    ['street', 'street address', 'address line 1', 'addr'],
-              'city':       ['town', 'ville', 'municipality'],
-              'state':      ['province', 'region', 'département'],
-              'zip':        ['postal code', 'postcode', 'zip code', 'code postal'],
-              'country':    ['pays', 'nation'],
-              'password':   ['pass', 'pwd', 'mot de passe'],
-              'username':   ['user', 'login', 'handle'],
-              'birthday':   ['date of birth', 'dob', 'birth date'],
-              'company':    ['organization', 'organisation', 'employer', 'business'],
+              'last name': ['family name', 'surname', 'lastname', 'lname', 'nom'],
+              'email': ['e-mail', 'email address', 'courriel'],
+              'phone': ['telephone', 'tel', 'mobile', 'cell', 'phone number'],
+              'address': ['street', 'street address', 'address line 1', 'addr'],
+              'city': ['town', 'ville', 'municipality'],
+              'state': ['province', 'region', 'département'],
+              'zip': ['postal code', 'postcode', 'zip code', 'code postal'],
+              'country': ['pays', 'nation'],
+              'password': ['pass', 'pwd', 'mot de passe'],
+              'username': ['user', 'login', 'handle'],
+              'birthday': ['date of birth', 'dob', 'birth date'],
+              'company': ['organization', 'organisation', 'employer', 'business'],
             };
             for (const [canonical, alts] of Object.entries(synonyms)) {
               const allForms = [canonical, ...alts];
@@ -2303,7 +2308,7 @@ async function executeTool(name, input) {
             }
             if (el.type === 'checkbox' || el.type === 'radio') {
               const v = value.toLowerCase();
-              el.checked = ['true','yes','1','on','checked'].includes(v);
+              el.checked = ['true', 'yes', '1', 'on', 'checked'].includes(v);
               el.dispatchEvent(new Event('change', { bubbles: true }));
               return true;
             }
@@ -2375,7 +2380,7 @@ async function executeTool(name, input) {
         const idx = Number(input.step_index);
         if (idx < 0 || idx >= state.taskPlan.steps.length) return { ok: false, result: `Step index ${idx} out of range.` };
         state.taskPlan.steps[idx].status = input.status || 'done';
-        state.taskPlan.steps[idx].note   = input.note || '';
+        state.taskPlan.steps[idx].note = input.note || '';
         renderTaskPlan();
         const remaining = state.taskPlan.steps.filter(s => s.status === 'pending').length;
         return { ok: true, result: `Step ${idx} marked ${input.status}. ${remaining} steps remaining.` };
@@ -2388,7 +2393,7 @@ async function executeTool(name, input) {
           return { ok: false, result: 'data must be a JSON array of objects.' };
         }
         if (!Array.isArray(rows) || !rows.length) return { ok: false, result: 'No data to export.' };
-        const fmt  = (input.format || 'csv').toLowerCase();
+        const fmt = (input.format || 'csv').toLowerCase();
         const name = (input.filename || 'export').replace(/[^a-z0-9_-]/gi, '_');
 
         // Render table in chat
@@ -2435,7 +2440,7 @@ async function executeTool(name, input) {
               const clone = document.body.cloneNode(true);
               clone.querySelectorAll('script,style,nav,footer,header,aside,[role=navigation],[role=banner]').forEach(e => e.remove());
               const text = (clone.innerText || '').replace(/\s{3,}/g, '\n\n').trim().substring(0, 3000);
-              const h1   = document.querySelector('h1')?.innerText?.trim() || '';
+              const h1 = document.querySelector('h1')?.innerText?.trim() || '';
               const meta = document.querySelector('meta[name=description]')?.content || '';
               return { text, h1, meta, title: document.title, url: location.href };
             }, [input.focus || '']);
@@ -2450,8 +2455,8 @@ async function executeTool(name, input) {
 
         // Build a compact digest
         const digest = summaries.map((s, i) => {
-          if (s.error) return `**Tab ${i+1}: ${s.title}**\n_${s.error}_`;
-          return `**Tab ${i+1}: ${s.h1 || s.title}**\n${s.url}\n${s.meta || s.snippet.substring(0, 200)}`;
+          if (s.error) return `**Tab ${i + 1}: ${s.title}**\n_${s.error}_`;
+          return `**Tab ${i + 1}: ${s.h1 || s.title}**\n${s.url}\n${s.meta || s.snippet.substring(0, 200)}`;
         }).join('\n\n---\n\n');
 
         renderTabSummary(summaries);
@@ -2521,14 +2526,16 @@ async function executeTool(name, input) {
 
           const walker = document.createTreeWalker(
             document.body, NodeFilter.SHOW_TEXT,
-            { acceptNode: n => {
-              const p = n.parentNode;
-              if (!p) return NodeFilter.FILTER_REJECT;
-              const tag = p.tagName?.toLowerCase();
-              if (['script','style','noscript','code','pre'].includes(tag)) return NodeFilter.FILTER_REJECT;
-              const text = n.nodeValue?.trim() || '';
-              return text.length > 20 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
-            }}
+            {
+              acceptNode: n => {
+                const p = n.parentNode;
+                if (!p) return NodeFilter.FILTER_REJECT;
+                const tag = p.tagName?.toLowerCase();
+                if (['script', 'style', 'noscript', 'code', 'pre'].includes(tag)) return NodeFilter.FILTER_REJECT;
+                const text = n.nodeValue?.trim() || '';
+                return text.length > 20 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+              }
+            }
           );
 
           const candidates = [];
@@ -2536,7 +2543,7 @@ async function executeTool(name, input) {
           while ((node = walker.nextNode())) {
             const text = node.nodeValue.toLowerCase();
             const score = keywords.reduce((s, kw) => {
-              const re = new RegExp(kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'), 'g');
+              const re = new RegExp(kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
               return s + (text.match(re)?.length || 0);
             }, 0);
             if (score > 0) candidates.push({ node, score, text: node.nodeValue.trim() });
@@ -2565,9 +2572,10 @@ async function executeTool(name, input) {
         }, [goal, maxH]);
 
         if (!r) return { ok: false, result: 'Could not apply highlights.' };
-        return { ok: true, result: r.count > 0
-          ? `Highlighted ${r.count} relevant passages for "${goal}". Keywords matched: ${r.keywords?.join(', ')}.`
-          : `No strong matches for "${goal}" found on this page.`
+        return {
+          ok: true, result: r.count > 0
+            ? `Highlighted ${r.count} relevant passages for "${goal}". Keywords matched: ${r.keywords?.join(', ')}.`
+            : `No strong matches for "${goal}" found on this page.`
         };
       }
 
@@ -2599,18 +2607,18 @@ async function executeTool(name, input) {
             return {
               title: document.title,
               author: get('meta[name=author]') || get('meta[property="article:author"]') || getT('[rel=author]') || getT('.author') || '',
-              date:   get('meta[property="article:published_time"]') || get('meta[name=date]') || getT('time[datetime]') || new Date().toISOString().slice(0,10),
-              site:   location.hostname.replace(/^www\./,''),
-              desc:   get('meta[name=description]') || get('meta[property="og:description"]') || ''
+              date: get('meta[property="article:published_time"]') || get('meta[name=date]') || getT('time[datetime]') || new Date().toISOString().slice(0, 10),
+              site: location.hostname.replace(/^www\./, ''),
+              desc: get('meta[name=description]') || get('meta[property="og:description"]') || ''
             };
           });
           if (r) meta = r;
         } else {
-          meta = { title: url, author: '', date: new Date().toISOString().slice(0,10), site: new URL(url).hostname.replace(/^www\./,''), desc: '' };
+          meta = { title: url, author: '', date: new Date().toISOString().slice(0, 10), site: new URL(url).hostname.replace(/^www\./, ''), desc: '' };
         }
 
         const fmt = input.format || 'url';
-        const year = meta.date?.substring(0,4) || new Date().getFullYear();
+        const year = meta.date?.substring(0, 4) || new Date().getFullYear();
         let formatted = '';
         if (fmt === 'apa') {
           formatted = `${meta.author || 'Unknown'}. (${year}). *${meta.title}*. ${meta.site}. ${url}`;
@@ -2645,15 +2653,15 @@ async function executeTool(name, input) {
           let content = '';
           if (efmt === 'bib') {
             content = state.citations.map((c, i) => {
-              const key = `ref${i+1}`;
-              return `@misc{${key},\n  author={${c.author || 'Unknown'}},\n  title={${c.title}},\n  year={${c.date?.substring(0,4) || ''}},\n  url={${c.url}}\n}`;
+              const key = `ref${i + 1}`;
+              return `@misc{${key},\n  author={${c.author || 'Unknown'}},\n  title={${c.title}},\n  year={${c.date?.substring(0, 4) || ''}},\n  url={${c.url}}\n}`;
             }).join('\n\n');
           } else if (efmt === 'md') {
-            content = state.citations.map((c,i) =>
-              `${i+1}. [${c.title}](${c.url})${c.author ? ' — ' + c.author : ''}${c.date ? ', ' + c.date.substring(0,10) : ''}${c.note ? '\n   > ' + c.note : ''}`
+            content = state.citations.map((c, i) =>
+              `${i + 1}. [${c.title}](${c.url})${c.author ? ' — ' + c.author : ''}${c.date ? ', ' + c.date.substring(0, 10) : ''}${c.note ? '\n   > ' + c.note : ''}`
             ).join('\n');
           } else {
-            content = state.citations.map((c,i) => `[${i+1}] ${c.formatted}`).join('\n');
+            content = state.citations.map((c, i) => `[${i + 1}] ${c.formatted}`).join('\n');
           }
           const blob = new Blob([content], { type: 'text/plain' });
           const a = Object.assign(document.createElement('a'), {
@@ -2676,7 +2684,7 @@ async function executeTool(name, input) {
 
       // ── VFS TOOLS ────────────────────────────────────────────────
       case 'write_file': {
-        const path    = (input.path || '').trim().replace(/^\/+/, '');
+        const path = (input.path || '').trim().replace(/^\/+/, '');
         const content = input.content || '';
         if (!path) return { ok: false, result: 'path is required' };
         await VFS.write(path, content);
@@ -2694,9 +2702,11 @@ async function executeTool(name, input) {
         const prefix = input.dir?.replace(/^\/+/, '') || '';
         const filtered = prefix ? files.filter(f => f.path.startsWith(prefix)) : files;
         if (!filtered.length) return { ok: true, result: prefix ? `No files in "${prefix}"` : 'Virtual filesystem is empty.' };
-        return { ok: true, result: filtered.map(f =>
-          `${f.path} (${new Blob([f.content||'']).size}B, updated ${new Date(f.updatedAt).toLocaleTimeString()})`
-        ).join('\n') };
+        return {
+          ok: true, result: filtered.map(f =>
+            `${f.path} (${new Blob([f.content || '']).size}B, updated ${new Date(f.updatedAt).toLocaleTimeString()})`
+          ).join('\n')
+        };
       }
       case 'delete_file': {
         const path = (input.path || '').trim().replace(/^\/+/, '');
@@ -2718,7 +2728,7 @@ async function executeTool(name, input) {
 function buildSys(page) {
   const mem = Object.keys(state.memory).length
     ? '\n\nMemory (persisted across sessions):\n' +
-      Object.entries(state.memory).map(([k,v]) => '  ' + k + ': ' + v).join('\n')
+    Object.entries(state.memory).map(([k, v]) => '  ' + k + ': ' + v).join('\n')
     : '';
   const custom = state.settings.instructions
     ? '\n\nUser instructions: ' + state.settings.instructions : '';
@@ -2748,8 +2758,8 @@ Break complex tasks into sub-goals. Never guess page state — verify first.` : 
 // ── AGENT LOOP ─────────────────────────────────────────────────────
 // ── AUTO-SCREENSHOT ─────────────────────────────────────────────────────────
 const AUTO_SCREENSHOT_AFTER = new Set([
-  'navigate','click','type','scroll','select_option',
-  'run_javascript','open_tab','switch_tab'
+  'navigate', 'click', 'type', 'scroll', 'select_option',
+  'run_javascript', 'open_tab', 'switch_tab'
 ]);
 
 async function maybeAutoScreenshot(toolName) {
@@ -2774,13 +2784,13 @@ async function runAgent(userMessage) {
     return;
   }
 
-  state.running       = true;
-  state.backupActive  = false;   // reset backup flag each new run
-  state.taskPlan      = null;    // reset task plan each new run
-  taskPlanEl          = null;
+  state.running = true;
+  state.backupActive = false;   // reset backup flag each new run
+  state.taskPlan = null;    // reset task plan each new run
+  taskPlanEl = null;
   // Store last prompt so user can save it as a macro
   if (el('chat-input')) el('chat-input').dataset.lastPrompt = userMessage;
-  state.abort         = new AbortController();
+  state.abort = new AbortController();
   el('send-btn').style.display = 'none';
   el('stop-btn').style.display = 'flex';
   setStatus('loading', 'Running…');
@@ -2789,7 +2799,7 @@ async function runAgent(userMessage) {
   let conv = getConv() || newConv();
   conv.messages.push({ role: 'user', content: userMessage });
   let isNewConv = false;
-  if (conv.messages.filter(m => m.role==='user').length <= 1) {
+  if (conv.messages.filter(m => m.role === 'user').length <= 1) {
     isNewConv = true;
     conv.title = userMessage.substring(0, 50) + (userMessage.length > 50 ? '…' : '');
   }
@@ -2804,13 +2814,13 @@ async function runAgent(userMessage) {
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (tab) page = { url: tab.url, title: tab.title };
-  } catch {}
+  } catch { }
 
-  const sys      = buildSys(page);
+  const sys = buildSys(page);
   const messages = [...conv.messages];
   const maxSteps = parseInt(state.settings.maxSteps) || 20;
-  let   steps    = 0;
-  let   done     = false;
+  let steps = 0;
+  let done = false;
 
   try {
     while (steps < maxSteps && !state.abort.signal.aborted && !done) {
@@ -2869,11 +2879,11 @@ async function runAgent(userMessage) {
         for (const tool of resp.tools) {
           if (state.abort.signal.aborted) break;
 
-          const icon   = TOOL_ICONS[tool.name] || '🔧';
+          const icon = TOOL_ICONS[tool.name] || '🔧';
           const stepId = addStep('loading', icon, tool.name, JSON.stringify(tool.input).substring(0, 120));
 
           // Record tool_use in message history
-          const tuMsg = { type:'tool_use', role:'assistant', id:tool.id, name:tool.name, input:tool.input };
+          const tuMsg = { type: 'tool_use', role: 'assistant', id: tool.id, name: tool.name, input: tool.input };
           messages.push(tuMsg);
           conv.messages.push(tuMsg);
 
@@ -2885,27 +2895,27 @@ async function runAgent(userMessage) {
           const autoShotPromise = maybeAutoScreenshot(tool.name);
 
           if (result.screenshot) appendScreenshot(result.screenshot);
-          updateStep(stepId, result.ok ? 'success' : 'error', icon, tool.name, String(result.result||'').substring(0, 150));
+          updateStep(stepId, result.ok ? 'success' : 'error', icon, tool.name, String(result.result || '').substring(0, 150));
 
           // Resolve auto-screenshot (awaits 2.5 s then captures)
           if (!result.screenshot) {   // don't double-screenshot if tool already returned one
             autoShotData = await autoShotPromise;
             if (autoShotData) appendScreenshot(autoShotData);
           } else {
-            autoShotPromise.catch(()=>{});  // suppress any errors
+            autoShotPromise.catch(() => { });  // suppress any errors
           }
 
           // Record tool_result — include auto-screenshot if we got one
           let trContent;
           if (result.screenshot) {
             trContent = [
-              { type:'text', text: result.result || 'Done' },
-              { type:'image', source:{ type:'base64', media_type:'image/jpeg', data: result.screenshot } }
+              { type: 'text', text: result.result || 'Done' },
+              { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: result.screenshot } }
             ];
           } else if (autoShotData) {
             trContent = [
-              { type:'text', text: result.result || (result.ok ? 'Done' : 'Failed') },
-              { type:'image', source:{ type:'base64', media_type:'image/jpeg', data: autoShotData } }
+              { type: 'text', text: result.result || (result.ok ? 'Done' : 'Failed') },
+              { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: autoShotData } }
             ];
           } else {
             trContent = String(result.result || (result.ok ? 'Done' : 'Failed'));
@@ -2921,7 +2931,7 @@ async function runAgent(userMessage) {
 
           if (tool.name === 'finish') {
             appendAssist(tool.input.answer);
-            conv.messages.push({ role:'assistant', content: tool.input.answer });
+            conv.messages.push({ role: 'assistant', content: tool.input.answer });
             done = true;
           }
         }
@@ -2931,19 +2941,19 @@ async function runAgent(userMessage) {
     if (!done && steps >= maxSteps) {
       const m = `Reached the step limit (${maxSteps}). Ask me to continue if needed.`;
       appendAssist(m);
-      conv.messages.push({ role:'assistant', content: m });
+      conv.messages.push({ role: 'assistant', content: m });
     }
 
   } finally {
     state.running = false;
-    state.abort   = null;
+    state.abort = null;
     el('send-btn').style.display = 'flex';
     el('stop-btn').style.display = 'none';
     setStatus('idle', 'Ready');
     setGlow(false);
     // Persist memory if enabled
     if (state.settings.persistMemory && Object.keys(state.memory).length) {
-      chrome.storage.local.set({ ob_memory: state.memory }).catch(()=>{});
+      chrome.storage.local.set({ ob_memory: state.memory }).catch(() => { });
     }
     conv.updatedAt = Date.now();
     await saveConvs();
@@ -2955,10 +2965,10 @@ async function generateConversationTitle(convId, firstMessage) {
     const s = state.settings;
     const providerKey = state.backupActive ? s.backupProvider : s.provider;
     if (!providerKey) return;
-    
+
     const sys = "You generate very short, 3-5 word titles for conversations based on the first message. Reply ONLY with the title. Do not use quotes or punctuation.";
     const req = await buildProviderRequest(providerKey, s.model, s.apiKey, s.baseUrl, s.accountId, [{ role: 'user', content: firstMessage }], sys);
-    
+
     // Override max_tokens to be very small and drop tools to save money/time
     req.body.max_tokens = 15;
     req.body.tools = undefined;
@@ -2970,7 +2980,7 @@ async function generateConversationTitle(convId, firstMessage) {
       body: JSON.stringify(req.body),
       signal: AbortSignal.timeout(8000)
     });
-    
+
     if (res.ok) {
       const parsed = parseAIResponse(await res.json(), req.format);
       let title = parsed.text ? parsed.text.trim().replace(/^["']|["']$/g, '') : '';
@@ -2989,17 +2999,17 @@ async function generateConversationTitle(convId, firstMessage) {
 }
 
 const TOOL_ICONS = {
-  navigate:'🌐', click:'👆', type:'⌨️', scroll:'↕️', screenshot:'📸',
-  get_page_content:'📄', scrape_page:'🕷️', run_javascript:'⚡',
-  open_tab:'🔗', switch_tab:'🔄', list_tabs:'📋', wait:'⏳',
-  extract_data:'📊', download_csv:'💾', select_option:'▼',
-  think:'💭', reason:'🧩', memorize:'🧠', recall:'💡', finish:'✅',
-  smart_fill_form:'📝', scan_forms:'🔍', create_task_plan:'📋',
-  update_task_step:'✔️', export_data:'📤',
-  summarize_tabs:'📑', cross_site_research:'🔀', auto_highlight:'🌟',
-  remove_highlights:'🚫', add_citation:'📌', show_citations:'📚', clear_citations:'🗑️',
-  browse_intent:'🎯', save_bookmark:'🔖', show_bookmarks:'📂',
-  write_file:'💾', read_file:'📖', list_files:'📁', delete_file:'🗑️'
+  navigate: '🌐', click: '👆', type: '⌨️', scroll: '↕️', screenshot: '📸',
+  get_page_content: '📄', scrape_page: '🕷️', run_javascript: '⚡',
+  open_tab: '🔗', switch_tab: '🔄', list_tabs: '📋', wait: '⏳',
+  extract_data: '📊', download_csv: '💾', select_option: '▼',
+  think: '💭', reason: '🧩', memorize: '🧠', recall: '💡', finish: '✅',
+  smart_fill_form: '📝', scan_forms: '🔍', create_task_plan: '📋',
+  update_task_step: '✔️', export_data: '📤',
+  summarize_tabs: '📑', cross_site_research: '🔀', auto_highlight: '🌟',
+  remove_highlights: '🚫', add_citation: '📌', show_citations: '📚', clear_citations: '🗑️',
+  browse_intent: '🎯', save_bookmark: '🔖', show_bookmarks: '📂',
+  write_file: '💾', read_file: '📖', list_files: '📁', delete_file: '🗑️'
 };
 
 // ── GLOW EFFECT ─────────────────────────────────────────────────────
@@ -3052,7 +3062,7 @@ function setGlow(on) {
           document.head.appendChild(style);
           document.documentElement.appendChild(overlay);
         }
-      }).catch(() => {});
+      }).catch(() => { });
     } else {
       // Remove overlay from page
       chrome.scripting.executeScript({
@@ -3062,7 +3072,7 @@ function setGlow(on) {
           document.getElementById('__ob_glow__')?.remove();
           document.getElementById('__ob_glow_style__')?.remove();
         }
-      }).catch(() => {});
+      }).catch(() => { });
     }
   });
 }
@@ -3077,7 +3087,7 @@ function msgs() { return el('chat-messages'); }
 
 function showTyping() {
   const id = 'ty-' + uid();
-  const d  = document.createElement('div');
+  const d = document.createElement('div');
   d.id = id; d.className = 'typing-indicator';
   d.innerHTML = '<div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div><span>Thinking…</span>';
   msgs().appendChild(d); scrollEnd(); return id;
@@ -3094,10 +3104,10 @@ function renderTabSummary(tabs) {
     <div class="tab-summary-list">
       ${tabs.map(t => `
         <div class="tab-summary-item">
-          <img class="tab-favicon" src="https://www.google.com/s2/favicons?sz=16&domain=${encodeURIComponent(t.url||'')}" width="14" height="14" onerror="this.style.display='none'" />
+          <img class="tab-favicon" src="https://www.google.com/s2/favicons?sz=16&domain=${encodeURIComponent(t.url || '')}" width="14" height="14" onerror="this.style.display='none'" />
           <div class="tab-summary-info">
-            <div class="tab-summary-title">${esc(t.title||'Untitled')}</div>
-            <div class="tab-summary-url">${esc((t.url||'').substring(0,55))}${(t.url||'').length>55?'…':''}</div>
+            <div class="tab-summary-title">${esc(t.title || 'Untitled')}</div>
+            <div class="tab-summary-url">${esc((t.url || '').substring(0, 55))}${(t.url || '').length > 55 ? '…' : ''}</div>
           </div>
           <span class="tab-id-badge">#${t.tabId}</span>
         </div>`).join('')}
@@ -3113,7 +3123,7 @@ function renderComparisonTable(rows, attributes, question) {
   const cols = attributes?.length ? attributes : ['Content'];
   const header = ['Source', ...cols].map(k => `<th>${esc(k)}</th>`).join('');
   const bodyRows = rows.map(r =>
-    `<tr><td><a class="compare-link" href="${esc(r.url)}" target="_blank" title="${esc(r.url)}">${esc((r.title||r.url||'').substring(0,32))}…</a></td>${cols.map(() => '<td class="compare-empty">—</td>').join('')}</tr>`
+    `<tr><td><a class="compare-link" href="${esc(r.url)}" target="_blank" title="${esc(r.url)}">${esc((r.title || r.url || '').substring(0, 32))}…</a></td>${cols.map(() => '<td class="compare-empty">—</td>').join('')}</tr>`
   ).join('');
   d.innerHTML = `
     <div class="data-table-header">🔀 Cross-site Research — ${rows.length} tabs
@@ -3144,13 +3154,13 @@ function renderCitationPanel() {
       ${state.citations.map(c => `
         <li class="citation-item">
           <div class="citation-title"><a href="${esc(c.url)}" target="_blank">${esc(c.title)}</a></div>
-          ${c.author ? `<div class="citation-meta">${esc(c.author)}${c.date ? ' · ' + c.date.substring(0,10) : ''}</div>` : ''}
+          ${c.author ? `<div class="citation-meta">${esc(c.author)}${c.date ? ' · ' + c.date.substring(0, 10) : ''}</div>` : ''}
           ${c.note ? `<div class="citation-note">"${esc(c.note)}"</div>` : ''}
           <div class="citation-formatted">${esc(c.formatted)}</div>
         </li>`).join('')}
     </ol>`;
   d.querySelectorAll('.cite-export-btn').forEach(btn =>
-    btn.addEventListener('click', () => executeTool('show_citations', { export_format: btn.dataset.fmt }).catch(()=>{}))
+    btn.addEventListener('click', () => executeTool('show_citations', { export_format: btn.dataset.fmt }).catch(() => { }))
   );
   msgs().appendChild(d);
   d.scrollIntoView({ behavior: 'smooth', block: 'end' });
@@ -3172,11 +3182,11 @@ function renderBookmarkSaved({ url, title, summary, tags }) {
     <div class="bookmark-saved-icon">🔖</div>
     <div class="bookmark-saved-body">
       <div class="bookmark-saved-title"><a href="${esc(url)}" target="_blank">${esc(title)}</a></div>
-      ${summary ? `<div class="bookmark-saved-summary">${esc(summary.substring(0,100))}…</div>` : ''}
+      ${summary ? `<div class="bookmark-saved-summary">${esc(summary.substring(0, 100))}…</div>` : ''}
       ${tags.length ? `<div class="bookmark-tags">${tags.map(t => `<span class="bookmark-tag">${esc(t)}</span>`).join('')}</div>` : ''}
     </div>`;
   msgs().appendChild(d);
-  d.scrollIntoView({ behavior:'smooth', block:'end' });
+  d.scrollIntoView({ behavior: 'smooth', block: 'end' });
 }
 
 function renderBookmarkPanel(bookmarks, filter) {
@@ -3190,33 +3200,33 @@ function renderBookmarkPanel(bookmarks, filter) {
     <div class="bookmark-list">
       ${bookmarks.slice(0, 30).map(b => `
         <div class="bookmark-item">
-          <img class="tab-favicon" src="https://www.google.com/s2/favicons?sz=14&domain=${encodeURIComponent(b.url||'')}" width="14" height="14" onerror="this.style.display='none'" />
+          <img class="tab-favicon" src="https://www.google.com/s2/favicons?sz=14&domain=${encodeURIComponent(b.url || '')}" width="14" height="14" onerror="this.style.display='none'" />
           <div class="bookmark-item-body">
-            <a class="bookmark-item-title" href="${esc(b.url)}" target="_blank">${esc(b.title||b.url)}</a>
-            ${b.summary ? `<div class="bookmark-item-summary">${esc(b.summary.substring(0,80))}</div>` : ''}
-            ${b.tags?.length ? `<div class="bookmark-tags">${b.tags.map(t=>`<span class="bookmark-tag">${esc(t)}</span>`).join('')}</div>` : ''}
+            <a class="bookmark-item-title" href="${esc(b.url)}" target="_blank">${esc(b.title || b.url)}</a>
+            ${b.summary ? `<div class="bookmark-item-summary">${esc(b.summary.substring(0, 80))}</div>` : ''}
+            ${b.tags?.length ? `<div class="bookmark-tags">${b.tags.map(t => `<span class="bookmark-tag">${esc(t)}</span>`).join('')}</div>` : ''}
           </div>
         </div>`).join('')}
     </div>`}`;
   msgs().appendChild(d);
-  d.scrollIntoView({ behavior:'smooth', block:'end' });
+  d.scrollIntoView({ behavior: 'smooth', block: 'end' });
 }
 
 // ── TOOLTIP SYSTEM ───────────────────────────────────────────────────────
 // Floating "i" icons that appear next to labeled UI elements
 const TOOLTIPS = {
-  'settings-provider':    'The AI service that powers OpenBrowser. Anthropic (Claude), OpenAI (GPT-4), Gemini, Groq (free+fast), or Ollama (fully local, free).',
-  'settings-model':       'The specific model to use. Larger models are smarter but slower and more expensive.',
-  'settings-apikey':      'Your private API key — stored only in your browser, never sent to us.',
-  'settings-maxsteps':    'How many tool calls the agent can make per task. More steps = more complex tasks, more API usage.',
-  'settings-rpm':         'Requests Per Minute limit. The agent will stop 5 calls before this limit to protect your quota.',
-  'settings-rpd':         'Requests Per Day limit. Useful for free-tier APIs like Anthropic free (25/day) or Groq (1000/day).',
-  'backup-provider':      'If your primary model hits its quota, the agent automatically switches to this backup and continues.',
+  'settings-provider': 'The AI service that powers OpenBrowser. Anthropic (Claude), OpenAI (GPT-4), Gemini, Groq (free+fast), or Ollama (fully local, free).',
+  'settings-model': 'The specific model to use. Larger models are smarter but slower and more expensive.',
+  'settings-apikey': 'Your private API key — stored only in your browser, never sent to us.',
+  'settings-maxsteps': 'How many tool calls the agent can make per task. More steps = more complex tasks, more API usage.',
+  'settings-rpm': 'Requests Per Minute limit. The agent will stop 5 calls before this limit to protect your quota.',
+  'settings-rpd': 'Requests Per Day limit. Useful for free-tier APIs like Anthropic free (25/day) or Groq (1000/day).',
+  'backup-provider': 'If your primary model hits its quota, the agent automatically switches to this backup and continues.',
   'toggle-auto-screenshot': 'After each action (click, type, navigate), automatically takes a screenshot so the AI can see the result.',
-  'toggle-reasoning':     'Injects a 6-step reasoning protocol into every prompt. Makes the agent more methodical and less likely to get stuck.',
+  'toggle-reasoning': 'Injects a 6-step reasoning protocol into every prompt. Makes the agent more methodical and less likely to get stuck.',
   'toggle-persist-memory': 'Saves the agent\'s "memorize" notes across browser sessions. The AI can recall things from previous conversations.',
-  'toggle-glow':          'Shows a pulsing green border on the controlled webpage while the agent is running, so you know which tab is active.',
-  'btn-open':             'Opens the OpenBrowser side panel in your current browser window.',
+  'toggle-glow': 'Shows a pulsing green border on the controlled webpage while the agent is running, so you know which tab is active.',
+  'btn-open': 'Opens the OpenBrowser side panel in your current browser window.',
 };
 
 function initTooltips() {
@@ -3233,8 +3243,8 @@ function initTooltips() {
 
     // Find the label for this element
     const label = document.querySelector(`label[for="${target.id}"]`)
-                || target.closest('.form-group')?.querySelector('.form-label')
-                || target.closest('.toggle-row')?.querySelector('.toggle-label');
+      || target.closest('.form-group')?.querySelector('.form-label')
+      || target.closest('.toggle-row')?.querySelector('.toggle-label');
     if (!label) return;
 
     const badge = document.createElement('button');
@@ -3249,7 +3259,7 @@ function initTooltips() {
       tip.classList.add('visible');
       const r = badge.getBoundingClientRect();
       const panelR = document.getElementById('app').getBoundingClientRect();
-      tip.style.top  = (r.bottom - panelR.top + 6) + 'px';
+      tip.style.top = (r.bottom - panelR.top + 6) + 'px';
       tip.style.left = Math.max(8, r.left - panelR.left - 100) + 'px';
     });
     badge.addEventListener('mouseleave', () => tip.classList.remove('visible'));
@@ -3259,7 +3269,7 @@ function initTooltips() {
       tip.classList.toggle('visible');
       const r = badge.getBoundingClientRect();
       const panelR = document.getElementById('app').getBoundingClientRect();
-      tip.style.top  = (r.bottom - panelR.top + 6) + 'px';
+      tip.style.top = (r.bottom - panelR.top + 6) + 'px';
       tip.style.left = Math.max(8, r.left - panelR.left - 100) + 'px';
     });
   });
@@ -3327,9 +3337,9 @@ function renderDataTable(rows, name) {
 
 function addStep(status, icon, label, text) {
   const id = 'step-' + (++stepN);
-  const d  = document.createElement('div');
+  const d = document.createElement('div');
   d.id = id; d.className = `tool-step ${status}`;
-  d.innerHTML = `<span class="tool-icon">${status==='loading'?'<div class="spinner"></div>':esc(icon)}</span>
+  d.innerHTML = `<span class="tool-icon">${status === 'loading' ? '<div class="spinner"></div>' : esc(icon)}</span>
     <div class="tool-content"><div class="tool-label">${esc(label)}</div><div class="tool-text">${esc(text)}</div></div>`;
   msgs().appendChild(d); scrollEnd(); return id;
 }
@@ -3347,7 +3357,7 @@ function appendAssist(text) {
   d.className = 'message message-assistant';
   d.innerHTML = `<div class="msg-bubble">${md(text)}</div>
     <div class="msg-actions"><button class="msg-action-btn copy-btn">Copy</button></div>`;
-  d.querySelector('.copy-btn').addEventListener('click', function() {
+  d.querySelector('.copy-btn').addEventListener('click', function () {
     navigator.clipboard.writeText(text).then(() => { this.textContent = 'Copied!'; setTimeout(() => this.textContent = 'Copy', 1500); });
   });
   msgs().appendChild(d); scrollEnd();
@@ -3386,7 +3396,7 @@ function createStreamingBubble() {
       const copyBtn = document.createElement('button');
       copyBtn.className = 'msg-action-btn copy-btn';
       copyBtn.textContent = 'Copy';
-      copyBtn.addEventListener('click', function() {
+      copyBtn.addEventListener('click', function () {
         navigator.clipboard.writeText(rawText).then(() => { this.textContent = 'Copied!'; setTimeout(() => this.textContent = 'Copy', 1500); });
       });
       actions.appendChild(copyBtn);
@@ -3401,14 +3411,14 @@ function createStreamingBubble() {
 // Falls back to non-streaming if the provider doesn't support it.
 // Returns the same { type, text, tools } shape as callAI.
 async function callAIStreaming(messages, sys, signal, onChunk) {
-  const s   = state.settings;
+  const s = state.settings;
   checkRateLimit();
 
   const providerKey = state.backupActive ? s.backupProvider : s.provider;
-  const modelId     = state.backupActive ? s.backupModel    : s.model;
-  const apiKey      = state.backupActive ? s.backupApiKey   : s.apiKey;
-  const baseUrl     = state.backupActive ? ''               : s.baseUrl;
-  const accountId   = state.backupActive ? ''               : s.accountId;
+  const modelId = state.backupActive ? s.backupModel : s.model;
+  const apiKey = state.backupActive ? s.backupApiKey : s.apiKey;
+  const baseUrl = state.backupActive ? '' : s.baseUrl;
+  const accountId = state.backupActive ? '' : s.accountId;
 
   const req = await buildProviderRequest(providerKey, modelId, apiKey, baseUrl, accountId, messages, sys);
 
@@ -3458,13 +3468,13 @@ async function callAIStreaming(messages, sys, signal, onChunk) {
     throw new Error(`API ${res.status}: ${errText.substring(0, 400)}`);
   }
 
-  const reader  = res.body.getReader();
+  const reader = res.body.getReader();
   const decoder = new TextDecoder();
-  let   buffer  = '';
-  let   rawBody = '';  // Raw accumulation — fallback if Ollama returns non-SSE JSON
-  let   fullText = '';
+  let buffer = '';
+  let rawBody = '';  // Raw accumulation — fallback if Ollama returns non-SSE JSON
+  let fullText = '';
   const toolCalls = [];    // For OpenAI streaming tool accumulation
-  let   currentToolCall = null;
+  let currentToolCall = null;
 
   // UX: if Ollama takes > 6s with no tokens (model loading), update status bar
   let firstTokenReceived = false;
@@ -3479,7 +3489,7 @@ async function callAIStreaming(messages, sys, signal, onChunk) {
 
       const decoded = decoder.decode(value, { stream: true });
       rawBody += decoded;          // accumulate everything for fallback
-      buffer  += decoded;
+      buffer += decoded;
       const lines = buffer.split('\n');
       buffer = lines.pop() || '';
 
@@ -3523,8 +3533,8 @@ async function callAIStreaming(messages, sys, signal, onChunk) {
             for (const tc of delta.tool_calls) {
               const idx = tc.index ?? 0;
               if (!toolCalls[idx]) toolCalls[idx] = { id: '', name: '', inputRaw: '' };
-              if (tc.id)                 toolCalls[idx].id      += tc.id;
-              if (tc.function?.name)     toolCalls[idx].name    += tc.function.name;
+              if (tc.id) toolCalls[idx].id += tc.id;
+              if (tc.function?.name) toolCalls[idx].name += tc.function.name;
               if (tc.function?.arguments) toolCalls[idx].inputRaw += tc.function.arguments;
             }
           }
@@ -3602,7 +3612,7 @@ function appendUser(text) {
   msgs().querySelector('.empty-state')?.remove();
   const d = document.createElement('div');
   d.className = 'message message-user';
-  d.innerHTML = `<div class="msg-bubble">${esc(text).replace(/\n/g,'<br>')}</div>`;
+  d.innerHTML = `<div class="msg-bubble">${esc(text).replace(/\n/g, '<br>')}</div>`;
   msgs().appendChild(d); scrollEnd();
 }
 
@@ -3616,13 +3626,13 @@ function appendScreenshot(data) {
 function scrollEnd() { const c = msgs(); c.scrollTop = c.scrollHeight; }
 
 function setStatus(type, text) {
-  el('status-dot').className = 'status-dot' + (type==='loading' ? ' loading' : type==='error' ? ' error' : '');
+  el('status-dot').className = 'status-dot' + (type === 'loading' ? ' loading' : type === 'error' ? ' error' : '');
   el('status-text').textContent = text;
 }
 
 function toast(msg) {
   document.querySelectorAll('.toast').forEach(t => t.remove());
-  const t = Object.assign(document.createElement('div'), { className:'toast', textContent: msg });
+  const t = Object.assign(document.createElement('div'), { className: 'toast', textContent: msg });
   document.body.appendChild(t);
   setTimeout(() => t.remove(), 2800);
 }
@@ -3631,7 +3641,7 @@ function emptyState() {
   msgs().innerHTML = `
     <div class="empty-state">
       <div class="empty-logo">
-        <img src="data:image/png;base64,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" width="52" height="52" alt="OpenBrowser" style="filter:drop-shadow(0 0 12px rgba(0,255,136,0.5))" />
+        <img src="data:image/png;base64,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" width="52" height="52" alt="OpenBrowser" style="filter:drop-shadow(0 0 12px rgba(0,255,136,0.5))" />
       </div>
       <div class="empty-title">OpenBrowser</div>
       <div class="empty-subtitle">Free, open-source AI browser agent. Describe your task below.</div>
@@ -3653,11 +3663,11 @@ function renderConv(id) {
   if (!conv || !conv.messages.length) { emptyState(); return; }
   for (const m of conv.messages) {
     if (m.role === 'system') continue;
-    if (m.type === 'tool_use')    { addStep('success', TOOL_ICONS[m.name]||'🔧', m.name, JSON.stringify(m.input).substring(0,100)); continue; }
+    if (m.type === 'tool_use') { addStep('success', TOOL_ICONS[m.name] || '🔧', m.name, JSON.stringify(m.input).substring(0, 100)); continue; }
     if (m.type === 'tool_result') continue;
     if (m.content && typeof m.content === 'string') {
       if (m.role === 'user') appendUser(m.content);
-      else                   appendAssist(m.content);
+      else appendAssist(m.content);
     }
   }
 }
@@ -3673,7 +3683,7 @@ function renderHistory() {
     d.className = 'history-item' + (c.id === state.convId ? ' active' : '');
     const dt = new Date(c.updatedAt);
     d.innerHTML = `<div class="history-title">${esc(c.title)}</div>
-      <div class="history-meta">${dt.toLocaleDateString([],{month:'short',day:'numeric'})} ${dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})} · ${c.messages.filter(m=>m.role==='user').length} msgs</div>`;
+      <div class="history-meta">${dt.toLocaleDateString([], { month: 'short', day: 'numeric' })} ${dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · ${c.messages.filter(m => m.role === 'user').length} msgs</div>`;
     d.addEventListener('click', () => { state.convId = c.id; renderConv(c.id); switchView('chat'); });
     list.appendChild(d);
   });
@@ -3682,17 +3692,17 @@ function renderHistory() {
 // ── SETTINGS UI ────────────────────────────────────────────────────
 function populateModels() {
   const pKey = el('settings-provider').value;
-  const pc   = PROVIDERS[pKey];
+  const pc = PROVIDERS[pKey];
 
   el('settings-model').innerHTML = (pc?.models || [])
-    .map(m => `<option value="${m.id}"${m.id===state.settings.model?' selected':''}>${m.label}</option>`)
+    .map(m => `<option value="${m.id}"${m.id === state.settings.model ? ' selected' : ''}>${m.label}</option>`)
     .join('');
 
   // Dynamic placeholder + hint
-  el('settings-apikey').placeholder    = pc?.keyPlaceholder || 'API key';
-  el('api-key-hint').textContent       = pc?.keyHint || 'Your key is stored locally only.';
-  el('api-key-group').style.display    = pKey === 'ollama' ? 'none' : 'block';
-  el('base-url-group').style.display   = (pKey === 'ollama' || pKey === 'custom' || pc?.requiresBaseUrl) ? 'block' : 'none';
+  el('settings-apikey').placeholder = pc?.keyPlaceholder || 'API key';
+  el('api-key-hint').textContent = pc?.keyHint || 'Your key is stored locally only.';
+  el('api-key-group').style.display = pKey === 'ollama' ? 'none' : 'block';
+  el('base-url-group').style.display = (pKey === 'ollama' || pKey === 'custom' || pc?.requiresBaseUrl) ? 'block' : 'none';
   el('account-id-group').style.display = pc?.requiresAccountId ? 'block' : 'none';
   // Show Ollama-specific controls (test button + setup guide)
   const ollamaCtrl = el('ollama-controls');
@@ -3705,35 +3715,35 @@ function populateModels() {
 
 function populateBackupModels() {
   const pKey = el('backup-provider').value;
-  const pc   = PROVIDERS[pKey];
+  const pc = PROVIDERS[pKey];
   el('backup-model').innerHTML = pKey === ''
     ? '<option value="">— disabled —</option>'
     : (pc?.models || []).map(m =>
-        `<option value="${m.id}"${m.id===state.settings.backupModel?' selected':''}>${m.label}</option>`
-      ).join('');
+      `<option value="${m.id}"${m.id === state.settings.backupModel ? ' selected' : ''}>${m.label}</option>`
+    ).join('');
   el('backup-key-group').style.display = (pKey && pKey !== 'ollama') ? 'block' : 'none';
 }
 
 function loadSettingsUI() {
   const s = state.settings;
-  el('settings-provider').value     = s.provider;
+  el('settings-provider').value = s.provider;
   populateModels();
-  el('settings-model').value        = s.model;
-  el('settings-apikey').value       = s.apiKey;
-  el('settings-baseurl').value      = s.baseUrl;
-  el('settings-accountid').value    = s.accountId;
-  el('settings-maxsteps').value     = s.maxSteps;
+  el('settings-model').value = s.model;
+  el('settings-apikey').value = s.apiKey;
+  el('settings-baseurl').value = s.baseUrl;
+  el('settings-accountid').value = s.accountId;
+  el('settings-maxsteps').value = s.maxSteps;
   el('settings-instructions').value = s.instructions;
   // Backup model
   el('backup-provider').value = s.backupProvider || '';
   populateBackupModels();
-  el('backup-model').value    = s.backupModel || '';
-  el('backup-apikey').value   = s.backupApiKey || '';
+  el('backup-model').value = s.backupModel || '';
+  el('backup-apikey').value = s.backupApiKey || '';
   // Toggles
   el('toggle-auto-screenshot').checked = s.autoScreenshot !== false;
-  el('toggle-reasoning').checked       = s.reasoningMode  !== false;
-  el('toggle-persist-memory').checked  = s.persistMemory  !== false;
-  el('toggle-glow').checked            = s.glowEffect     !== false;
+  el('toggle-reasoning').checked = s.reasoningMode !== false;
+  el('toggle-persist-memory').checked = s.persistMemory !== false;
+  el('toggle-glow').checked = s.glowEffect !== false;
   // Rate limits
   el('settings-rpm').value = s.rpmLimit || 0;
   el('settings-rpd').value = s.rpdLimit || 0;
@@ -3749,7 +3759,7 @@ function loadSettingsUI() {
 
 function updateBadge() {
   const pc = PROVIDERS[state.settings.provider];
-  const m  = pc?.models.find(m => m.id === state.settings.model);
+  const m = pc?.models.find(m => m.id === state.settings.model);
   el('current-model-label').textContent = m?.label || state.settings.model || 'No model';
 }
 
@@ -3764,11 +3774,11 @@ function switchView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   el('view-' + name)?.classList.add('active');
-  el('nav-'  + name)?.classList.add('active');
-  if (name === 'history')  renderHistory();
+  el('nav-' + name)?.classList.add('active');
+  if (name === 'history') renderHistory();
   if (name === 'settings') loadSettingsUI();
-  if (name === 'macros')   renderMacros();
-  if (name === 'files')    renderFileTree();
+  if (name === 'macros') renderMacros();
+  if (name === 'files') renderFileTree();
 }
 
 function exportConversation() {
@@ -3787,7 +3797,7 @@ function exportConversation() {
   const blob = new Blob([lines.join('\n')], { type: 'text/markdown' });
   const a = Object.assign(document.createElement('a'), {
     href: URL.createObjectURL(blob),
-    download: `${(conv.title || 'chat').replace(/[^a-z0-9]/gi,'_').substring(0,40)}.md`
+    download: `${(conv.title || 'chat').replace(/[^a-z0-9]/gi, '_').substring(0, 40)}.md`
   });
   a.click(); URL.revokeObjectURL(a.href);
   toast('Conversation exported ✓');
@@ -3801,7 +3811,7 @@ function autoH() {
 
 async function send() {
   if (state.running) return;
-  const ta  = el('chat-input');
+  const ta = el('chat-input');
   const msg = ta.value.trim();
   if (!msg) return;
   ta.value = ''; autoH();
@@ -3824,8 +3834,8 @@ async function boot() {
   );
   el('btn-new-chat').addEventListener('click', () => { newConv(); renderConv(state.convId); switchView('chat'); });
   el('btn-new-chat-history').addEventListener('click', () => { newConv(); renderConv(state.convId); switchView('chat'); });
-  el('model-badge').addEventListener('click',   () => switchView('settings'));
-  el('setup-banner').addEventListener('click',  () => switchView('settings'));
+  el('model-badge').addEventListener('click', () => switchView('settings'));
+  el('setup-banner').addEventListener('click', () => switchView('settings'));
   el('send-btn').addEventListener('click', send);
   el('stop-btn').addEventListener('click', () => {
     state.abort?.abort();
@@ -3835,7 +3845,7 @@ async function boot() {
     setStatus('idle', 'Stopped');
     appendAssist('⏹ Stopped.');
   });
-  el('chat-input').addEventListener('keydown', e => { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); send(); } });
+  el('chat-input').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } });
   el('chat-input').addEventListener('input', autoH);
 
   el('settings-provider').addEventListener('change', () => {
@@ -3848,22 +3858,22 @@ async function boot() {
   });
   el('btn-save-settings').addEventListener('click', async () => {
     const s = state.settings;
-    s.provider     = el('settings-provider').value;
-    s.model        = el('settings-model').value;
-    s.apiKey       = el('settings-apikey').value.trim();
-    s.baseUrl      = el('settings-baseurl').value.trim();
-    s.accountId    = el('settings-accountid').value.trim();
-    s.maxSteps     = parseInt(el('settings-maxsteps').value) || 20;
+    s.provider = el('settings-provider').value;
+    s.model = el('settings-model').value;
+    s.apiKey = el('settings-apikey').value.trim();
+    s.baseUrl = el('settings-baseurl').value.trim();
+    s.accountId = el('settings-accountid').value.trim();
+    s.maxSteps = parseInt(el('settings-maxsteps').value) || 20;
     s.instructions = el('settings-instructions').value.trim();
     // Backup model
     s.backupProvider = el('backup-provider').value;
-    s.backupModel    = el('backup-model').value;
-    s.backupApiKey   = el('backup-apikey').value.trim();
+    s.backupModel = el('backup-model').value;
+    s.backupApiKey = el('backup-apikey').value.trim();
     // Toggles
     s.autoScreenshot = el('toggle-auto-screenshot').checked;
-    s.reasoningMode  = el('toggle-reasoning').checked;
-    s.persistMemory  = el('toggle-persist-memory').checked;
-    s.glowEffect     = el('toggle-glow').checked;
+    s.reasoningMode = el('toggle-reasoning').checked;
+    s.persistMemory = el('toggle-persist-memory').checked;
+    s.glowEffect = el('toggle-glow').checked;
     // Rate limits
     s.rpmLimit = Math.max(0, parseInt(el('settings-rpm').value) || 0);
     s.rpdLimit = Math.max(0, parseInt(el('settings-rpd').value) || 0);
@@ -3886,11 +3896,11 @@ async function boot() {
   });
 
   // Check for pending message (omnibox / quick command palette)
-  const d = await chrome.storage.local.get(['pendingOmniboxMessage','pendingOmniboxMessageId']);
+  const d = await chrome.storage.local.get(['pendingOmniboxMessage', 'pendingOmniboxMessageId']);
   if (d.pendingOmniboxMessage) {
     const prompt = d.pendingOmniboxMessage;
     el('chat-input').value = prompt; autoH();
-    await chrome.storage.local.remove(['pendingOmniboxMessage','pendingOmniboxMessageId']);
+    await chrome.storage.local.remove(['pendingOmniboxMessage', 'pendingOmniboxMessageId']);
     // Auto-run if it came from the quick command palette (non-empty)
     if (prompt.trim()) {
       switchView('chat');
@@ -3901,7 +3911,7 @@ async function boot() {
     if (changes.pendingOmniboxMessage?.newValue) {
       const prompt = changes.pendingOmniboxMessage.newValue;
       el('chat-input').value = prompt; autoH();
-      chrome.storage.local.remove(['pendingOmniboxMessage','pendingOmniboxMessageId']);
+      chrome.storage.local.remove(['pendingOmniboxMessage', 'pendingOmniboxMessageId']);
       // Auto-run from quick command palette
       if (prompt.trim() && !state.running) {
         switchView('chat');
@@ -3926,7 +3936,7 @@ async function boot() {
   });
 
   // Heartbeat
-  setInterval(() => chrome.runtime.sendMessage({ type:'sidepanel-heartbeat' }).catch(()=>{}), 500);
+  setInterval(() => chrome.runtime.sendMessage({ type: 'sidepanel-heartbeat' }).catch(() => { }), 500);
 
   // Memory view: clear all persistent memory
   el('btn-clear-memory')?.addEventListener('click', async () => {
@@ -4006,7 +4016,7 @@ async function boot() {
   el('btn-open-memory')?.addEventListener('click', () => openModal('memory-modal'));
   el('btn-add-memory')?.addEventListener('click', async () => {
     const k = prompt('Memory key:'); if (!k?.trim()) return;
-    const v = prompt('Value:');      if (v === null) return;
+    const v = prompt('Value:'); if (v === null) return;
     state.memory[k.trim()] = v.trim();
     if (state.settings.persistMemory) await saveMemory();
     renderMemoryDashboard();
@@ -4053,7 +4063,7 @@ async function boot() {
     if (e.ctrlKey && e.key === 'n' && !inInput) { e.preventDefault(); newConv(); renderConv(state.convId); switchView('chat'); return; }
     // Alt+1-5 = nav shortcuts
     if (e.altKey && !inInput) {
-      const views = ['chat','history','files','macros','settings'];
+      const views = ['chat', 'history', 'files', 'macros', 'settings'];
       const idx = parseInt(e.key) - 1;
       if (idx >= 0 && idx < views.length) { e.preventDefault(); switchView(views[idx]); }
     }
@@ -4112,10 +4122,10 @@ async function boot() {
   // ── Page change detector ─────────────────────────────────────────────
   const PAGE_SUGGESTIONS = {
     youtube: ['Summarize this video', 'Find the key points', 'Extract comments'],
-    amazon:  ['Find the best price', 'Compare product specs', 'Check reviews summary'],
-    github:  ['Explain this repo', 'Summarize the README', 'List recent issues'],
-    reddit:  ['Summarize this thread', 'Find the top comments', 'Extract key opinions'],
-    news:    ['Summarize this article', 'Find the key facts', 'Save as citation'],
+    amazon: ['Find the best price', 'Compare product specs', 'Check reviews summary'],
+    github: ['Explain this repo', 'Summarize the README', 'List recent issues'],
+    reddit: ['Summarize this thread', 'Find the top comments', 'Extract key opinions'],
+    news: ['Summarize this article', 'Find the key facts', 'Save as citation'],
     default: ['Summarize this page', 'Take a screenshot', 'Extract key information'],
   };
 
@@ -4246,7 +4256,7 @@ async function boot() {
       recognition.onresult = (event) => {
         // Accumulate all final segments first, then append interim
         let allFinal = '';
-        let interim  = '';
+        let interim = '';
         for (let i = 0; i < event.results.length; i++) {
           if (event.results[i].isFinal) {
             allFinal += event.results[i][0].transcript;
@@ -4279,7 +4289,7 @@ async function boot() {
       isRecording = false;
       micBtn.classList.remove('recording');
       micBtn.title = 'Voice input (click to record)';
-      try { recognition?.stop(); } catch {}
+      try { recognition?.stop(); } catch { }
       recognition = null;
     }
 
