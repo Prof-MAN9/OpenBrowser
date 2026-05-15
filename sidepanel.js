@@ -511,9 +511,13 @@ const uid = () => crypto.randomUUID ? crypto.randomUUID() : Math.random().toStri
 const wait = ms => new Promise(r => setTimeout(r, ms));
 
 function esc(s) {
+  if (s === undefined || s === null) return '';
   return String(s)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 // ── MERMAID DIAGRAM RENDERER ─────────────────────────────────────────────
@@ -567,13 +571,25 @@ function md(text) {
   if (!text) return '';
   let hasMermaid = false;
   const result = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
     .replace(/```mermaid\n?([\s\S]*?)```/gi, (_, code) => {
       hasMermaid = true;
       const id = 'mmd_pre_' + Math.random().toString(36).slice(2);
-      return `<pre class="mermaid-pre" id="${id}">${esc(code.trim())}</pre>`;
+      // Mermaid code is rendered inside esc() via the original block, but we escaped everything at start.
+      // Re-reversing the &lt; and &gt; for mermaid specifically so it can parse its syntax.
+      const unescapedCode = code.trim().replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+      return `<pre class="mermaid-pre" id="${id}">${esc(unescapedCode)}</pre>`;
     })
-    .replace(/```(\w*)\n?([\s\S]*?)```/g, (_, l, c) => `<pre><code>${esc(c.trim())}</code></pre>`)
-    .replace(/`([^`\n]+)`/g, '<code>$1</code>')
+    .replace(/```(\w*)\n?([\s\S]*?)```/g, (_, l, c) => {
+      const unescapedCode = c.trim().replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+      return `<pre><code>${esc(unescapedCode)}</code></pre>`;
+    })
+    .replace(/`([^`\n]+)`/g, (_, c) => {
+      const unescapedCode = c.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+      return `<code>${esc(unescapedCode)}</code>`;
+    })
     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
     .replace(/\*([^*\n]+)\*/g, '<em>$1</em>')
     .replace(/^### (.+)$/gm, '<h3>$1</h3>')
@@ -584,15 +600,19 @@ function md(text) {
     .replace(/\n{2,}/g, '</p><p>')
     .replace(/^([^<\n].+)$/gm, m => m.startsWith('<') ? m : `<p>${m}</p>`)
     .replace(/<p><\/p>/g, '')
-    .replace(/(https?:\/\/[^\s<"]+)/g, (_, url) => {
-      // Only allow http/https links to prevent javascript: injection
-      if (!/^https?:\/\//i.test(url)) return url;
-      const safeUrl = url.replace(/"/g, '%22');
-      return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${esc(url)}</a>`;
+    .replace(/\[(.*?)\]\((https?:\/\/.*?)\)/g, (_, label, url) => {
+      const u = url.replace(/&amp;/g, '&');
+      const safeUrl = u.replace(/"/g, '%22').replace(/'/g, '%27');
+      return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${label}</a>`;
+    })
+    .replace(/(?<!href=")(https?:\/\/[^\s<"]+)/g, (_, url) => {
+      const u = url.replace(/&amp;/g, '&');
+      if (!/^https?:\/\//i.test(u)) return url;
+      const safeUrl = u.replace(/"/g, '%22').replace(/'/g, '%27');
+      return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${esc(u)}</a>`;
     });
 
   if (hasMermaid) {
-    // Defer mermaid rendering until DOM is updated
     setTimeout(() => {
       document.querySelectorAll('.mermaid-pre').forEach(el => renderMermaidEl(el));
     }, 50);
@@ -735,7 +755,38 @@ function renderMemoryDashboard() {
       delete state.memory[btn.dataset.key];
       if (state.settings.persistMemory) await saveMemory();
       renderMemoryDashboard();
-      toast('Memory entry deleted');
+    });
+  });
+}
+
+// ── RAG DASHBOARD ────────────────────────────────────────────────────────
+async function renderRAGDashboard() {
+  const container = el('rag-entries');
+  if (!container) return;
+  const urls = await RAG.listUrls();
+  if (!urls.length) {
+    container.innerHTML = '<div class="memory-empty">No pages indexed yet.<br><small>Use the <code>index_current_page</code> tool to save page content for semantic search.</small></div>';
+    return;
+  }
+  container.innerHTML = urls.map(u => `
+    <div class="rag-entry">
+      <div class="rag-info">
+        <div class="rag-title" title="${esc(u.title)}">${esc(u.title || u.url)}</div>
+        <div class="rag-url" title="${esc(u.url)}">${esc(u.url)}</div>
+        <div class="rag-stats">${u.count} segments · Indexed ${timeSince(u.lastIndexed)} ago</div>
+      </div>
+      <button class="memory-del-btn rag-del-btn" data-url="${esc(u.url)}" title="Remove from knowledge base">✕</button>
+    </div>
+  `).join('');
+
+  container.querySelectorAll('.rag-del-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const url = btn.dataset.url;
+      if (confirm(`Remove "${url}" from local knowledge base?`)) {
+        await RAG.deleteUrl(url);
+        renderRAGDashboard();
+        toast('Page removed from knowledge base');
+      }
     });
   });
 }
@@ -744,9 +795,11 @@ function renderMemoryDashboard() {
 // IndexedDB-backed file store for AI-generated files
 const VFS = {
   db: null,
+  _initPromise: null,
   async init() {
     if (this.db) return;
-    this.db = await new Promise((resolve, reject) => {
+    if (this._initPromise) return this._initPromise;
+    this._initPromise = new Promise((resolve, reject) => {
       const req = indexedDB.open('ob_vfs', 1);
       req.onupgradeneeded = e => {
         const db = e.target.result;
@@ -754,11 +807,15 @@ const VFS = {
           db.createObjectStore('files', { keyPath: 'path' });
         }
       };
-      req.onsuccess = e => resolve(e.target.result);
+      req.onsuccess = e => { this.db = e.target.result; resolve(); };
       req.onerror = () => reject(req.error);
     });
+    return this._initPromise;
   },
+  norm(path) { return (path || '').trim().replace(/\/+/g, '/').replace(/^\//, ''); },
   async write(path, content) {
+    path = this.norm(path);
+    if (!path) throw new Error('Path required');
     await this.init();
     return new Promise((resolve, reject) => {
       const tx = this.db.transaction('files', 'readwrite');
@@ -767,6 +824,7 @@ const VFS = {
     });
   },
   async read(path) {
+    path = this.norm(path);
     await this.init();
     return new Promise((resolve, reject) => {
       const tx = this.db.transaction('files', 'readonly');
@@ -785,6 +843,7 @@ const VFS = {
     });
   },
   async delete(path) {
+    path = this.norm(path);
     await this.init();
     return new Promise((resolve, reject) => {
       const tx = this.db.transaction('files', 'readwrite');
@@ -797,9 +856,11 @@ const VFS = {
 // ── RAG SYSTEM ────────────────────────────────────────────────────────────
 const RAG = {
   db: null,
+  _dbPromise: null,
   async initDB() {
     if (this.db) return;
-    this.db = await new Promise((resolve, reject) => {
+    if (this._dbPromise) return this._dbPromise;
+    this._dbPromise = new Promise((resolve, reject) => {
       const req = indexedDB.open('ob_rag', 1);
       req.onupgradeneeded = e => {
         const db = e.target.result;
@@ -808,24 +869,31 @@ const RAG = {
           store.createIndex('url', 'url', { unique: false });
         }
       };
-      req.onsuccess = e => resolve(e.target.result);
+      req.onsuccess = e => { this.db = e.target.result; resolve(); };
       req.onerror = () => reject(req.error);
     });
+    return this._dbPromise;
   },
+  _workerPromise: null,
   async initWorker() {
     if (state.ragWorker) return;
-    state.ragWorker = new Worker('lib/rag-worker.js', { type: 'module' });
-    state.ragWorker.onmessage = (e) => {
-      const { type, id, embedding, error } = e.data;
-      if (type === 'embed-result' && this.pendingEmbeds[id]) {
-        this.pendingEmbeds[id].resolve(embedding);
-        delete this.pendingEmbeds[id];
-      } else if (type === 'error' && this.pendingEmbeds[id]) {
-        this.pendingEmbeds[id].reject(new Error(error));
-        delete this.pendingEmbeds[id];
-      }
-    };
-    state.ragReady = true;
+    if (this._workerPromise) return this._workerPromise;
+    this._workerPromise = new Promise((resolve) => {
+      state.ragWorker = new Worker('lib/rag-worker.js', { type: 'module' });
+      state.ragWorker.onmessage = (e) => {
+        const { type, id, embedding, error } = e.data;
+        if (type === 'embed-result' && this.pendingEmbeds[id]) {
+          this.pendingEmbeds[id].resolve(embedding);
+          delete this.pendingEmbeds[id];
+        } else if (type === 'error' && this.pendingEmbeds[id]) {
+          this.pendingEmbeds[id].reject(new Error(error));
+          delete this.pendingEmbeds[id];
+        }
+      };
+      state.ragReady = true;
+      resolve();
+    });
+    return this._workerPromise;
   },
   pendingEmbeds: {},
   async getEmbedding(text) {
@@ -861,13 +929,66 @@ const RAG = {
     });
   },
   cosineSimilarity(v1, v2) {
+    if (!v1 || !v2 || v1.length !== v2.length) return 0;
     let dot = 0, mag1 = 0, mag2 = 0;
     for (let i = 0; i < v1.length; i++) {
       dot += v1[i] * v2[i];
       mag1 += v1[i] * v1[i];
       mag2 += v2[i] * v2[i];
     }
-    return dot / (Math.sqrt(mag1) * Math.sqrt(mag2));
+    const mag = Math.sqrt(mag1) * Math.sqrt(mag2);
+    return mag > 0 ? dot / mag : 0;
+  },
+  async listUrls() {
+    await this.initDB();
+    return new Promise((resolve) => {
+      const tx = this.db.transaction('chunks', 'readonly');
+      const store = tx.objectStore('chunks');
+      const index = store.index('url');
+      const urls = new Map();
+      index.openCursor().onsuccess = (e) => {
+        const cursor = e.target.result;
+        if (cursor) {
+          const val = cursor.value;
+          if (!urls.has(val.url)) {
+            urls.set(val.url, { url: val.url, title: val.title, count: 1, lastIndexed: val.createdAt });
+          } else {
+            const entry = urls.get(val.url);
+            entry.count++;
+            entry.lastIndexed = Math.max(entry.lastIndexed, val.createdAt);
+          }
+          cursor.continue();
+        } else {
+          resolve(Array.from(urls.values()).sort((a, b) => b.lastIndexed - a.lastIndexed));
+        }
+      };
+    });
+  },
+  async deleteUrl(url) {
+    await this.initDB();
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction('chunks', 'readwrite');
+      const store = tx.objectStore('chunks');
+      const index = store.index('url');
+      index.openKeyCursor(IDBKeyRange.only(url)).onsuccess = (e) => {
+        const cursor = e.target.result;
+        if (cursor) {
+          store.delete(cursor.primaryKey);
+          cursor.continue();
+        }
+      };
+      tx.oncomplete = resolve;
+      tx.onerror = () => reject(tx.error);
+    });
+  },
+  async clearAll() {
+    await this.initDB();
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction('chunks', 'readwrite');
+      tx.objectStore('chunks').clear();
+      tx.oncomplete = resolve;
+      tx.onerror = () => reject(tx.error);
+    });
   }
 };
 
@@ -953,16 +1074,48 @@ function showFileViewer(path, content) {
   modal.innerHTML = `
     <div class="modal-box file-viewer-box">
       <div class="modal-header">
-        <span class="modal-title">📄 ${esc(name)}</span>
-        <span class="modal-path">${esc(path)}</span>
+        <div class="modal-title-row">
+          <span class="modal-title">📄 ${esc(name)}</span>
+          <span class="modal-path">${esc(path)}</span>
+        </div>
         <button class="modal-close-btn" id="fv-close">✕</button>
       </div>
       <div class="file-content-wrap">
-        <pre class="file-content-pre"><code>${esc(content)}</code></pre>
+        <div class="file-editor-container">
+          <div class="file-line-numbers" id="fv-lines"></div>
+          <textarea class="file-editor-textarea" id="fv-textarea" spellcheck="false">${esc(content)}</textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="fv-save" class="modal-action-btn" style="background:var(--green-subtle);border-color:var(--green-border);color:var(--green-bright)">Save Changes</button>
+        <button id="fv-cancel" class="modal-action-btn">Close</button>
       </div>
     </div>`;
   document.body.appendChild(modal);
+
+  const textarea = document.getElementById('fv-textarea');
+  const linesEl = document.getElementById('fv-lines');
+  
+  const updateLines = () => {
+    const count = textarea.value.split('\n').length;
+    linesEl.innerHTML = Array.from({length: count}, (_, i) => `<div>${i+1}</div>`).join('');
+  };
+  
+  textarea.addEventListener('input', updateLines);
+  textarea.addEventListener('scroll', () => {
+    linesEl.scrollTop = textarea.scrollTop;
+  });
+  updateLines();
+
+  document.getElementById('fv-save').addEventListener('click', async () => {
+    const newContent = textarea.value;
+    await VFS.write(path, newContent);
+    toast('File saved ✓');
+    renderFileTree();
+  });
+
   document.getElementById('fv-close').addEventListener('click', () => modal.remove());
+  document.getElementById('fv-cancel').addEventListener('click', () => modal.remove());
   modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
 }
 
@@ -1016,7 +1169,10 @@ function openModal(id) {
   m.style.display = 'flex';
   if (id === 'templates-modal') renderPromptTemplates();
   if (id === 'shortcuts-modal') { }  // static content
-  if (id === 'memory-modal') renderMemoryDashboard();
+  if (id === 'memory-modal') {
+    renderMemoryDashboard();
+    renderRAGDashboard();
+  }
 }
 
 function closeModal(id) {
@@ -2943,41 +3099,61 @@ async function executeTool(name, input) {
         });
         if (!r || !r.text) return { ok: false, result: 'Could not read page content.' };
         
-        toast('Indexing page into local memory...');
-        
         // Improved chunking: Overlapping windows for better semantic retrieval
         const chunks = [];
         const chunkSize = 800;
         const overlap = 200;
+        let isTruncated = false;
         for (let i = 0; i < r.text.length; i += (chunkSize - overlap)) {
+          if (chunks.length >= 25) { isTruncated = true; break; }
           chunks.push(r.text.substring(i, i + chunkSize));
-          if (chunks.length >= 10) break; // Cap to first 10 chunks to avoid quota issues
         }
 
+        toast(`Indexing ${chunks.length} segments...`);
+        
         let completed = 0;
-        for (const chunk of chunks) {
-          try {
-            const vector = await RAG.getEmbedding(chunk);
-            await RAG.saveChunk(r.url, r.title, chunk, vector);
-            completed++;
-          } catch (e) {
-            console.error('[RAG] Chunk failed:', e.message);
+        try {
+          for (const chunk of chunks) {
+            try {
+              const vector = await RAG.getEmbedding(chunk);
+              await RAG.saveChunk(r.url, r.title, chunk, vector);
+              completed++;
+              if (completed % 5 === 0) setStatus('loading', `Indexing... (${completed}/${chunks.length})`);
+            } catch (e) {
+              console.error('[RAG] Chunk failed:', e.message);
+            }
           }
+        } finally {
+          setStatus('idle', 'Ready');
         }
-        return { ok: true, result: `Successfully indexed "${r.title}" (${completed} segments). It is now searchable in your local knowledge base.` };
+
+        const summary = `Successfully indexed "${r.title}" into local memory.
+- Segments: ${completed}/${chunks.length}${isTruncated ? ' (Truncated: Page is very long)' : ''}
+- Total length: ~${Math.round(r.text.length / 4)} tokens
+- URL: ${r.url}
+
+${isTruncated ? '> [!NOTE]\n> Only the first ~20k characters were indexed due to local performance limits.' : ''}
+You can now ask questions about this page using semantic search.`;
+        return { ok: true, result: summary };
       }
 
       case 'semantic_search_memory': {
         if (!input.query) return { ok: false, result: 'query is required' };
+        const limit = parseInt(input.limit) || 3;
         toast('Searching memory...');
-        const queryVector = await RAG.getEmbedding(input.query);
-        const results = await RAG.search(queryVector, input.limit || 3);
-        if (!results.length) return { ok: true, result: 'No relevant memories found.' };
+        setStatus('loading', 'Searching...');
+        try {
+          const queryVector = await RAG.getEmbedding(input.query);
+          const results = await RAG.search(queryVector, limit);
+          if (!results.length) return { ok: true, result: 'No relevant memories found.' };
 
-        const formatted = results.map((r, i) => 
-          `**Result ${i+1}** (Score: ${r.score.toFixed(3)})\nSource: [${r.title}](${r.url})\n"${r.text.substring(0, 300)}..."`
-        ).join('\n\n---\n\n');
-        return { ok: true, result: `Found ${results.length} relevant results:\n\n${formatted}` };
+          const formatted = results.map((r, i) => 
+            `**Result ${i+1}** (Score: ${r.score.toFixed(3)})\nSource: [${r.title}](${r.url})\n"${r.text.substring(0, 300)}..."`
+          ).join('\n\n---\n\n');
+          return { ok: true, result: `Found ${results.length} relevant results:\n\n${formatted}` };
+        } finally {
+          setStatus('idle', 'Ready');
+        }
       }
 
       default: return { ok: false, result: `Unknown tool: ${name}` };
@@ -3187,10 +3363,10 @@ async function runAgent(userMessage) {
           const trMsg = {
             type: 'tool_result', role: 'user',
             tool_use_id: tool.id, toolName: tool.name,
-            content: trContent
+            content: trContent, ok: result.ok
           };
           messages.push(trMsg);
-          conv.messages.push({ ...trMsg, content: typeof trMsg.content === 'string' ? trMsg.content : '[screenshot]' });
+          conv.messages.push(trMsg);
 
           if (tool.name === 'finish') {
             appendAssist(tool.input.answer);
@@ -3924,10 +4100,35 @@ function renderConv(id) {
   const conv = state.conversations.find(c => c.id === id);
   msgs().innerHTML = '';
   if (!conv || !conv.messages.length) { emptyState(); return; }
+
+  // Map to link tool_use to its result
+  const results = {};
+  conv.messages.forEach(m => { if (m.type === 'tool_result') results[m.tool_use_id] = m; });
+
   for (const m of conv.messages) {
     if (m.role === 'system') continue;
-    if (m.type === 'tool_use') { addStep('success', TOOL_ICONS[m.name] || '🔧', m.name, JSON.stringify(m.input).substring(0, 100)); continue; }
+
+    if (m.type === 'tool_use') {
+      const res = results[m.id];
+      const status = res ? (res.ok ? 'success' : 'error') : 'success';
+      const resultText = res ? (typeof res.content === 'string' ? res.content : (Array.isArray(res.content) ? res.content.find(b => b.type === 'text')?.text : '')) : '';
+      
+      const stepId = addStep(status, TOOL_ICONS[m.name] || '🔧', m.name, JSON.stringify(m.input).substring(0, 100));
+      
+      if (resultText) {
+        updateStep(stepId, status, TOOL_ICONS[m.name] || '🔧', m.name, resultText.substring(0, 200));
+      }
+
+      // Render screenshots if they exist in the result
+      if (res && Array.isArray(res.content)) {
+        const img = res.content.find(b => b.type === 'image');
+        if (img?.source?.data) appendScreenshot(img.source.data);
+      }
+      continue;
+    }
+
     if (m.type === 'tool_result') continue;
+
     if (m.content && typeof m.content === 'string') {
       if (m.role === 'user') appendUser(m.content);
       else appendAssist(m.content);
@@ -4244,6 +4445,23 @@ async function boot() {
   });
   el('qa-export')?.addEventListener('click', () => exportConversation());
 
+  // ── Memory modal: Tabs and Clear ──────────────────────────────────
+  document.querySelectorAll('#memory-modal .modal-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.tab;
+      document.querySelectorAll('#memory-modal .modal-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('#memory-modal .modal-tab-content').forEach(c => c.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(target)?.classList.add('active');
+    });
+  });
+  el('btn-clear-rag-all')?.addEventListener('click', async () => {
+    if (!confirm('Clear the ENTIRE local knowledge base? This cannot be undone.')) return;
+    await RAG.clearAll();
+    renderRAGDashboard();
+    toast('Knowledge base cleared');
+  });
+
   // ── Rate limit presets ───────────────────────────────────────────────
   document.querySelectorAll('.rate-preset-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -4381,6 +4599,37 @@ async function boot() {
     await Promise.all(files.map(f => VFS.delete(f.path)));
     renderFileTree(); toast('All files deleted');
   });
+  el('files-search')?.addEventListener('input', e => {
+    const q = e.target.value.toLowerCase().trim();
+    document.querySelectorAll('#file-tree .file-row').forEach(row => {
+      const name = row.querySelector('.file-name').textContent.toLowerCase();
+      row.style.display = (!q || name.includes(q)) ? '' : 'none';
+    });
+    // Hide empty groups
+    let totalVisible = 0;
+    document.querySelectorAll('#file-tree .file-group').forEach(group => {
+      const rows = Array.from(group.querySelectorAll('.file-row'));
+      const hasVisible = rows.some(r => r.style.display !== 'none');
+      group.style.display = hasVisible ? '' : 'none';
+      if (hasVisible) totalVisible++;
+    });
+    
+    const intro = document.querySelector('.files-intro');
+    if (intro) intro.style.display = q ? 'none' : 'block';
+    
+    const treeEmpty = el('file-tree-empty-msg');
+    if (q && totalVisible === 0) {
+      if (!treeEmpty) {
+        const msg = document.createElement('div');
+        msg.id = 'file-tree-empty-msg';
+        msg.className = 'file-empty';
+        msg.textContent = 'No matching files found.';
+        el('file-tree').appendChild(msg);
+      }
+    } else {
+      treeEmpty?.remove();
+    }
+  });
 
   // ── Page change detector ─────────────────────────────────────────────
   const PAGE_SUGGESTIONS = {
@@ -4417,11 +4666,32 @@ async function boot() {
       clearTimeout(banner._timer);
       banner._timer = setTimeout(() => { banner.style.display = 'none'; }, 12000);
     }
+    
+    if (msg.type === 'run-macro-prompt') {
+      if (state.running) {
+        toast(`Scheduled macro "${msg.macroName}" skipped (agent is busy)`);
+        return;
+      }
+      switchView('chat');
+      el('chat-input').value = msg.prompt; autoH();
+      runAgent(msg.prompt);
+    }
   });
   el('pcb-close')?.addEventListener('click', () => { el('page-change-banner').style.display = 'none'; });
 
   // ── VFS init & Files tab ─────────────────────────────────────────────
   VFS.init().catch(console.warn);
+
+  // ── Check for pending prompts (Omnibox / Context Menu) ────────────────
+  const PENDING_OMNIBOX = { message: 'pendingOmniboxMessage', messageId: 'pendingOmniboxMessageId' };
+  chrome.storage.local.get([PENDING_OMNIBOX.message, PENDING_OMNIBOX.messageId]).then(res => {
+    const prompt = res[PENDING_OMNIBOX.message];
+    if (prompt) {
+      chrome.storage.local.remove([PENDING_OMNIBOX.message, PENDING_OMNIBOX.messageId]);
+      el('chat-input').value = prompt; autoH();
+      runAgent(prompt);
+    }
+  });
 
   // ── Ollama: Test Connection + Auto-discover models ───────────────────
   el('btn-ollama-test')?.addEventListener('click', async () => {

@@ -889,6 +889,20 @@
     .memory-val-input:focus { border-color: var(--green-border); outline: none; }
     .memory-del-btn { background: none; border: 1px solid var(--border-subtle); border-radius: 4px; color: var(--text-muted); cursor: pointer; width: 22px; height: 22px; font-size: 9px; flex-shrink: 0; transition: all 0.15s; display: flex; align-items: center; justify-content: center; }
     .memory-del-btn:hover { color: var(--error-color); border-color: rgba(255,68,102,0.3); }
+    
+    .modal-tabs { display: flex; border-bottom: 1px solid var(--border-subtle); padding: 0 16px; gap: 16px; }
+    .modal-tab { background: none; border: none; border-bottom: 2px solid transparent; color: var(--text-muted); padding: 8px 4px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+    .modal-tab:hover { color: var(--text-primary); }
+    .modal-tab.active { color: var(--green-bright); border-bottom-color: var(--green-bright); }
+    .modal-tab-content { display: none; }
+    .modal-tab-content.active { display: block; }
+    
+    .rag-entry { display: flex; align-items: center; gap: 8px; padding: 10px 0; border-bottom: 1px solid var(--border-subtle); }
+    .rag-entry:last-child { border-bottom: none; }
+    .rag-info { flex: 1; min-width: 0; }
+    .rag-title { font-size: 11px; font-weight: 500; color: var(--text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 2px; }
+    .rag-url { font-size: 9px; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--font-mono); }
+    .rag-stats { font-size: 8px; color: var(--green-bright); opacity: 0.7; margin-top: 1px; }
 
     /* ── THEME SWITCHER ────────────────────────────────────────── */
     .theme-switcher { display: flex; gap: 6px; }
@@ -933,8 +947,11 @@
     /* File viewer modal */
     .file-viewer-box { max-width: 560px; max-height: 85vh; }
     .modal-path { font-size: 9px; color: var(--text-muted); font-family: var(--font-mono); }
-    .file-content-wrap { flex: 1; overflow: auto; padding: 12px; }
-    .file-content-pre { background: var(--bg-tertiary); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 12px; margin: 0; font-size: 11px; line-height: 1.6; font-family: var(--font-mono); color: var(--text-primary); overflow-x: auto; white-space: pre; }
+    .modal-title-row { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+    .file-content-wrap { flex: 1; overflow: hidden; padding: 0; display: flex; flex-direction: column; }
+    .file-editor-container { flex: 1; display: flex; background: var(--bg-tertiary); position: relative; overflow: hidden; border-top: 1px solid var(--border-subtle); }
+    .file-line-numbers { padding: 12px 8px; background: rgba(0,0,0,0.2); color: var(--text-dim); font-size: 10px; font-family: var(--font-mono); text-align: right; min-width: 32px; border-right: 1px solid var(--border-subtle); overflow: hidden; user-select: none; }
+    .file-editor-textarea { flex: 1; background: transparent; border: none; outline: none; padding: 12px; color: var(--text-primary); font-size: 11px; font-family: var(--font-mono); line-height: 1.6; resize: none; overflow-y: scroll; white-space: pre; tab-size: 4; }
 
     /* ── PROMPT TEMPLATES ────────────────────────────────────────── */
     .template-row { display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 6px; border: 1px solid var(--border-subtle); margin-bottom: 6px; cursor: default; transition: background 0.1s; }
@@ -1315,6 +1332,10 @@
         <button class="header-btn" id="btn-refresh-files" title="Refresh file list">↺</button>
         <button class="header-btn" id="btn-clear-files" title="Delete all files">🗑</button>
       </div>
+      <div class="search-bar-wrap">
+        <svg class="search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="search-bar" id="files-search" placeholder="Search files…" type="search" />
+      </div>
       <div class="view-body">
         <div class="files-intro">
           <p>Ask the AI to create files — e.g. <em>"Write a Python parser and save it"</em>. Files persist across sessions.</p>
@@ -1327,15 +1348,28 @@
     <div id="memory-modal" class="modal-overlay" style="display:none">
       <div class="modal-box">
         <div class="modal-header">
-          <span class="modal-title">🧠 Memory Dashboard</span>
+          <span class="modal-title">🧠 Memory & Knowledge</span>
           <button class="modal-close-btn" data-close="memory-modal">✕</button>
         </div>
+        <div class="modal-tabs">
+          <button class="modal-tab active" data-tab="memory-facts">Facts</button>
+          <button class="modal-tab" data-tab="memory-rag">Local Knowledge (RAG)</button>
+        </div>
         <div class="modal-body">
-          <p class="modal-desc">Facts the AI has stored across conversations. You can edit or delete any entry.</p>
-          <div id="memory-entries"></div>
-          <div class="modal-footer">
-            <button id="btn-add-memory" class="modal-action-btn">+ Add Entry</button>
-            <button id="btn-clear-memory-all" class="modal-action-btn modal-action-danger">Clear All</button>
+          <div id="memory-facts" class="modal-tab-content active">
+            <p class="modal-desc">Facts the AI has stored across conversations. You can edit or delete any entry.</p>
+            <div id="memory-entries"></div>
+            <div class="modal-footer">
+              <button id="btn-add-memory" class="modal-action-btn">+ Add Entry</button>
+              <button id="btn-clear-memory-all" class="modal-action-btn modal-action-danger">Clear All</button>
+            </div>
+          </div>
+          <div id="memory-rag" class="modal-tab-content">
+            <p class="modal-desc">Pages indexed for semantic search. These are stored locally using vector embeddings.</p>
+            <div id="rag-entries"></div>
+            <div class="modal-footer">
+              <button id="btn-clear-rag-all" class="modal-action-btn modal-action-danger">Clear RAG Database</button>
+            </div>
           </div>
         </div>
       </div>
