@@ -9,8 +9,8 @@ const PROVIDERS = {
   anthropic: {
     name: 'Anthropic', baseUrl: 'https://api.anthropic.com/v1/messages',
     models: [
-      { id: 'claude-opus-4-5', label: 'Claude Opus 4.5' },
-      { id: 'claude-sonnet-4-5', label: 'Claude Sonnet 4.5' },
+      { id: 'claude-opus-4-7', label: 'Claude Opus 4.7 (Reasoning)' },
+      { id: 'claude-sonnet-4-6', label: 'Claude Sonnet 4.6' },
       { id: 'claude-haiku-4-5', label: 'Claude Haiku 4.5' },
       { id: 'claude-3-5-sonnet-20241022', label: 'Claude 3.5 Sonnet' },
       { id: 'claude-3-haiku-20240307', label: 'Claude 3 Haiku' }
@@ -20,15 +20,15 @@ const PROVIDERS = {
     keyHint: 'Get your key at console.anthropic.com'
   },
   openai: {
-    name: 'OpenAI', baseUrl: 'https://api.openai.com/v1/chat/completions',
+    name: 'OpenAI', baseUrl: 'https://api.openai.com/v1/responses',
     models: [
+      { id: 'gpt-5.4', label: 'GPT-5.4' },
+      { id: 'gpt-5.4-pro', label: 'GPT-5.4 Pro' },
+      { id: 'gpt-5-family', label: 'GPT-5 Family' },
       { id: 'gpt-4o', label: 'GPT-4o' },
-      { id: 'gpt-4o-mini', label: 'GPT-4o Mini' },
-      { id: 'gpt-4.1', label: 'GPT-4.1' },
-      { id: 'gpt-4.1-mini', label: 'GPT-4.1 Mini' },
-      { id: 'o4-mini', label: 'o4-mini (Reasoning)' }
+      { id: 'gpt-4o-mini', label: 'GPT-4o Mini' }
     ],
-    format: 'openai', requiresKey: true,
+    format: 'openai-responses', requiresKey: true,
     keyPlaceholder: 'sk-…',
     keyHint: 'Get your key at platform.openai.com/api-keys'
   },
@@ -36,10 +36,11 @@ const PROVIDERS = {
     name: 'Google Gemini',
     baseUrl: 'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent',
     models: [
-      { id: 'gemini-2.0-flash', label: 'Gemini 2.0 Flash' },
-      { id: 'gemini-2.0-flash-lite', label: 'Gemini 2.0 Flash Lite' },
-      { id: 'gemini-1.5-pro', label: 'Gemini 1.5 Pro' },
-      { id: 'gemini-1.5-flash', label: 'Gemini 1.5 Flash' }
+      { id: 'gemini-3.1-pro', label: 'Gemini 3.1 Pro' },
+      { id: 'gemini-3.1-flash', label: 'Gemini 3.1 Flash' },
+      { id: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro' },
+      { id: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash' },
+      { id: 'gemini-2.0-flash', label: 'Gemini 2.0 Flash' }
     ],
     format: 'gemini', requiresKey: true,
     keyPlaceholder: 'AIza…',
@@ -1458,7 +1459,8 @@ function buildOpenAITools(tools) {
 }
 
 function buildOpenAIMessages(messages, sys) {
-  const out = [{ role: 'system', content: sys }];
+  // sys may be null when called for the Responses API (system goes in `instructions` field)
+  const out = sys != null ? [{ role: 'system', content: sys }] : [];
   for (const m of messages) {
     if (m.role === 'system') continue;
     if (m.type === 'tool_result') {
@@ -1556,6 +1558,11 @@ async function buildProviderRequest(providerKey, modelId, apiKeyVal, baseUrlVal,
   if (!pc) throw new Error('Unknown provider: ' + providerKey);
   let url, headers, body;
 
+  // Determine max output tokens based on model era.
+  // Modern models (Claude 4.5+, GPT-5+, Gemini 3+) support much larger output buffers.
+  const isModernModel = modelId.includes('4.') || modelId.includes('5.') || modelId.includes('3.');
+  const maxTokens = isModernModel ? 65536 : 4096;
+
   if (pc.format === 'anthropic') {
     url = pc.baseUrl;
     headers = {
@@ -1565,11 +1572,29 @@ async function buildProviderRequest(providerKey, modelId, apiKeyVal, baseUrlVal,
       'anthropic-dangerous-direct-browser-access': 'true'
     };
     body = {
-      model: modelId, max_tokens: 4096, system: sys,
+      model: modelId, max_tokens: maxTokens, system: sys,
       messages: buildAnthropicMessages(messages),
       tools: buildAnthropicTools(TOOLS),
       tool_choice: { type: 'auto' }
     };
+
+  } else if (pc.format === 'openai-responses') {
+    // OpenAI Responses API (/v1/responses) — different shape from Chat Completions.
+    // Uses `input` instead of `messages`, `instructions` for system prompt,
+    // and `max_output_tokens` instead of `max_tokens`.
+    url = baseUrlVal || pc.baseUrl;
+    headers = { 'Content-Type': 'application/json' };
+    if (apiKeyVal) headers['Authorization'] = `Bearer ${apiKeyVal}`;
+    const oaiTools = buildOpenAITools(TOOLS);
+    body = {
+      model: modelId,
+      input: buildOpenAIMessages(messages, null), // system excluded from input
+      instructions: sys,                           // system goes here
+      max_output_tokens: maxTokens,
+      tools: oaiTools,
+      tool_choice: 'auto'
+    };
+
   } else if (pc.format === 'gemini') {
     const mdl = modelId.includes('/') ? modelId.split('/').pop() : modelId;
     url = pc.baseUrl.replace('{model}', mdl) + (apiKeyVal ? `?key=${apiKeyVal}` : '');
@@ -1579,9 +1604,11 @@ async function buildProviderRequest(providerKey, modelId, apiKeyVal, baseUrlVal,
       contents: buildGeminiContents(messages),
       tools: buildGeminiTools(TOOLS),
       systemInstruction: { parts: [{ text: sys }] },
-      generationConfig: { maxOutputTokens: 4096 }
+      generationConfig: { maxOutputTokens: maxTokens }
     };
+
   } else {
+    // Generic OpenAI-compatible (Chat Completions) — covers openrouter, groq, ollama, cloudflare etc.
     let finalTools = buildOpenAITools(TOOLS);
     let finalSysPrompt = sys;
     if (providerKey === 'ollama') {
@@ -1602,7 +1629,7 @@ async function buildProviderRequest(providerKey, modelId, apiKeyVal, baseUrlVal,
       headers['X-Title'] = 'OpenBrowser';
     }
     body = {
-      model: modelId, max_tokens: 4096,
+      model: modelId, max_tokens: maxTokens,
       messages: buildOpenAIMessages(messages, finalSysPrompt),
       tools: finalTools,
       tool_choice: finalTools ? 'auto' : undefined
@@ -1918,7 +1945,7 @@ async function callAI(messages, sys, signal) {
 
   // ── Try primary model ──────────────────────────────────────────
   if (!state.backupActive) {
-    const req = buildProviderRequest(s.provider, s.model, s.apiKey, s.baseUrl, s.accountId, messages, sys);
+    const req = await buildProviderRequest(s.provider, s.model, s.apiKey, s.baseUrl, s.accountId, messages, sys);
     const res = await fetch(req.url, { method: 'POST', headers: req.headers, body: JSON.stringify(req.body), signal });
 
     // Record AFTER receiving the response (counts only real API round-trips)
@@ -3958,7 +3985,7 @@ async function callAIStreaming(messages, sys, signal, onChunk) {
             toolCalls.push({ id: currentToolCall.id, name: currentToolCall.name, input: currentToolCall.input });
             currentToolCall = null;
           }
-        } else if (req.format === 'openai') {
+        } else if (req.format === 'openai' || req.format === 'openai-responses') {
           // OpenAI streaming events
           const delta = chunk.choices?.[0]?.delta;
           if (!delta) continue;
@@ -4000,7 +4027,7 @@ async function callAIStreaming(messages, sys, signal, onChunk) {
   }
 
   // Parse accumulated tool calls for OpenAI
-  if (req.format === 'openai' && toolCalls.length) {
+  if ((req.format === 'openai' || req.format === 'openai-responses') && toolCalls.length) {
     const parsed = toolCalls.filter(tc => tc.name).map(tc => {
       try { return { id: tc.id, name: tc.name, input: JSON.parse(tc.inputRaw || '{}') }; }
       catch { return { id: tc.id, name: tc.name, input: {} }; }
@@ -4165,6 +4192,21 @@ function populateModels() {
   // Dynamic placeholder + hint
   el('settings-apikey').placeholder = pc?.keyPlaceholder || 'API key';
   el('api-key-hint').textContent = pc?.keyHint || 'Your key is stored locally only.';
+  
+  // Model capability hints
+  const m = (pc?.models || []).find(x => x.id === state.settings.model);
+  const capHint = m?.id.includes('4.') || m?.id.includes('5.') || m?.id.includes('3.') ? 'Supports 64K+ Output Tokens & Streaming' : 'Supports 4K Output Tokens & Streaming';
+  let hintEl = document.getElementById('model-capability-hint');
+  if (!hintEl) {
+    hintEl = document.createElement('div');
+    hintEl.id = 'model-capability-hint';
+    hintEl.style.fontSize = '11px';
+    hintEl.style.color = 'var(--info-color)';
+    hintEl.style.marginTop = '4px';
+    hintEl.style.fontFamily = 'var(--font-mono)';
+    document.getElementById('settings-model').parentNode.appendChild(hintEl);
+  }
+  hintEl.textContent = '? ' + capHint;
   el('api-key-group').style.display = pKey === 'ollama' ? 'none' : 'block';
   el('base-url-group').style.display = (pKey === 'ollama' || pKey === 'custom' || pc?.requiresBaseUrl) ? 'block' : 'none';
   el('account-id-group').style.display = pc?.requiresAccountId ? 'block' : 'none';
