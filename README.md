@@ -21,10 +21,14 @@
 - **[What is OpenBrowser?](https://github.com/Prof-MAN9/OpenBrowser?tab=readme-ov-file#what-is-openbrowser)**
 - **[Features](https://github.com/Prof-MAN9/OpenBrowser?tab=readme-ov-file#features)**
 - **[Built-In Tools](https://github.com/Prof-MAN9/OpenBrowser?tab=readme-ov-file#-50-built-in-agent-tools)**
+- **[Changelog](https://github.com/Prof-MAN9/OpenBrowser?tab=readme-ov-file#changelog)**
 - **[Setup](https://github.com/Prof-MAN9/OpenBrowser?tab=readme-ov-file#setup)**
 - **[Usage](https://github.com/Prof-MAN9/OpenBrowser?tab=readme-ov-file#usage)**
+- **[Keyboard Shortcuts](https://github.com/Prof-MAN9/OpenBrowser?tab=readme-ov-file#keyboard-shortcuts)**
+- **[Help & FAQs](https://github.com/Prof-MAN9/OpenBrowser?tab=readme-ov-file#help--faqs)**
+- **[Architecture](https://github.com/Prof-MAN9/OpenBrowser?tab=readme-ov-file#architecture)**
 - **[Contributing](https://github.com/Prof-MAN9/OpenBrowser?tab=readme-ov-file#contributing)**
-- **[What is OpenBrowser?](https://github.com/Prof-MAN9/OpenBrowser?tab=readme-ov-file#what-is-openbrowser)**
+- **[Roadmap](https://github.com/Prof-MAN9/OpenBrowser?tab=readme-ov-file#roadmap)**
 - **[Acknowledgements](https://github.com/Prof-MAN9/OpenBrowser?tab=readme-ov-file#Acknowledgements)**
 
 
@@ -141,6 +145,45 @@ Set RPM and RPD caps to protect your API quota. OpenBrowser stops 5 calls before
 
 ### 🔄 Backup Model
 Configure a secondary provider/model. If the primary hits its quota, the agent automatically switches mid-task.
+
+---
+
+## Changelog
+### Timeline
+* **v1.0.0** — Initial release of the basic browser automation extension.
+* **v2.0.0** — Added support for multiple AI providers and the ability to save macros and schedules.
+* **v3.0.0** — Major update with a new virtual filesystem, persistent memory, and prompt templates.
+* **v3.1.0** — Enhanced tab management with tab grouping and an improved visual execution log.
+* **v3.2.0** — Added Mermaid diagram rendering and a real-time execution log with screenshot thumbnails.
+* **v3.3.0** — The Agent Intelligence & RAG Update with OpenAI Responses API integration, native WASM embedding, semantic memory search, and interactive spatial grid overlay.
+
+
+### **v3.3 — The Agent Intelligence & RAG Update** (Newest)
+
+This release focuses on stabilizing the agent's core architecture, bringing massive updates to AI model orchestration, memory systems, advanced tab interactions, and page accessibility automation:
+
+#### 🤖 **Next-Gen AI & Modern Models**
+* **OpenAI Responses API Integration**: Transitioned the OpenAI provider from legacy chat completions to the highly robust `/v1/responses` endpoints (`openai-responses` shape), standardizing request handling.
+* **Modern Model Suite**: Native support for **GPT-5.4, GPT-5.4 Pro, and the GPT-5 Family**, as well as the new **Gemini 3.1 Pro/Flash** and **Gemini 2.5 Pro/Flash** releases.
+* **64K+ Dynamic Output Tokens**: Implemented automatic capability detection. Modern models (GPT-5, Claude 4.5, Gemini 3) automatically support up to **65,536 output tokens**, while older model eras fall back to 4,096 tokens. A model capability indicator now displays in Settings to guide selection.
+
+#### 🧠 **Retrieval-Augmented Generation (RAG) Memory**
+* **Native WASM Embedding Worker**: Integrates Transformers.js to perform lightning-fast, privacy-first embedding calculations entirely in the browser using WASM.
+* **Memory Modal Dashboard**: Added a RAG Knowledge base management interface to query, inspect, and bulk-clear stored embeddings.
+* **Smart Indexing & Semantic Search**: New tools `index_current_page` (which segments page content with sliding-window overlaps) and `semantic_search_memory` allow the agent to look up, rank, and retrieve relevant local knowledge in real-time.
+
+#### 🎯 **Interactive Spatial Grid Overlay**
+* **Visual Element Badging**: Added the `toggle_spatial_grid` tool. It generates dynamic, high-contrast, numeric markers directly over all interactive page elements (inputs, links, buttons).
+* **Numeric Selector Control**: Streamlines agent execution! The agent can now reliably click or focus target elements by simply referring to their visual ID badge (e.g. clicking "12") instead of fragile CSS selectors.
+
+#### 🗂 **Advanced Tab Grouping & Controls**
+* **Tab Management Tools**: Introduced `group_tabs` (grouping tabs seamlessly with custom titles and colors) and `close_tabs` tools.
+* **Group Metadata Detection**: Upgraded the `list_tabs` tool to retrieve and output active tab group names and color tags for full system awareness.
+
+#### ✨ **UX Polish & Performance Enhancements**
+* **Visual Execution Log**: Live step displays now track and color-code tool success/error states, provide short execution result previews, and render screenshot thumbnails inline in the conversation view.
+* **Filesystem Search**: Added an instantaneous live search filter (`files-search`) in the VFS "Files" tab to find virtual files and subfolders on the fly.
+* **Trigger Integrations**: Supported prompt routing for scheduled background macros and Omnibox/Context Menu intent buffering—routing prompts straight into execution when the sidebar opens.
 
 ---
 
