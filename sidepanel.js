@@ -22,9 +22,9 @@ const PROVIDERS = {
   openai: {
     name: 'OpenAI', baseUrl: 'https://api.openai.com/v1/responses',
     models: [
+      { id: 'gpt-5.5', label: 'GPT-5.5' },
       { id: 'gpt-5.4', label: 'GPT-5.4' },
-      { id: 'gpt-5.4-pro', label: 'GPT-5.4 Pro' },
-      { id: 'gpt-5-family', label: 'GPT-5 Family' },
+      { id: 'gpt-5.4-mini', label: 'GPT-5.4 Mini' },
       { id: 'gpt-4o', label: 'GPT-4o' },
       { id: 'gpt-4o-mini', label: 'GPT-4o Mini' }
     ],
@@ -36,11 +36,11 @@ const PROVIDERS = {
     name: 'Google Gemini',
     baseUrl: 'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent',
     models: [
-      { id: 'gemini-3.1-pro', label: 'Gemini 3.1 Pro' },
-      { id: 'gemini-3.1-flash', label: 'Gemini 3.1 Flash' },
+      { id: 'gemini-3.1-pro-preview', label: 'Gemini 3.1 Pro' },
+      { id: 'gemini-3-flash-preview', label: 'Gemini 3.1 Flash' },
       { id: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro' },
       { id: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash' },
-      { id: 'gemini-2.0-flash', label: 'Gemini 2.0 Flash' }
+      { id: 'gemini-2.5-flash-lite', label: 'Gemini 2.5 Flash Lite' }
     ],
     format: 'gemini', requiresKey: true,
     keyPlaceholder: 'AIza…',
@@ -51,22 +51,25 @@ const PROVIDERS = {
     models: [
       { id: 'llama-3.3-70b-versatile', label: 'Llama 3.3 70B' },
       { id: 'llama-3.1-8b-instant', label: 'Llama 3.1 8B Instant' },
-      { id: 'mixtral-8x7b-32768', label: 'Mixtral 8x7B' },
-      { id: 'gemma2-9b-it', label: 'Gemma 2 9B' }
+      { id: 'groq/compound', label: 'Groq Compound' },
+      { id: 'openai/gpt-oss-20b', label: 'GPT OSS 20B' }
     ],
     format: 'openai', requiresKey: true,
     keyPlaceholder: 'gsk_…',
     keyHint: 'Get your key at console.groq.com/keys'
   },
   ollama: {
-    name: 'Ollama (Local)', baseUrl: 'http://localhost:11434/v1/chat/completions',
+    name: 'Ollama (Local)', baseUrl: 'http://localhost:11434/api/chat',
     models: [
-      { id: 'llama3.2', label: 'Llama 3.2' },
-      { id: 'llama3.1', label: 'Llama 3.1' },
-      { id: 'mistral', label: 'Mistral 7B' },
-      { id: 'codellama', label: 'Code Llama' },
-      { id: 'qwen2.5', label: 'Qwen 2.5' },
-      { id: 'deepseek-r1', label: 'DeepSeek R1' }
+      { id: 'quen3-coder', label: 'Qwen 3 Coder' },
+      { id: 'llama4', label: 'Llama 4' },
+      { id: 'deepseek-v4-pro:cloud', label: 'DeepSeek-v4 Pro' },
+      { id: 'gemma4', label: 'Gemma 4' },
+      { id: 'krith/qwen2.5-coder-32b-instruct:IQ3_M', label: 'Qwen 2.5 Coder' },
+      { id: 'llama3.3', label: 'Llama 3.3' }
+      { id: 'glm-5.1:cloud', label: 'GLM 5.1' }
+      { id: 'gemma3', label: 'Gemma 3' }
+      { id: 'phi4', label: 'PHI 4' }
     ],
     format: 'openai', requiresKey: false,
     keyPlaceholder: '(not required)',
