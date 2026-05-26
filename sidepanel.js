@@ -20,15 +20,15 @@ const PROVIDERS = {
     keyHint: 'Get your key at console.anthropic.com'
   },
   openai: {
-    name: 'OpenAI', baseUrl: 'https://api.openai.com/v1/responses',
+    name: 'OpenAI', baseUrl: 'https://api.openai.com/v1/chat/completions',
     models: [
-      { id: 'gpt-5.5', label: 'GPT-5.5' },
-      { id: 'gpt-5.4', label: 'GPT-5.4' },
-      { id: 'gpt-5.4-mini', label: 'GPT-5.4 Mini' },
       { id: 'gpt-4o', label: 'GPT-4o' },
-      { id: 'gpt-4o-mini', label: 'GPT-4o Mini' }
+      { id: 'gpt-4o-mini', label: 'GPT-4o Mini' },
+      { id: 'gpt-4-turbo', label: 'GPT-4 Turbo' },
+      { id: 'gpt-4', label: 'GPT-4' },
+      { id: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo' }
     ],
-    format: 'openai-responses', requiresKey: true,
+    format: 'openai', requiresKey: true,
     keyPlaceholder: 'sk-…',
     keyHint: 'Get your key at platform.openai.com/api-keys'
   },
@@ -66,9 +66,9 @@ const PROVIDERS = {
       { id: 'deepseek-v4-pro:cloud', label: 'DeepSeek-v4 Pro' },
       { id: 'gemma4', label: 'Gemma 4' },
       { id: 'krith/qwen2.5-coder-32b-instruct:IQ3_M', label: 'Qwen 2.5 Coder' },
-      { id: 'llama3.3', label: 'Llama 3.3' }
-      { id: 'glm-5.1:cloud', label: 'GLM 5.1' }
-      { id: 'gemma3', label: 'Gemma 3' }
+      { id: 'llama3.3', label: 'Llama 3.3' },
+      { id: 'glm-5.1:cloud', label: 'GLM 5.1' },
+      { id: 'gemma3', label: 'Gemma 3' },
       { id: 'phi4', label: 'PHI 4' }
     ],
     format: 'openai', requiresKey: false,
