@@ -1,4 +1,4 @@
-﻿let state_macros = [];  // { id, name, description, prompt, created, schedule, lastRun }
+let state_macros = [];  // { id, name, description, prompt, created, schedule, lastRun }
 
 async function loadMacros() {
   const d = await chrome.storage.local.get('ob_macros');
@@ -14,7 +14,7 @@ async function saveMacro(name, description, prompt) {
   state_macros.unshift({ id, name, description, prompt, created: Date.now(), schedule: null, lastRun: null });
   await saveMacros();
   renderMacros();
-  toast(`Macro "${name}" saved âœ“`);
+  toast(`Macro "${name}" saved ✓`);
 }
 
 async function deleteMacro(id) {
@@ -49,7 +49,7 @@ async function scheduleMacro(id, intervalMinutes) {
   }
   await saveMacros();
   renderMacros();
-  toast(intervalMinutes ? `Scheduled every ${intervalMinutes}m âœ“` : 'Schedule removed');
+  toast(intervalMinutes ? `Scheduled every ${intervalMinutes}m ✓` : 'Schedule removed');
 }
 
 function renderMacros() {
@@ -70,14 +70,14 @@ function renderMacros() {
           <div class="macro-desc">${esc(m.description || m.prompt.substring(0, 60) + '...')}</div>
         </div>
         <div class="macro-actions">
-          <button class="macro-run-btn" data-id="${m.id}" title="Run now">â–¶</button>
-          <button class="macro-del-btn" data-id="${m.id}" title="Delete">âœ•</button>
+          <button class="macro-run-btn" data-id="${m.id}" title="Run now">▶</button>
+          <button class="macro-del-btn" data-id="${m.id}" title="Delete">✕</button>
         </div>
       </div>
       <div class="macro-meta">
         <span>Last run: ${ago}</span>
         <span>Schedule: <select class="macro-schedule-sel" data-id="${m.id}">
-          <option value="">manual${!m.schedule ? ' âœ“' : ''}</option>
+          <option value="">manual${!m.schedule ? ' ✓' : ''}</option>
           <option value="15"${m.schedule === 15 ? ' selected' : ''}>every 15m</option>
           <option value="30"${m.schedule === 30 ? ' selected' : ''}>every 30m</option>
           <option value="60"${m.schedule === 60 ? ' selected' : ''}>every 1h</option>
@@ -117,4 +117,4 @@ function newConv() {
   return c;
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════════════════════════════

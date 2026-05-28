@@ -1,4 +1,4 @@
-﻿function buildSys(page) {
+function buildSys(page) {
   const mem = Object.keys(state.memory).length
     ? '\n\nMemory (persisted across sessions):\n' +
     Object.entries(state.memory).map(([k, v]) => '  ' + k + ': ' + v).join('\n')
@@ -9,27 +9,27 @@
   const reasoning = state.settings.reasoningMode ? `
 
 ## Reasoning protocol (always follow this for complex tasks)
-1. UNDERSTAND â€” restate the goal in one sentence using 'think'
-2. PLAN â€” list every step needed, identify risks
-3. EXECUTE â€” carry out steps one at a time, verifying each
-4. VERIFY â€” When you receive a tool result with an automatic screenshot, you MUST analyze the new visual state to verify your action succeeded before taking your next action.
-5. ADAPT â€” if something fails, reason about alternatives
-6. FINISH â€” call 'finish' with a complete summary
+1. UNDERSTAND — restate the goal in one sentence using 'think'
+2. PLAN — list every step needed, identify risks
+3. EXECUTE — carry out steps one at a time, verifying each
+4. VERIFY — When you receive a tool result with an automatic screenshot, you MUST analyze the new visual state to verify your action succeeded before taking your next action.
+5. ADAPT — if something fails, reason about alternatives
+6. FINISH — call 'finish' with a complete summary
 
-Break complex tasks into sub-goals. Never guess page state â€” verify first.` : '';
+Break complex tasks into sub-goals. Never guess page state — verify first.` : '';
 
   const autoNote = state.settings.autoScreenshot
     ? '\nAuto-screenshot: a screenshot is captured 2.5s after each action and sent to you automatically. You must use this proactive screenshot to verify your actions.'
     : '';
 
-  const backupNote = state.backupActive ? '\n[Running on backup model â€” primary quota exceeded]' : '';
+  const backupNote = state.backupActive ? '\n[Running on backup model — primary quota exceeded]' : '';
 
-  return 'You are OpenBrowser v3.3, an expert AI browser automation agent.\nGitHub: https://github.com/Prof-MAN9/OpenBrowser' + backupNote + '\n\nCurrent page: ' + (page && page.url || 'none') + ' â€” "' + (page && page.title || '') + '"' + mem + custom + autoNote + reasoning + '\n\n## Core rules\n- Prefer visible text when clicking, not CSS selectors\n- Fill all form fields before submitting\n- If one approach fails, try an alternative\n- Always call finish when done\n- You can open tabs, navigate to URLs, and switch between multiple tabs to perform tasks. Use list_tabs to see all open tabs.\n- You control a REAL browser â€” actions have real effects';
+  return 'You are OpenBrowser v3.3, an expert AI browser automation agent.\nGitHub: https://github.com/Prof-MAN9/OpenBrowser' + backupNote + '\n\nCurrent page: ' + (page && page.url || 'none') + ' — "' + (page && page.title || '') + '"' + mem + custom + autoNote + reasoning + '\n\n## Core rules\n- Prefer visible text when clicking, not CSS selectors\n- Fill all form fields before submitting\n- If one approach fails, try an alternative\n- Always call finish when done\n- You can open tabs, navigate to URLs, and switch between multiple tabs to perform tasks. Use list_tabs to see all open tabs.\n- You control a REAL browser — actions have real effects';
 }
 
 
-// â”€â”€ AGENT LOOP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// â”€â”€ AUTO-SCREENSHOT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── AGENT LOOP ─────────────────────────────────────────────────────
+// ── AUTO-SCREENSHOT ─────────────────────────────────────────────────────────
 const AUTO_SCREENSHOT_AFTER = new Set([
   'navigate', 'click', 'type', 'scroll', 'select_option',
   'run_javascript', 'open_tab', 'switch_tab'
@@ -52,7 +52,7 @@ async function runAgent(userMessage) {
 
   const pc = PROVIDERS[state.settings.provider];
   if (pc?.requiresKey && !state.settings.apiKey) {
-    appendAssist('âš ï¸ No API key configured. Go to **Settings** to add your key.');
+    appendAssist('⚠️ No API key configured. Go to **Settings** to add your key.');
     switchView('settings');
     return;
   }
@@ -66,7 +66,7 @@ async function runAgent(userMessage) {
   state.abort = new AbortController();
   el('send-btn').style.display = 'none';
   el('stop-btn').style.display = 'flex';
-  setStatus('loading', 'Runningâ€¦');
+  setStatus('loading', 'Running…');
   if (state.settings.glowEffect) setGlow(true);
 
   let conv = getConv() || newConv();
@@ -74,7 +74,7 @@ async function runAgent(userMessage) {
   let isNewConv = false;
   if (conv.messages.filter(m => m.role === 'user').length <= 1) {
     isNewConv = true;
-    conv.title = userMessage.substring(0, 50) + (userMessage.length > 50 ? 'â€¦' : '');
+    conv.title = userMessage.substring(0, 50) + (userMessage.length > 50 ? '…' : '');
   }
   conv.updatedAt = Date.now();
 
@@ -118,7 +118,7 @@ async function runAgent(userMessage) {
         if (streamBubble) streamBubble.finish('');
         removeEl(tid);
         if (err.name === 'AbortError') break;
-        addStep('error', 'âœ—', 'API Error', err.message.substring(0, 300));
+        addStep('error', '✗', 'API Error', err.message.substring(0, 300));
         break;
       }
       removeEl(tid); // Remove typing indicator if no tokens came (e.g. tool-only response)
@@ -146,14 +146,14 @@ async function runAgent(userMessage) {
           conv.messages.push({ role: 'assistant', content: resp.text });
           messages.push({ role: 'assistant', content: resp.text });
         } else if (streamBubble) {
-          // No text alongside tools â€” remove the empty streaming bubble
+          // No text alongside tools — remove the empty streaming bubble
           streamBubble.el.remove();
         }
 
         for (const tool of resp.tools) {
           if (state.abort.signal.aborted) break;
 
-          const icon = TOOL_ICONS[tool.name] || 'ðŸ”§';
+          const icon = TOOL_ICONS[tool.name] || '🔧';
           const stepId = addStep('loading', icon, tool.name, JSON.stringify(tool.input).substring(0, 120));
 
           // Record tool_use in message history
@@ -163,7 +163,7 @@ async function runAgent(userMessage) {
 
           const result = await executeTool(tool.name, tool.input);
 
-          // â”€â”€ Auto-screenshot 2.5 s after action â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+          // ── Auto-screenshot 2.5 s after action ──────────────────
           // Happens in background while we process the tool result
           let autoShotData = null;
           const autoShotPromise = maybeAutoScreenshot(tool.name);
@@ -179,7 +179,7 @@ async function runAgent(userMessage) {
             autoShotPromise.catch(() => { });  // suppress any errors
           }
 
-          // Record tool_result â€” include auto-screenshot if we got one
+          // Record tool_result — include auto-screenshot if we got one
           let trContent;
           if (result.screenshot) {
             trContent = [
@@ -273,20 +273,20 @@ async function generateConversationTitle(convId, firstMessage) {
 }
 
 const TOOL_ICONS = {
-  navigate: 'ðŸŒ', click: 'ðŸ‘†', type: 'âŒ¨ï¸', scroll: 'â†•ï¸', screenshot: 'ðŸ“¸',
-  get_page_content: 'ðŸ“„', scrape_page: 'ðŸ•·ï¸', run_javascript: 'âš¡',
-  open_tab: 'ðŸ”—', switch_tab: 'ðŸ”„', list_tabs: 'ðŸ“‹', wait: 'â³',
-  extract_data: 'ðŸ“Š', download_csv: 'ðŸ’¾', select_option: 'â–¼',
-  think: 'ðŸ’­', reason: 'ðŸ§©', memorize: 'ðŸ§ ', recall: 'ðŸ’¡', finish: 'âœ…',
-  smart_fill_form: 'ðŸ“', scan_forms: 'ðŸ”', create_task_plan: 'ðŸ“‹',
-  update_task_step: 'âœ”ï¸', export_data: 'ðŸ“¤',
-  summarize_tabs: 'ðŸ“‘', cross_site_research: 'ðŸ”€', auto_highlight: 'ðŸŒŸ',
-  remove_highlights: 'ðŸš«', add_citation: 'ðŸ“Œ', show_citations: 'ðŸ“š', clear_citations: 'ðŸ—‘ï¸',
-  browse_intent: 'ðŸŽ¯', save_bookmark: 'ðŸ”–', show_bookmarks: 'ðŸ“‚',
-  write_file: 'ðŸ’¾', read_file: 'ðŸ“–', list_files: 'ðŸ“', delete_file: 'ðŸ—‘ï¸'
+  navigate: '🌐', click: '👆', type: '⌨️', scroll: '↕️', screenshot: '📸',
+  get_page_content: '📄', scrape_page: '🕷️', run_javascript: '⚡',
+  open_tab: '🔗', switch_tab: '🔄', list_tabs: '📋', wait: '⏳',
+  extract_data: '📊', download_csv: '💾', select_option: '▼',
+  think: '💭', reason: '🧩', memorize: '🧠', recall: '💡', finish: '✅',
+  smart_fill_form: '📝', scan_forms: '🔍', create_task_plan: '📋',
+  update_task_step: '✔️', export_data: '📤',
+  summarize_tabs: '📑', cross_site_research: '🔀', auto_highlight: '🌟',
+  remove_highlights: '🚫', add_citation: '📌', show_citations: '📚', clear_citations: '🗑️',
+  browse_intent: '🎯', save_bookmark: '🔖', show_bookmarks: '📂',
+  write_file: '💾', read_file: '📖', list_files: '📁', delete_file: '🗑️'
 };
 
-// â”€â”€ GLOW EFFECT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── GLOW EFFECT ─────────────────────────────────────────────────────
 function setGlow(on) {
   // Glow on the sidepanel overlay
   if (!state.settings.glowEffect) {
@@ -351,6 +351,6 @@ function setGlow(on) {
   });
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════════════════════════════
 // UI LAYER
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════════════════════════════

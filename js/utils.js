@@ -1,4 +1,4 @@
-﻿const uid = () => crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2);
+const uid = () => crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2);
 const wait = ms => new Promise(r => setTimeout(r, ms));
 
 function esc(s) {
@@ -11,7 +11,7 @@ function esc(s) {
     .replace(/'/g, '&#39;');
 }
 
-// â”€â”€ MERMAID DIAGRAM RENDERER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── MERMAID DIAGRAM RENDERER ─────────────────────────────────────────────
 let mermaidLoaded = false;
 let mermaidLoading = false;
 let mermaidQueue = [];
@@ -125,4 +125,4 @@ function csvFromJSON(raw) {
   }).join(',')).join('\n');
 }
 
-// â”€â”€ STORAGE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── STORAGE ────────────────────────────────────────────────────────

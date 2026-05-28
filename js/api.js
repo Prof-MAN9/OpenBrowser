@@ -1,25 +1,25 @@
-﻿// API LAYER â€” THREE FORMATS
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// API LAYER — THREE FORMATS
+// ══════════════════════════════════════════════════════════════════
 
-// â”€â”€ ANTHROPIC â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── ANTHROPIC ─────────────────────────────────────────────────────
 //
 // CRITICAL RULES for Anthropic JSON Schema:
 //  1. Tools with ZERO parameters: omit input_schema entirely
 //  2. 'number' stays 'number' (NOT integer)  
 //  3. 'array'  must include items: { type: 'string' }
 //  4. 'required' omitted when empty
-//  5. Screenshot/list_tabs/finish have no params â†’ NO input_schema
+//  5. Screenshot/list_tabs/finish have no params → NO input_schema
 //
 function buildAnthropicTools(tools) {
   return tools.map(t => {
     const entries = Object.entries(t.parameters);
 
-    // â”€â”€ Zero-parameter tools: no input_schema at all â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Zero-parameter tools: no input_schema at all ──────────────
     if (entries.length === 0) {
       return { name: t.name, description: t.description };
     }
 
-    // â”€â”€ Build valid JSON Schema properties â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Build valid JSON Schema properties ────────────────────────
     const properties = {};
     for (const [k, v] of entries) {
       const jsType = (v.type || 'string').toLowerCase();
@@ -55,7 +55,7 @@ function buildAnthropicTools(tools) {
       'question', 'attributes',
       // auto_highlight
       'max_highlights',
-      // add_citation (url is optional â€” defaults to current tab)
+      // add_citation (url is optional — defaults to current tab)
       'url',
     ]);
     const required = entries.map(([k]) => k).filter(k => !OPTIONAL.has(k));
@@ -73,7 +73,7 @@ function buildAnthropicMessages(messages) {
     if (m.role === 'system') continue;
 
     if (m.type === 'tool_result') {
-      // Strip image data â€” only text reaches Anthropic as a tool_result
+      // Strip image data — only text reaches Anthropic as a tool_result
       const text = typeof m.content === 'string'
         ? m.content
         : Array.isArray(m.content)
@@ -105,7 +105,7 @@ function buildAnthropicMessages(messages) {
   return merged;
 }
 
-// â”€â”€ OPENAI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── OPENAI ────────────────────────────────────────────────────────
 function buildOpenAITools(tools) {
   return tools.map(t => ({
     type: 'function',
@@ -158,7 +158,7 @@ function buildOpenAIMessages(messages, sys) {
   return out;
 }
 
-// â”€â”€ GEMINI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── GEMINI ────────────────────────────────────────────────────────
 function toGeminiType(t) {
   switch ((t || 'string').toLowerCase()) {
     case 'boolean': return 'BOOLEAN';
@@ -226,7 +226,7 @@ function generateXMLToolsSchema() {
   return `\n\n## Tools Available\nYou have access to the following tools. To use a tool, respond ONLY with the following exact format:\n<function=tool_name>{"arg_name": "arg_value"}</function>\n\n${toolsXML}`;
 }
 
-// â”€â”€ CALL AI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── CALL AI ───────────────────────────────────────────────────────
 // Build request body + headers for a given provider config + credentials
 async function buildProviderRequest(providerKey, modelId, apiKeyVal, baseUrlVal, accountIdVal, messages, sys) {
   const pc = PROVIDERS[providerKey];
@@ -254,7 +254,7 @@ async function buildProviderRequest(providerKey, modelId, apiKeyVal, baseUrlVal,
     };
 
   } else if (pc.format === 'openai-responses') {
-    // OpenAI Responses API (/v1/responses) â€” different shape from Chat Completions.
+    // OpenAI Responses API (/v1/responses) — different shape from Chat Completions.
     // Uses `input` instead of `messages`, `instructions` for system prompt,
     // and `max_output_tokens` instead of `max_tokens`.
     url = baseUrlVal || pc.baseUrl;
@@ -283,7 +283,7 @@ async function buildProviderRequest(providerKey, modelId, apiKeyVal, baseUrlVal,
     };
 
   } else {
-    // Generic OpenAI-compatible (Chat Completions) â€” covers openrouter, groq, ollama, cloudflare etc.
+    // Generic OpenAI-compatible (Chat Completions) — covers openrouter, groq, ollama, cloudflare etc.
     let finalTools = buildOpenAITools(TOOLS);
     let finalSysPrompt = sys;
     if (providerKey === 'ollama') {
@@ -333,8 +333,8 @@ function isQuotaError(status, text) {
   return false;
 }
 
-// â”€â”€ NATURAL LANGUAGE NAVIGATION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// Known site name â†’ canonical URL mapping
+// ── NATURAL LANGUAGE NAVIGATION ─────────────────────────────────────────
+// Known site name → canonical URL mapping
 const SITE_MAP = {
   'youtube': 'https://www.youtube.com', 'yt': 'https://www.youtube.com',
   'gmail': 'https://mail.google.com', 'mail': 'https://mail.google.com',
@@ -389,7 +389,7 @@ function resolveNavigationTarget(raw) {
   if (SITE_MAP[key]) return SITE_MAP[key];
   if (SITE_MAP[target]) return SITE_MAP[target];
 
-  // Partial match: "my gmail" â†’ gmail
+  // Partial match: "my gmail" → gmail
   for (const [k, v] of Object.entries(SITE_MAP)) {
     if (target.includes(k) || k.includes(target.replace(/\s+/g, ''))) return v;
   }
@@ -401,7 +401,7 @@ function resolveNavigationTarget(raw) {
   return 'https://www.google.com/search?q=' + encodeURIComponent(raw);
 }
 
-// â”€â”€ INTENT-BASED BROWSING â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── INTENT-BASED BROWSING ────────────────────────────────────────────────
 // Maps a user intent to the best starting URL using heuristics
 function resolveIntentToUrl(intent) {
   const lower = intent.toLowerCase();
@@ -438,7 +438,7 @@ function resolveIntentToUrl(intent) {
   return 'https://www.google.com/search?q=' + encodeURIComponent(intent);
 }
 
-// â”€â”€ SMART BOOKMARKS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── SMART BOOKMARKS ──────────────────────────────────────────────────────
 function autoTagBookmark(url, title, summary) {
   const text = (url + ' ' + title + ' ' + summary).toLowerCase();
   const tagRules = [
@@ -475,7 +475,7 @@ async function saveSmartBookmark({ url, title, summary, tags, folder }) {
       const newFolder = await chrome.bookmarks.create({ title: folder });
       folderId = newFolder.id;
     }
-    // Create the bookmark â€” append tags and summary to title
+    // Create the bookmark — append tags and summary to title
     const fullTitle = `${title}${tagList.length ? ' [' + tagList.join(', ') + ']' : ''}`;
     await chrome.bookmarks.create({ parentId: folderId, title: fullTitle, url });
     // Also store in local state for the panel
@@ -486,7 +486,7 @@ async function saveSmartBookmark({ url, title, summary, tags, folder }) {
     // Fallback: save only in session state
     if (!state.bookmarks) state.bookmarks = [];
     state.bookmarks.unshift({ url, title, summary, tags: tagList, savedAt: Date.now() });
-    return { ok: true, warn: 'bookmarks permission missing â€” saved in session only' };
+    return { ok: true, warn: 'bookmarks permission missing — saved in session only' };
   }
 }
 
@@ -512,11 +512,11 @@ async function loadSmartBookmarks(filter = '') {
   }
 }
 
-// â”€â”€ OLLAMA DISCOVERY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── OLLAMA DISCOVERY ─────────────────────────────────────────────────────
 async function discoverOllamaModels(baseUrl) {
   const root = (baseUrl || 'http://localhost:11434').replace(/\/v1\/.*$/, '').replace(/\/$/, '');
   try {
-    // 8s timeout â€” /api/tags is a lightweight call but can be slow if Ollama
+    // 8s timeout — /api/tags is a lightweight call but can be slow if Ollama
     // is first starting up or if the system is under load.
     const res = await fetch(`${root}/api/tags`, { signal: AbortSignal.timeout(8000) });
     // 403 = Ollama is running but rejected the chrome-extension:// origin.
@@ -557,7 +557,7 @@ async function checkOllamaToolSupport(baseUrl, modelId) {
   }
 }
 
-// â”€â”€ RATE LIMITER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── RATE LIMITER ─────────────────────────────────────────────────────────
 // Tracks API call timestamps. Enforces RPM / RPD limits (stops 5 before limit).
 function recordApiCall() {
   const now = Date.now();
@@ -601,7 +601,7 @@ function updateRateDisplay() {
   if (s.rpdLimit > 0) parts.push(`${rpd}/${s.rpdLimit} rpd`);
 
   if (parts.length) {
-    badge.textContent = parts.join(' Â· ');
+    badge.textContent = parts.join(' · ');
     badge.style.display = 'inline';
     // Warn if close to limit (within 10%)
     const rpmWarn = s.rpmLimit > 0 && rpm >= s.rpmLimit * 0.9;
@@ -615,10 +615,10 @@ function updateRateDisplay() {
 async function callAI(messages, sys, signal) {
   const s = state.settings;
 
-  // â”€â”€ Rate limit check (throws if within buffer of limit) â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Rate limit check (throws if within buffer of limit) ────────
   checkRateLimit();
 
-  // â”€â”€ Try primary model â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Try primary model ──────────────────────────────────────────
   if (!state.backupActive) {
     const req = await buildProviderRequest(s.provider, s.model, s.apiKey, s.baseUrl, s.accountId, messages, sys);
     const res = await fetch(req.url, { method: 'POST', headers: req.headers, body: JSON.stringify(req.body), signal });
@@ -632,10 +632,10 @@ async function callAI(messages, sys, signal) {
 
     const errText = await res.text().catch(() => '');
     // Ollama-specific: 403 means the server rejected the chrome-extension:// origin.
-    // This is a CORS configuration issue, not a quota error â€” don't try the backup model.
+    // This is a CORS configuration issue, not a quota error — don't try the backup model.
     if (res.status === 403 && s.provider === 'ollama') {
       throw new Error(
-        'Ollama blocked this request (HTTP 403 â€” CORS).\n\n' +
+        'Ollama blocked this request (HTTP 403 — CORS).\n\n' +
         'Ollama does not allow requests from browser extensions by default.\n\n' +
         'Fix: restart Ollama with the OLLAMA_ORIGINS environment variable:\n\n' +
         '  macOS/Linux:   OLLAMA_ORIGINS="chrome-extension://*" ollama serve\n' +
@@ -646,14 +646,14 @@ async function callAI(messages, sys, signal) {
     // If it's a quota/rate-limit error AND backup is configured, fall through
     if (isQuotaError(res.status, errText) && s.backupProvider && s.backupModel && s.backupApiKey) {
       state.backupActive = true;
-      addStep('error', 'âš ï¸', 'Primary quota hit', `Switching to backup: ${s.backupModel}`);
-      toast('Primary model quota exceeded â€” switching to backup model');
+      addStep('error', '⚠️', 'Primary quota hit', `Switching to backup: ${s.backupModel}`);
+      toast('Primary model quota exceeded — switching to backup model');
     } else {
       throw new Error(`API ${res.status}: ${errText.substring(0, 400)}`);
     }
   }
 
-  // â”€â”€ Try backup model â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Try backup model ───────────────────────────────────────────
   const req = await buildProviderRequest(s.backupProvider, s.backupModel, s.backupApiKey, '', '', messages, sys);
   const res = await fetch(req.url, { method: 'POST', headers: req.headers, body: JSON.stringify(req.body), signal });
   if (!res.ok) {
@@ -664,7 +664,7 @@ async function callAI(messages, sys, signal) {
   return parseAIResponse(await res.json(), req.format);
 }
 
-// â”€â”€ PARSE RESPONSE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── PARSE RESPONSE ────────────────────────────────────────────────
 // Safety net: detect XML <function_calls> fallback and re-parse it.
 // This happens if the model falls back to its old format.
 // Detect ALL known Anthropic XML / text-format tool-call fallbacks.
@@ -681,9 +681,9 @@ function detectXMLToolCalls(text) {
   // Helper: safe JSON parse
   const tryParse = (s) => { try { return JSON.parse(s.trim()); } catch { return null; } };
 
-  // â”€â”€ Format B (current): <function=toolName{...}> â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Format B (current): <function=toolName{...}> ─────────────────
   // e.g. <function=navigate{"url": "https://youtube.com"}>
-  // IMPORTANT: tool name is ONLY word chars â€” the { starts the JSON immediately
+  // IMPORTANT: tool name is ONLY word chars — the { starts the JSON immediately
   const fmtB = /<function=([a-zA-Z_]\w*)(\{[\s\S]*?\})(?:>|$)/g;
   let m;
   while ((m = fmtB.exec(text)) !== null) {
@@ -694,7 +694,7 @@ function detectXMLToolCalls(text) {
   }
   if (calls.length) return calls;
 
-  // â”€â”€ Format B2: <function=toolName> (no json, just the name) â”€â”€â”€â”€â”€â”€
+  // ── Format B2: <function=toolName> (no json, just the name) ──────
   const fmtB2 = /<function=([a-zA-Z_]\w*)>/g;
   while ((m = fmtB2.exec(text)) !== null) {
     const name = m[1];
@@ -703,7 +703,7 @@ function detectXMLToolCalls(text) {
   }
   if (calls.length) return calls;
 
-  // â”€â”€ Format C: <function=toolName>{"arg": "val"}</function> â”€â”€â”€â”€â”€â”€â”€
+  // ── Format C: <function=toolName>{"arg": "val"}</function> ───────
   const fmtC = /<function=([a-zA-Z_]\w*)>([\s\S]*?)<\/function>/g;
   while ((m = fmtC.exec(text)) !== null) {
     const name = m[1];
@@ -713,7 +713,7 @@ function detectXMLToolCalls(text) {
   }
   if (calls.length) return calls;
 
-  // â”€â”€ Format A (old): <function_calls><invoke name="X">...</invoke> â”€
+  // ── Format A (old): <function_calls><invoke name="X">...</invoke> ─
   if (text.includes('<function_calls>') || text.includes('<invoke')) {
     const invokeRE = /<invoke\s+name="([^"]+)">([\s\S]*?)<\/invoke>/g;
     while ((m = invokeRE.exec(text)) !== null) {
@@ -728,7 +728,7 @@ function detectXMLToolCalls(text) {
   }
   if (calls.length) return calls;
 
-  // â”€â”€ Format D: [toolName({"arg": "val"})] â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Format D: [toolName({"arg": "val"})] ─────────────────────────
   const fmtD = /\[([a-zA-Z_]\w*)\((\{[\s\S]*?\})\)\]/g;
   while ((m = fmtD.exec(text)) !== null) {
     const name = m[1];
@@ -738,7 +738,7 @@ function detectXMLToolCalls(text) {
   }
   if (calls.length) return calls;
 
-  // â”€â”€ Format E: bare JSON block after tool name (model gets confused) â”€
+  // ── Format E: bare JSON block after tool name (model gets confused) ─
   // e.g.  navigate\n{"url": "https://..."}\n
   const fmtE = /^([a-zA-Z_]\w*)\s*\n(\{[\s\S]*?\})/m;
   const mE = fmtE.exec(text);
@@ -795,11 +795,11 @@ function parseAIResponse(data, format) {
   return { type: 'text', text };
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════════════════════════════
 // TOOL EXECUTOR
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════════════════════════════
 async function injectAndRun(tabId, func, args = []) {
-  // Dynamic injection â€” no static content_scripts needed
+  // Dynamic injection — no static content_scripts needed
   const results = await chrome.scripting.executeScript({
     target: { tabId }, func, args, world: 'MAIN'
   });

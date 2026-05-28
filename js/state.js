@@ -1,4 +1,4 @@
-﻿const state = {
+const state = {
   view: 'chat',
   conversations: [],
   convId: null,
@@ -10,7 +10,7 @@
     backupProvider: '', backupModel: '', backupApiKey: '',
     // Agent behaviour
     maxSteps: 20, instructions: '',
-    // Rate limiting â€” prevent runaway API usage (0 = disabled, stops 5 before limit)
+    // Rate limiting — prevent runaway API usage (0 = disabled, stops 5 before limit)
     rpmLimit: 0,   // requests per minute (0 = unlimited)
     rpdLimit: 0,   // requests per day    (0 = unlimited)
     // Quality-of-life toggles
@@ -34,7 +34,7 @@
   memory: {},            // persistent key-value memory store
   backupActive: false,   // true when currently using backup model
   taskPlan: null,        // current visual task plan (create_task_plan tool)
-  // â”€â”€ Rate limit tracking â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Rate limit tracking ───────────────────────────────────────────
   rateLog: [],           // timestamps of recent API calls (last 24h kept)
   citations: [],         // collected citations [{ url, title, author, date, note, format }]
   bookmarks: [],         // session smart bookmarks
@@ -42,4 +42,4 @@
   ragReady: false
 };
 
-// â”€â”€ UTILS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── UTILS ──────────────────────────────────────────────────────────

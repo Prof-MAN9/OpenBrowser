@@ -1,10 +1,10 @@
-﻿// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// OpenBrowser v3.3 â€” Side Panel Application
+// ═══════════════════════════════════════════════════════════════════
+// OpenBrowser v3.3 — Side Panel Application
 // https://github.com/Prof-MAN9/OpenBrowser
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════════════════════════════════
 'use strict';
 
-// â”€â”€ PROVIDERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── PROVIDERS ──────────────────────────────────────────────────────
 const PROVIDERS = {
   anthropic: {
     name: 'Anthropic', baseUrl: 'https://api.anthropic.com/v1/messages',
@@ -16,7 +16,7 @@ const PROVIDERS = {
       { id: 'claude-3-haiku-20240307', label: 'Claude 3 Haiku' }
     ],
     format: 'anthropic', requiresKey: true,
-    keyPlaceholder: 'sk-ant-api03-â€¦',
+    keyPlaceholder: 'sk-ant-api03-…',
     keyHint: 'Get your key at console.anthropic.com'
   },
   openai: {
@@ -29,7 +29,7 @@ const PROVIDERS = {
       { id: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo' }
     ],
     format: 'openai', requiresKey: true,
-    keyPlaceholder: 'sk-â€¦',
+    keyPlaceholder: 'sk-…',
     keyHint: 'Get your key at platform.openai.com/api-keys'
   },
   gemini: {
@@ -43,7 +43,7 @@ const PROVIDERS = {
       { id: 'gemini-2.5-flash-lite', label: 'Gemini 2.5 Flash Lite' }
     ],
     format: 'gemini', requiresKey: true,
-    keyPlaceholder: 'AIzaâ€¦',
+    keyPlaceholder: 'AIza…',
     keyHint: 'Get your key at aistudio.google.com/app/apikey'
   },
   groq: {
@@ -55,7 +55,7 @@ const PROVIDERS = {
       { id: 'openai/gpt-oss-20b', label: 'GPT OSS 20B' }
     ],
     format: 'openai', requiresKey: true,
-    keyPlaceholder: 'gsk_â€¦',
+    keyPlaceholder: 'gsk_…',
     keyHint: 'Get your key at console.groq.com/keys'
   },
   ollama: {
@@ -73,7 +73,7 @@ const PROVIDERS = {
     ],
     format: 'openai', requiresKey: false,
     keyPlaceholder: '(not required)',
-    keyHint: 'Ollama runs locally â€” no API key needed'
+    keyHint: 'Ollama runs locally — no API key needed'
   },
   openrouter: {
     name: 'OpenRouter', baseUrl: 'https://openrouter.ai/api/v1/chat/completions',
@@ -86,7 +86,7 @@ const PROVIDERS = {
       { id: 'deepseek/deepseek-chat', label: 'DeepSeek Chat' }
     ],
     format: 'openai', requiresKey: true,
-    keyPlaceholder: 'sk-or-v1-â€¦',
+    keyPlaceholder: 'sk-or-v1-…',
     keyHint: 'Get your key at openrouter.ai/keys'
   },
   cloudflare: {
@@ -109,7 +109,7 @@ const PROVIDERS = {
       { id: 'mistralai/Mistral-7B-Instruct-v0.3', label: 'Mistral 7B' }
     ],
     format: 'openai', requiresKey: true,
-    keyPlaceholder: 'hf_â€¦',
+    keyPlaceholder: 'hf_…',
     keyHint: 'Get your token at huggingface.co/settings/tokens'
   },
   minimax: {
@@ -130,7 +130,7 @@ const PROVIDERS = {
       { id: 'moonshot-v1-8k', label: 'Moonshot 8K' }
     ],
     format: 'openai', requiresKey: true,
-    keyPlaceholder: 'sk-â€¦',
+    keyPlaceholder: 'sk-…',
     keyHint: 'Get your key at platform.moonshot.cn'
   },
   qwen: {
@@ -143,7 +143,7 @@ const PROVIDERS = {
       { id: 'qwen2.5-72b-instruct', label: 'Qwen 2.5 72B' }
     ],
     format: 'openai', requiresKey: true,
-    keyPlaceholder: 'sk-â€¦',
+    keyPlaceholder: 'sk-…',
     keyHint: 'Get your key at dashscope.aliyuncs.com'
   },
   custom: {
@@ -155,7 +155,7 @@ const PROVIDERS = {
   }
 };
 
-// â”€â”€ TOOLS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── TOOLS ──────────────────────────────────────────────────────────
 // RULE: tools with zero parameters must have NO input_schema at all.
 // RULE: 'number' stays 'number', never 'integer'.
 // RULE: 'array' must have items: { type: 'string' }.
@@ -334,7 +334,7 @@ const TOOLS = [
   },
   {
     name: 'smart_fill_form',
-    description: 'Intelligently fill form fields on the current page using semantic matching. Understands context: "first name", "given name", "prÃ©nom" all map correctly. Handles checkboxes, selects, radios, and textareas too.',
+    description: 'Intelligently fill form fields on the current page using semantic matching. Understands context: "first name", "given name", "prénom" all map correctly. Handles checkboxes, selects, radios, and textareas too.',
     parameters: {
       fields: {
         type: 'string',
@@ -374,13 +374,13 @@ const TOOLS = [
       format: { type: 'string', description: '"csv" or "json" (default csv)' }
     }
   },
-  // â”€â”€ NEW v3.2.3 TOOLS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── NEW v3.2.3 TOOLS ─────────────────────────────────────────────
   {
     name: 'summarize_tabs',
     description: 'Summarize all open browser tabs (or a specific subset) and return a structured digest. Great for "catch me up on all my open research" requests.',
     parameters: {
       tab_ids: { type: 'string', description: 'Optional JSON array of specific tab IDs to summarize (from list_tabs). Leave empty to summarize all tabs.' },
-      focus: { type: 'string', description: 'Optional focus topic â€” e.g. "pricing" or "technical specs". Guides what to extract from each page.' }
+      focus: { type: 'string', description: 'Optional focus topic — e.g. "pricing" or "technical specs". Guides what to extract from each page.' }
     }
   },
   {
@@ -426,7 +426,7 @@ const TOOLS = [
     description: 'Remove all saved citations.',
     parameters: {}
   },
-  // â”€â”€ VIRTUAL FILESYSTEM â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── VIRTUAL FILESYSTEM ───────────────────────────────────────────
   {
     name: 'write_file',
     description: 'Write content to a file in the virtual filesystem. Creates directories automatically. Use for saving code, data, notes, or any generated content.',
@@ -465,4 +465,4 @@ const TOOLS = [
   }
 ];
 
-// â”€â”€ STATE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── STATE ──────────────────────────────────────────────────────────

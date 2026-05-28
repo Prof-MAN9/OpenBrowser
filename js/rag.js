@@ -1,4 +1,4 @@
-﻿const RAG = {
+const RAG = {
   db: null,
   _dbPromise: null,
   async initDB() {
@@ -142,7 +142,7 @@ async function renderFileTree() {
   const files = await VFS.list().catch(() => []);
 
   if (!files.length) {
-    container.innerHTML = '<div class="file-empty">No files yet.<br><small>Ask the AI to create files â€” e.g.<br>"Write a Python script to parse CSV files"</small></div>';
+    container.innerHTML = '<div class="file-empty">No files yet.<br><small>Ask the AI to create files — e.g.<br>"Write a Python script to parse CSV files"</small></div>';
     return;
   }
 
@@ -157,11 +157,11 @@ async function renderFileTree() {
 
   container.innerHTML = Object.entries(tree).map(([dir, items]) => `
     <div class="file-group">
-      ${dir !== '/' ? `<div class="file-dir">ðŸ“ ${esc(dir)}</div>` : ''}
+      ${dir !== '/' ? `<div class="file-dir">📁 ${esc(dir)}</div>` : ''}
       ${items.map(f => {
     const name = f.path.split('/').pop();
     const ext = name.split('.').pop()?.toLowerCase() || '';
-    const icon = { js: 'ðŸŸ¨', ts: 'ðŸ”·', py: 'ðŸ', css: 'ðŸŽ¨', html: 'ðŸŒ', json: 'ðŸ“‹', md: 'ðŸ“', txt: 'ðŸ“„', csv: 'ðŸ“Š', sh: 'âš™ï¸' }[ext] || 'ðŸ“„';
+    const icon = { js: '🟨', ts: '🔷', py: '🐍', css: '🎨', html: '🌐', json: '📋', md: '📝', txt: '📄', csv: '📊', sh: '⚙️' }[ext] || '📄';
     const size = new Blob([f.content || '']).size;
     const sizeStr = size > 1024 ? (size / 1024).toFixed(1) + 'KB' : size + 'B';
     return `<div class="file-row" data-path="${esc(f.path)}">
@@ -169,9 +169,9 @@ async function renderFileTree() {
           <span class="file-name">${esc(name)}</span>
           <span class="file-size">${sizeStr}</span>
           <div class="file-actions">
-            <button class="file-btn file-view-btn" data-path="${esc(f.path)}" title="View">ðŸ‘</button>
-            <button class="file-btn file-dl-btn" data-path="${esc(f.path)}" title="Download">â¬‡</button>
-            <button class="file-btn file-del-btn" data-path="${esc(f.path)}" title="Delete">âœ•</button>
+            <button class="file-btn file-view-btn" data-path="${esc(f.path)}" title="View">👁</button>
+            <button class="file-btn file-dl-btn" data-path="${esc(f.path)}" title="Download">⬇</button>
+            <button class="file-btn file-del-btn" data-path="${esc(f.path)}" title="Delete">✕</button>
           </div>
         </div>`;
   }).join('')}
@@ -219,10 +219,10 @@ function showFileViewer(path, content) {
     <div class="modal-box file-viewer-box">
       <div class="modal-header">
         <div class="modal-title-row">
-          <span class="modal-title">ðŸ“„ ${esc(name)}</span>
+          <span class="modal-title">📄 ${esc(name)}</span>
           <span class="modal-path">${esc(path)}</span>
         </div>
-        <button class="modal-close-btn" id="fv-close">âœ•</button>
+        <button class="modal-close-btn" id="fv-close">✕</button>
       </div>
       <div class="file-content-wrap">
         <div class="file-editor-container">
@@ -254,7 +254,7 @@ function showFileViewer(path, content) {
   document.getElementById('fv-save').addEventListener('click', async () => {
     const newContent = textarea.value;
     await VFS.write(path, newContent);
-    toast('File saved âœ“');
+    toast('File saved ✓');
     renderFileTree();
   });
 
@@ -263,7 +263,7 @@ function showFileViewer(path, content) {
   modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
 }
 
-// â”€â”€ PROMPT TEMPLATES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── PROMPT TEMPLATES ─────────────────────────────────────────────────────
 function renderPromptTemplates() {
   const list = el('template-list');
   if (!list) return;
@@ -272,11 +272,11 @@ function renderPromptTemplates() {
     <div class="template-row" data-idx="${i}">
       <div class="template-info">
         <div class="template-name">${esc(t.name)}</div>
-        <div class="template-preview">${esc(t.prompt.substring(0, 60))}â€¦</div>
+        <div class="template-preview">${esc(t.prompt.substring(0, 60))}…</div>
       </div>
       <div class="template-actions">
-        <button class="tmpl-use-btn" data-idx="${i}" title="Use this template">â–¶</button>
-        <button class="tmpl-del-btn" data-idx="${i}" title="Delete">âœ•</button>
+        <button class="tmpl-use-btn" data-idx="${i}" title="Use this template">▶</button>
+        <button class="tmpl-del-btn" data-idx="${i}" title="Delete">✕</button>
       </div>
     </div>`).join('') +
     `<button class="tmpl-add-btn" id="tmpl-add">+ Add Template</button>`;
@@ -324,7 +324,7 @@ function closeModal(id) {
   if (m) m.style.display = 'none';
 }
 
-// â”€â”€ KEYBOARD SHORTCUTS OVERLAY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── KEYBOARD SHORTCUTS OVERLAY ────────────────────────────────────────────
 // Shown on Ctrl+? (or ? when input not focused)
 const SHORTCUTS = [
   { group: 'Panel', keys: 'Ctrl+Shift+Y', desc: 'Toggle side panel open/closed' },
@@ -345,4 +345,4 @@ const SHORTCUTS = [
 
 
 
-// â”€â”€ MACROS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── MACROS ───────────────────────────────────────────────────────────────

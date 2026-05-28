@@ -1,11 +1,11 @@
-﻿async function boot() {
+async function boot() {
   await load();
   updateBadge();
   checkBanner();
   if (!state.convId || !state.conversations.length) newConv();
   renderConv(state.convId);
 
-  // â”€â”€ All event listeners â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── All event listeners ────────────────────────────────────────
   document.querySelectorAll('.nav-btn').forEach(b =>
     b.addEventListener('click', () => switchView(b.dataset.view))
   );
@@ -20,7 +20,7 @@
     el('send-btn').style.display = 'flex';
     el('stop-btn').style.display = 'none';
     setStatus('idle', 'Stopped');
-    appendAssist('â¹ Stopped.');
+    appendAssist('⏹ Stopped.');
   });
   el('chat-input').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } });
   el('chat-input').addEventListener('input', autoH);
@@ -61,7 +61,7 @@
     applyTheme(s.theme, s.accentColor);
     await saveSettings();
     updateBadge(); checkBanner();
-    toast('Settings saved âœ“');
+    toast('Settings saved ✓');
     switchView('chat');
   });
   el('btn-clear-history').addEventListener('click', async () => {
@@ -97,12 +97,12 @@
     }
   });
 
-  // â”€â”€ Listen for messages from background (e.g. scheduled macros, toggle) â”€â”€
+  // ── Listen for messages from background (e.g. scheduled macros, toggle) ──
   chrome.runtime.onMessage.addListener((msg) => {
     if (msg.type === 'run-macro-prompt' && msg.prompt) {
-      if (state.running) { toast(`Macro "${msg.macroName}" skipped â€” agent already running.`); return; }
+      if (state.running) { toast(`Macro "${msg.macroName}" skipped — agent already running.`); return; }
       switchView('chat');
-      toast(`â–¶ Running scheduled macro: "${msg.macroName}"`);
+      toast(`▶ Running scheduled macro: "${msg.macroName}"`);
       runAgent(msg.prompt).catch(console.error);
     }
     if (msg.type === 'close-sidepanel') {
@@ -123,7 +123,7 @@
     toast('Memory cleared');
   });
 
-  // â”€â”€ Macros tab â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Macros tab ───────────────────────────────────────────────────────
   await loadMacros();
   renderMacros();
 
@@ -138,7 +138,7 @@
     saveMacro(name.trim(), desc.trim(), lastPrompt);
   });
 
-  // â”€â”€ Quick-action toolbar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Quick-action toolbar ─────────────────────────────────────────────
   el('qa-screenshot')?.addEventListener('click', async () => {
     if (state.running) return;
     switchView('chat');
@@ -158,7 +158,7 @@
   });
   el('qa-export')?.addEventListener('click', () => exportConversation());
 
-  // â”€â”€ Memory modal: Tabs and Clear â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Memory modal: Tabs and Clear ──────────────────────────────────
   document.querySelectorAll('#memory-modal .modal-tab').forEach(tab => {
     tab.addEventListener('click', () => {
       const target = tab.dataset.tab;
@@ -175,7 +175,7 @@
     toast('Knowledge base cleared');
   });
 
-  // â”€â”€ Rate limit presets â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Rate limit presets ───────────────────────────────────────────────
   document.querySelectorAll('.rate-preset-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       el('settings-rpm').value = btn.dataset.rpm;
@@ -183,22 +183,22 @@
     });
   });
 
-  // â”€â”€ Citation badge in header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Citation badge in header ─────────────────────────────────────────
   el('btn-show-citations')?.addEventListener('click', () => {
     if (!state.citations.length) { toast('No citations yet. Browse and use add_citation.'); return; }
     renderCitationPanel();
   });
 
-  // â”€â”€ Initialize rate display â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Initialize rate display ──────────────────────────────────────────
   updateRateDisplay();
 
-  // â”€â”€ Apply saved theme â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Apply saved theme ────────────────────────────────────────────────
   applyTheme(state.settings.theme || 'dark', state.settings.accentColor);
 
-  // â”€â”€ Tooltip system â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Tooltip system ───────────────────────────────────────────────────
   initTooltips();
 
-  // â”€â”€ Modal close buttons â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Modal close buttons ──────────────────────────────────────────────
   document.querySelectorAll('[data-close]').forEach(btn => {
     btn.addEventListener('click', () => closeModal(btn.dataset.close));
   });
@@ -206,7 +206,7 @@
     overlay.addEventListener('click', e => { if (e.target === overlay) overlay.style.display = 'none'; });
   });
 
-  // â”€â”€ Memory dashboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Memory dashboard ─────────────────────────────────────────────────
   el('btn-open-memory')?.addEventListener('click', () => openModal('memory-modal'));
   el('btn-add-memory')?.addEventListener('click', async () => {
     const k = prompt('Memory key:'); if (!k?.trim()) return;
@@ -223,10 +223,10 @@
     toast('All memories cleared');
   });
 
-  // â”€â”€ Prompt templates â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Prompt templates ─────────────────────────────────────────────────
   el('btn-open-templates')?.addEventListener('click', () => openModal('templates-modal'));
 
-  // â”€â”€ Keyboard shortcuts overlay â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Keyboard shortcuts overlay ───────────────────────────────────────
   function buildShortcutsPanel() {
     const body = el('shortcuts-body');
     if (!body || body.children.length) return;
@@ -267,7 +267,7 @@
     }
   });
 
-  // â”€â”€ Theme switcher in settings â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Theme switcher in settings ────────────────────────────────────────
   document.querySelectorAll('.theme-btn').forEach(btn => {
     if (btn.dataset.theme === (state.settings.theme || 'dark')) btn.classList.add('active');
     btn.addEventListener('click', () => {
@@ -295,7 +295,7 @@
     if (el('settings-accent')) el('settings-accent').value = state.settings.accentColor || '#00ff88';
   }
 
-  // â”€â”€ History search â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── History search ────────────────────────────────────────────────────
   el('history-search')?.addEventListener('input', e => {
     const q = e.target.value.toLowerCase().trim();
     document.querySelectorAll('#history-list .history-item').forEach(item => {
@@ -304,7 +304,7 @@
     });
   });
 
-  // â”€â”€ Files view wiring â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Files view wiring ─────────────────────────────────────────────────
   el('btn-refresh-files')?.addEventListener('click', renderFileTree);
   el('btn-clear-files')?.addEventListener('click', async () => {
     if (!confirm('Delete ALL files in the virtual filesystem?')) return;
@@ -344,7 +344,7 @@
     }
   });
 
-  // â”€â”€ Page change detector â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Page change detector ─────────────────────────────────────────────
   const PAGE_SUGGESTIONS = {
     youtube: ['Summarize this video', 'Find the key points', 'Extract comments'],
     amazon: ['Find the best price', 'Compare product specs', 'Check reviews summary'],
@@ -363,7 +363,7 @@
       const suggestions = PAGE_SUGGESTIONS[category];
 
       const banner = el('page-change-banner');
-      el('pcb-title').textContent = `Navigated: ${title.substring(0, 50)}${title.length > 50 ? 'â€¦' : ''}`;
+      el('pcb-title').textContent = `Navigated: ${title.substring(0, 50)}${title.length > 50 ? '…' : ''}`;
       el('pcb-suggestions').innerHTML = suggestions.map(s =>
         `<button class="pcb-sug-btn">${esc(s)}</button>`
       ).join('');
@@ -392,10 +392,10 @@
   });
   el('pcb-close')?.addEventListener('click', () => { el('page-change-banner').style.display = 'none'; });
 
-  // â”€â”€ VFS init & Files tab â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── VFS init & Files tab ─────────────────────────────────────────────
   VFS.init().catch(console.warn);
 
-  // â”€â”€ Check for pending prompts (Omnibox / Context Menu) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Check for pending prompts (Omnibox / Context Menu) ────────────────
   const PENDING_OMNIBOX = { message: 'pendingOmniboxMessage', messageId: 'pendingOmniboxMessageId' };
   chrome.storage.local.get([PENDING_OMNIBOX.message, PENDING_OMNIBOX.messageId]).then(res => {
     const prompt = res[PENDING_OMNIBOX.message];
@@ -406,21 +406,21 @@
     }
   });
 
-  // â”€â”€ Ollama: Test Connection + Auto-discover models â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Ollama: Test Connection + Auto-discover models ───────────────────
   el('btn-ollama-test')?.addEventListener('click', async () => {
     const btn = el('btn-ollama-test');
     const baseUrl = el('settings-baseurl')?.value || 'http://localhost:11434';
-    btn.textContent = 'Connectingâ€¦'; btn.disabled = true;
+    btn.textContent = 'Connecting…'; btn.disabled = true;
     const result = await discoverOllamaModels(baseUrl);
     btn.disabled = false;
 
     if (result?.corsError) {
       // Ollama is running but blocked the chrome-extension:// origin (HTTP 403).
       // The only fix is to set OLLAMA_ORIGINS on the server side.
-      btn.textContent = 'âœ— CORS blocked (403)';
+      btn.textContent = '✗ CORS blocked (403)';
       btn.style.color = '#ff5555';
       const msg = [
-        'ðŸ”’ Ollama is running but is blocking this extension (HTTP 403).',
+        '🔒 Ollama is running but is blocking this extension (HTTP 403).',
         '',
         'Fix: set the OLLAMA_ORIGINS environment variable, then restart Ollama.',
         '',
@@ -432,7 +432,7 @@
         '',
         '  Windows (System env var):',
         '    Add OLLAMA_ORIGINS = chrome-extension://* in',
-        '    System Properties â†’ Environment Variables, then restart Ollama.',
+        '    System Properties → Environment Variables, then restart Ollama.',
         '',
         'After restarting, click "Test Connection" again.',
       ].join('\n');
@@ -441,7 +441,7 @@
       overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;padding:20px';
       overlay.innerHTML = `
         <div style="background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:12px;max-width:480px;width:100%;padding:24px;font-family:var(--font-mono,monospace)">
-          <div style="font-size:1rem;font-weight:700;color:var(--text-primary);margin-bottom:12px">ðŸ”’ Ollama CORS Setup Required</div>
+          <div style="font-size:1rem;font-weight:700;color:var(--text-primary);margin-bottom:12px">🔒 Ollama CORS Setup Required</div>
           <div style="font-size:0.78rem;color:var(--text-secondary);line-height:1.7;white-space:pre-wrap">${esc(msg.split('\n').slice(2).join('\n'))}</div>
           <button id="cors-help-close" style="margin-top:18px;padding:8px 18px;background:var(--green-bright);color:#000;border:none;border-radius:6px;font-weight:700;cursor:pointer;font-size:0.8rem">Got it</button>
         </div>`;
@@ -449,16 +449,16 @@
       document.getElementById('cors-help-close').addEventListener('click', () => overlay.remove());
       overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
     } else if (result && result.length) {
-      // Success â€” populate the model dropdown
+      // Success — populate the model dropdown
       const sel = el('settings-model');
       sel.innerHTML = result.map(m =>
         `<option value="${m.id}">${m.label}</option>`
       ).join('');
-      btn.textContent = `âœ“ ${result.length} models found`;
+      btn.textContent = `✓ ${result.length} models found`;
       btn.style.color = 'var(--green-bright)';
-      toast(`Ollama connected â€” ${result.length} model${result.length !== 1 ? 's' : ''} available`);
+      toast(`Ollama connected — ${result.length} model${result.length !== 1 ? 's' : ''} available`);
     } else {
-      btn.textContent = 'âœ— Not reachable';
+      btn.textContent = '✗ Not reachable';
       btn.style.color = '#ff5555';
       toast('Cannot reach Ollama. Is it running? Try: ollama serve');
     }
@@ -472,7 +472,7 @@
     await runAgent('Save the current page as a smart bookmark with auto-generated tags and summary.');
   });
 
-  // â”€â”€ VOICE INPUT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── VOICE INPUT ───────────────────────────────────────────────────────
   (function initVoice() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const micBtn = el('mic-btn');
@@ -526,8 +526,8 @@
       recognition.start();
       isRecording = true;
       micBtn.classList.add('recording');
-      micBtn.title = 'Recordingâ€¦ click to stop';
-      toast('ðŸŽ¤ Listeningâ€¦');
+      micBtn.title = 'Recording… click to stop';
+      toast('🎤 Listening…');
     }
 
     function stopRecording() {

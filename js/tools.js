@@ -1,5 +1,5 @@
-﻿async function executeTool(name, input) {
-  setStatus('loading', name + 'â€¦');
+async function executeTool(name, input) {
+  setStatus('loading', name + '…');
   try {
     switch (name) {
       case 'think': return { ok: true, result: 'Plan noted.' };
@@ -24,7 +24,7 @@
         const tab = await activeTab();
         await chrome.tabs.update(tab.id, { url: startUrl });
         await wait(2000);
-        return { ok: true, result: `Opening best starting point for: "${input.intent}"\nâ†’ ${startUrl}` };
+        return { ok: true, result: `Opening best starting point for: "${input.intent}"\n→ ${startUrl}` };
       }
 
       case 'save_bookmark': {
@@ -260,7 +260,7 @@
         const groupMap = Object.fromEntries(groups.map(g => [g.id, g]));
         
         return { ok: true, result: tabs.map(t => {
-          let str = `[${t.id}] ${t.title} â€” ${t.url}`;
+          let str = `[${t.id}] ${t.title} — ${t.url}`;
           if (t.groupId !== chrome.tabGroups.TAB_GROUP_ID_NONE && groupMap[t.groupId]) {
             const g = groupMap[t.groupId];
             str += ` (Group: ${g.title || 'Untitled'}, Color: ${g.color})`;
@@ -355,13 +355,13 @@
         return { ok: true, result: `Downloaded ${input.filename || 'export'}.csv (${count} rows)` };
       }
 
-      // â”€â”€ REASON: deep chain-of-thought â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── REASON: deep chain-of-thought ─────────────────────────────
       case 'reason': {
         const summary = `Problem: ${input.problem}\n\nReasoning:\n${input.thoughts}\n\nPlan:\n${input.plan}`;
         return { ok: true, result: summary };
       }
 
-      // â”€â”€ RECALL: look up persistent memory â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── RECALL: look up persistent memory ──────────────────────────
       case 'recall': {
         const val = state.memory[input.key];
         if (val !== undefined) return { ok: true, result: `${input.key}: ${val}` };
@@ -374,7 +374,7 @@
           : { ok: false, result: `Nothing found for key "${input.key}". Known keys: ${Object.keys(state.memory).join(', ') || 'none'}` };
       }
 
-      // â”€â”€ SCRAPE_PAGE: deep structured extraction â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── SCRAPE_PAGE: deep structured extraction ─────────────────────
       case 'scrape_page': {
         const tab = await activeTab();
         const r = await injectAndRun(tab.id, (sel, doLinks, doTables) => {
@@ -434,7 +434,7 @@
         return { ok: true, result: out };
       }
 
-      // â”€â”€ SCAN_FORMS: discover all form fields â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── SCAN_FORMS: discover all form fields ───────────────────────
       case 'scan_forms': {
         const tab = await activeTab();
         const r = await injectAndRun(tab.id, () => {
@@ -483,7 +483,7 @@
         return { ok: true, result: `Found ${r.length} form fields:\n\n${summary}` };
       }
 
-      // â”€â”€ SMART_FILL_FORM: semantic field matching + fill â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── SMART_FILL_FORM: semantic field matching + fill ──────────────
       case 'smart_fill_form': {
         const tab = await activeTab();
         let fieldsMap;
@@ -530,13 +530,13 @@
 
             // Semantic synonym map
             const synonyms = {
-              'first name': ['given name', 'prÃ©nom', 'firstname', 'fname', 'forename'],
+              'first name': ['given name', 'prénom', 'firstname', 'fname', 'forename'],
               'last name': ['family name', 'surname', 'lastname', 'lname', 'nom'],
               'email': ['e-mail', 'email address', 'courriel'],
               'phone': ['telephone', 'tel', 'mobile', 'cell', 'phone number'],
               'address': ['street', 'street address', 'address line 1', 'addr'],
               'city': ['town', 'ville', 'municipality'],
-              'state': ['province', 'region', 'dÃ©partement'],
+              'state': ['province', 'region', 'département'],
               'zip': ['postal code', 'postcode', 'zip code', 'code postal'],
               'country': ['pays', 'nation'],
               'password': ['pass', 'pwd', 'mot de passe'],
@@ -617,13 +617,13 @@
         const filled = r.filter(x => x.filled).length;
         const summary = r.map(x =>
           x.filled
-            ? `âœ“ "${x.field}" â†’ ${x.matched} (score ${x.score})`
-            : `âœ— "${x.field}" â€” no match found`
+            ? `✓ "${x.field}" → ${x.matched} (score ${x.score})`
+            : `✗ "${x.field}" — no match found`
         ).join('\n');
         return { ok: true, result: `Filled ${filled}/${r.length} fields:\n${summary}` };
       }
 
-      // â”€â”€ CREATE_TASK_PLAN: display visual checklist in chat â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── CREATE_TASK_PLAN: display visual checklist in chat ───────────
       case 'create_task_plan': {
         let steps;
         try { steps = JSON.parse(input.steps); } catch {
@@ -635,7 +635,7 @@
         return { ok: true, result: `Task plan created with ${steps.length} steps. Proceed with step 0: "${steps[0]}"` };
       }
 
-      // â”€â”€ UPDATE_TASK_STEP: tick off steps in the plan â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── UPDATE_TASK_STEP: tick off steps in the plan ─────────────────
       case 'update_task_step': {
         if (!state.taskPlan) return { ok: false, result: 'No active task plan. Use create_task_plan first.' };
         const idx = Number(input.step_index);
@@ -647,7 +647,7 @@
         return { ok: true, result: `Step ${idx} marked ${input.status}. ${remaining} steps remaining.` };
       }
 
-      // â”€â”€ EXPORT_DATA: render table + download CSV/JSON â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── EXPORT_DATA: render table + download CSV/JSON ────────────────
       case 'export_data': {
         let rows;
         try { rows = JSON.parse(input.data); } catch {
@@ -677,7 +677,7 @@
         return { ok: true, result: `Exported ${rows.length} rows as "${name}${ext}" and displayed table in chat.` };
       }
 
-      // â”€â”€ SUMMARIZE_TABS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── SUMMARIZE_TABS ───────────────────────────────────────────
       case 'summarize_tabs': {
         const allTabs = await chrome.tabs.query({ currentWindow: true });
         let targetTabs = allTabs.filter(t =>
@@ -730,7 +730,7 @@
         };
       }
 
-      // â”€â”€ CROSS_SITE_RESEARCH â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── CROSS_SITE_RESEARCH ──────────────────────────────────────
       case 'cross_site_research': {
         let tabIds, attributes;
         try { tabIds = JSON.parse(input.tab_ids).map(Number); } catch {
@@ -754,7 +754,7 @@
           } catch { rows.push({ tabId, title: tabInfo?.title || `Tab ${tabId}`, url: tabInfo?.url || '', content: 'Could not access tab content.' }); }
         }
 
-        // Render comparison scaffold in chat â€” AI will fill it in
+        // Render comparison scaffold in chat — AI will fill it in
         renderComparisonTable(rows, attributes, input.question);
 
         return {
@@ -765,7 +765,7 @@
         };
       }
 
-      // â”€â”€ AUTO_HIGHLIGHT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── AUTO_HIGHLIGHT ────────────────────────────────────────────
       case 'auto_highlight': {
         const tab = await activeTab();
         const maxH = Math.min(Number(input.max_highlights) || 8, 25);
@@ -840,7 +840,7 @@
         };
       }
 
-      // â”€â”€ REMOVE_HIGHLIGHTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── REMOVE_HIGHLIGHTS ─────────────────────────────────────────
       case 'remove_highlights': {
         const tab = await activeTab();
         await injectAndRun(tab.id, () => {
@@ -853,7 +853,7 @@
         return { ok: true, result: 'All highlights removed.' };
       }
 
-      // â”€â”€ ADD_CITATION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── ADD_CITATION ──────────────────────────────────────────────
       case 'add_citation': {
         let url = input.url?.trim();
         let meta = {};
@@ -904,7 +904,7 @@
         return { ok: true, result: `Citation saved (${state.citations.length} total):\n${formatted}${input.note ? '\nNote: ' + input.note : ''}` };
       }
 
-      // â”€â”€ SHOW_CITATIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── SHOW_CITATIONS ────────────────────────────────────────────
       case 'show_citations': {
         if (!state.citations.length) return { ok: false, result: 'No citations saved yet. Use add_citation while browsing.' };
         renderCitationPanel();
@@ -919,7 +919,7 @@
             }).join('\n\n');
           } else if (efmt === 'md') {
             content = state.citations.map((c, i) =>
-              `${i + 1}. [${c.title}](${c.url})${c.author ? ' â€” ' + c.author : ''}${c.date ? ', ' + c.date.substring(0, 10) : ''}${c.note ? '\n   > ' + c.note : ''}`
+              `${i + 1}. [${c.title}](${c.url})${c.author ? ' — ' + c.author : ''}${c.date ? ', ' + c.date.substring(0, 10) : ''}${c.note ? '\n   > ' + c.note : ''}`
             ).join('\n');
           } else {
             content = state.citations.map((c, i) => `[${i + 1}] ${c.formatted}`).join('\n');
@@ -935,7 +935,7 @@
         return { ok: true, result: `Showing ${state.citations.length} citations.` };
       }
 
-      // â”€â”€ CLEAR_CITATIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── CLEAR_CITATIONS ───────────────────────────────────────────
       case 'clear_citations': {
         state.citations = [];
         updateCitationBadge();
@@ -943,7 +943,7 @@
         return { ok: true, result: 'All citations cleared.' };
       }
 
-      // â”€â”€ VFS TOOLS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── VFS TOOLS ────────────────────────────────────────────────
       case 'write_file': {
         const path = (input.path || '').trim().replace(/^\/+/, '');
         const content = input.content || '';
@@ -978,7 +978,7 @@
         return { ok: true, result: `Deleted "${path}"` };
       }
 
-      // â”€â”€ RAG TOOLS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── RAG TOOLS ────────────────────────────────────────────────
       case 'index_current_page': {
         const tab = await activeTab();
         const r = await injectAndRun(tab.id, () => {
@@ -1051,4 +1051,4 @@ You can now ask questions about this page using semantic search.`;
   }
 }
 
-// â”€â”€ SYSTEM PROMPT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── SYSTEM PROMPT ──────────────────────────────────────────────────

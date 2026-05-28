@@ -1,4 +1,4 @@
-﻿async function load() {
+async function load() {
   const d = await chrome.storage.local.get(['ob_settings', 'ob_conversations', 'ob_memory', 'ob_citations', 'ob_rateLog']);
   if (d.ob_settings) Object.assign(state.settings, d.ob_settings);
   if (d.ob_conversations) state.conversations = d.ob_conversations;
@@ -14,7 +14,7 @@ async function saveSettings() { await chrome.storage.local.set({ ob_settings: { 
 async function saveConvs() { await chrome.storage.local.set({ ob_conversations: state.conversations.slice(0, 50) }); }
 async function saveMemory() { await chrome.storage.local.set({ ob_memory: { ...state.memory } }); }
 
-// â”€â”€ THEME SYSTEM â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── THEME SYSTEM ─────────────────────────────────────────────────────────
 const THEMES = {
   dark: {
     '--bg-primary': '#080c0a', '--bg-secondary': '#0d1410',
@@ -69,7 +69,7 @@ function adjustBrightness(hex, factor) {
   return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
 }
 
-// â”€â”€ MEMORY DASHBOARD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── MEMORY DASHBOARD ─────────────────────────────────────────────────────
 function renderMemoryDashboard() {
   const container = el('memory-entries');
   if (!container) return;
@@ -98,7 +98,7 @@ function renderMemoryDashboard() {
     del.className = 'memory-del-btn';
     del.dataset.key = k;
     del.title = 'Delete';
-    del.textContent = 'âœ•';
+    del.textContent = '✕';
 
     row.appendChild(keyEl);
     row.appendChild(inp);
@@ -122,7 +122,7 @@ function renderMemoryDashboard() {
   });
 }
 
-// â”€â”€ RAG DASHBOARD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── RAG DASHBOARD ────────────────────────────────────────────────────────
 async function renderRAGDashboard() {
   const container = el('rag-entries');
   if (!container) return;
@@ -136,9 +136,9 @@ async function renderRAGDashboard() {
       <div class="rag-info">
         <div class="rag-title" title="${esc(u.title)}">${esc(u.title || u.url)}</div>
         <div class="rag-url" title="${esc(u.url)}">${esc(u.url)}</div>
-        <div class="rag-stats">${u.count} segments Â· Indexed ${timeSince(u.lastIndexed)} ago</div>
+        <div class="rag-stats">${u.count} segments · Indexed ${timeSince(u.lastIndexed)} ago</div>
       </div>
-      <button class="memory-del-btn rag-del-btn" data-url="${esc(u.url)}" title="Remove from knowledge base">âœ•</button>
+      <button class="memory-del-btn rag-del-btn" data-url="${esc(u.url)}" title="Remove from knowledge base">✕</button>
     </div>
   `).join('');
 
@@ -154,5 +154,5 @@ async function renderRAGDashboard() {
   });
 }
 
-// â”€â”€ VIRTUAL FILESYSTEM â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── VIRTUAL FILESYSTEM ────────────────────────────────────────────────────
 // IndexedDB-backed file store for AI-generated files

@@ -1,4 +1,4 @@
-﻿const el = id => document.getElementById(id);
+const el = id => document.getElementById(id);
 let stepN = 0;
 
 function msgs() { return el('chat-messages'); }
@@ -7,25 +7,25 @@ function showTyping() {
   const id = 'ty-' + uid();
   const d = document.createElement('div');
   d.id = id; d.className = 'typing-indicator';
-  d.innerHTML = '<div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div><span>Thinkingâ€¦</span>';
+  d.innerHTML = '<div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div><span>Thinking…</span>';
   msgs().appendChild(d); scrollEnd(); return id;
 }
 
 function removeEl(id) { el(id)?.remove(); }
 
-// â”€â”€ TAB SUMMARY RENDERER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── TAB SUMMARY RENDERER ─────────────────────────────────────────────────
 function renderTabSummary(tabs) {
   const d = document.createElement('div');
   d.className = 'msg tab-summary-msg';
   d.innerHTML = `
-    <div class="tab-summary-header">ðŸ“‘ Tab Summary â€” ${tabs.length} tab${tabs.length !== 1 ? 's' : ''}</div>
+    <div class="tab-summary-header">📑 Tab Summary — ${tabs.length} tab${tabs.length !== 1 ? 's' : ''}</div>
     <div class="tab-summary-list">
       ${tabs.map(t => `
         <div class="tab-summary-item">
           <img class="tab-favicon" src="https://www.google.com/s2/favicons?sz=16&domain=${encodeURIComponent(t.url || '')}" width="14" height="14" onerror="this.style.display='none'" />
           <div class="tab-summary-info">
             <div class="tab-summary-title">${esc(t.title || 'Untitled')}</div>
-            <div class="tab-summary-url">${esc((t.url || '').substring(0, 55))}${(t.url || '').length > 55 ? 'â€¦' : ''}</div>
+            <div class="tab-summary-url">${esc((t.url || '').substring(0, 55))}${(t.url || '').length > 55 ? '…' : ''}</div>
           </div>
           <span class="tab-id-badge">#${t.tabId}</span>
         </div>`).join('')}
@@ -34,34 +34,34 @@ function renderTabSummary(tabs) {
   d.scrollIntoView({ behavior: 'smooth', block: 'end' });
 }
 
-// â”€â”€ COMPARISON TABLE RENDERER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── COMPARISON TABLE RENDERER ─────────────────────────────────────────────
 function renderComparisonTable(rows, attributes, question) {
   const d = document.createElement('div');
   d.className = 'msg data-table-msg';
   const cols = attributes?.length ? attributes : ['Content'];
   const header = ['Source', ...cols].map(k => `<th>${esc(k)}</th>`).join('');
   const bodyRows = rows.map(r =>
-    `<tr><td><a class="compare-link" href="${esc(r.url)}" target="_blank" title="${esc(r.url)}">${esc((r.title || r.url || '').substring(0, 32))}â€¦</a></td>${cols.map(() => '<td class="compare-empty">â€”</td>').join('')}</tr>`
+    `<tr><td><a class="compare-link" href="${esc(r.url)}" target="_blank" title="${esc(r.url)}">${esc((r.title || r.url || '').substring(0, 32))}…</a></td>${cols.map(() => '<td class="compare-empty">—</td>').join('')}</tr>`
   ).join('');
   d.innerHTML = `
-    <div class="data-table-header">ðŸ”€ Cross-site Research â€” ${rows.length} tabs
+    <div class="data-table-header">🔀 Cross-site Research — ${rows.length} tabs
       ${question ? `<div class="compare-q">${esc(question)}</div>` : ''}
     </div>
     <div class="data-table-wrap">
       <table class="data-table"><thead><tr>${header}</tr></thead><tbody>${bodyRows}</tbody></table>
     </div>
-    <div class="table-more">AI analysis follows â†“</div>`;
+    <div class="table-more">AI analysis follows ↓</div>`;
   msgs().appendChild(d);
   d.scrollIntoView({ behavior: 'smooth', block: 'end' });
 }
 
-// â”€â”€ CITATION PANEL RENDERER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── CITATION PANEL RENDERER ───────────────────────────────────────────────
 function renderCitationPanel() {
   const d = document.createElement('div');
   d.className = 'msg citation-panel';
   d.innerHTML = `
     <div class="citation-header">
-      <span>ðŸ“š Citations (${state.citations.length})</span>
+      <span>📚 Citations (${state.citations.length})</span>
       <div class="citation-export-btns">
         <button class="cite-export-btn" data-fmt="txt">TXT</button>
         <button class="cite-export-btn" data-fmt="md">MD</button>
@@ -72,7 +72,7 @@ function renderCitationPanel() {
       ${state.citations.map(c => `
         <li class="citation-item">
           <div class="citation-title"><a href="${esc(c.url)}" target="_blank">${esc(c.title)}</a></div>
-          ${c.author ? `<div class="citation-meta">${esc(c.author)}${c.date ? ' Â· ' + c.date.substring(0, 10) : ''}</div>` : ''}
+          ${c.author ? `<div class="citation-meta">${esc(c.author)}${c.date ? ' · ' + c.date.substring(0, 10) : ''}</div>` : ''}
           ${c.note ? `<div class="citation-note">"${esc(c.note)}"</div>` : ''}
           <div class="citation-formatted">${esc(c.formatted)}</div>
         </li>`).join('')}
@@ -92,15 +92,15 @@ function updateCitationBadge() {
   badge.style.display = n > 0 ? 'flex' : 'none';
 }
 
-// â”€â”€ BOOKMARK RENDERERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── BOOKMARK RENDERERS ───────────────────────────────────────────────────
 function renderBookmarkSaved({ url, title, summary, tags }) {
   const d = document.createElement('div');
   d.className = 'msg bookmark-saved-msg';
   d.innerHTML = `
-    <div class="bookmark-saved-icon">ðŸ”–</div>
+    <div class="bookmark-saved-icon">🔖</div>
     <div class="bookmark-saved-body">
       <div class="bookmark-saved-title"><a href="${esc(url)}" target="_blank">${esc(title)}</a></div>
-      ${summary ? `<div class="bookmark-saved-summary">${esc(summary.substring(0, 100))}â€¦</div>` : ''}
+      ${summary ? `<div class="bookmark-saved-summary">${esc(summary.substring(0, 100))}…</div>` : ''}
       ${tags.length ? `<div class="bookmark-tags">${tags.map(t => `<span class="bookmark-tag">${esc(t)}</span>`).join('')}</div>` : ''}
     </div>`;
   msgs().appendChild(d);
@@ -112,7 +112,7 @@ function renderBookmarkPanel(bookmarks, filter) {
   d.className = 'msg bookmark-panel';
   d.innerHTML = `
     <div class="bookmark-panel-header">
-      <span>ðŸ“‚ Bookmarks${filter ? ` â€” "${esc(filter)}"` : ''} (${bookmarks.length})</span>
+      <span>📂 Bookmarks${filter ? ` — "${esc(filter)}"` : ''} (${bookmarks.length})</span>
     </div>
     ${bookmarks.length === 0 ? '<div class="bookmarks-empty">No bookmarks yet.</div>' : `
     <div class="bookmark-list">
@@ -130,12 +130,12 @@ function renderBookmarkPanel(bookmarks, filter) {
   d.scrollIntoView({ behavior: 'smooth', block: 'end' });
 }
 
-// â”€â”€ TOOLTIP SYSTEM â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── TOOLTIP SYSTEM ───────────────────────────────────────────────────────
 // Floating "i" icons that appear next to labeled UI elements
 const TOOLTIPS = {
   'settings-provider': 'The AI service that powers OpenBrowser. Anthropic (Claude), OpenAI (GPT-4), Gemini, Groq (free+fast), or Ollama (fully local, free).',
   'settings-model': 'The specific model to use. Larger models are smarter but slower and more expensive.',
-  'settings-apikey': 'Your private API key â€” stored only in your browser, never sent to us.',
+  'settings-apikey': 'Your private API key — stored only in your browser, never sent to us.',
   'settings-maxsteps': 'How many tool calls the agent can make per task. More steps = more complex tasks, more API usage.',
   'settings-rpm': 'Requests Per Minute limit. The agent will stop 5 calls before this limit to protect your quota.',
   'settings-rpd': 'Requests Per Day limit. Useful for free-tier APIs like Anthropic free (25/day) or Groq (1000/day).',
@@ -198,14 +198,14 @@ function initTooltips() {
   });
 }
 
-// â”€â”€ TASK PLAN RENDERER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── TASK PLAN RENDERER ──────────────────────────────────────────────────
 let taskPlanEl = null;  // keep reference so we can update it in-place
 
 function renderTaskPlan() {
   const plan = state.taskPlan;
   if (!plan) return;
 
-  const statusIcon = { pending: 'â—‹', active: 'â—‰', done: 'âœ“', failed: 'âœ—' };
+  const statusIcon = { pending: '○', active: '◉', done: '✓', failed: '✗' };
   const statusClass = { pending: 'task-pending', active: 'task-active', done: 'task-done', failed: 'task-failed' };
 
   const inner = `
@@ -213,7 +213,7 @@ function renderTaskPlan() {
     <ol class="task-plan-steps">
       ${plan.steps.map((s, i) => `
         <li class="task-step ${statusClass[s.status] || 'task-pending'}">
-          <span class="task-step-icon">${statusIcon[s.status] || 'â—‹'}</span>
+          <span class="task-step-icon">${statusIcon[s.status] || '○'}</span>
           <span class="task-step-text">${esc(s.text)}${s.note ? ` <em>${esc(s.note)}</em>` : ''}</span>
         </li>`).join('')}
     </ol>`;
@@ -230,7 +230,7 @@ function renderTaskPlan() {
   }
 }
 
-// â”€â”€ DATA TABLE RENDERER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── DATA TABLE RENDERER ──────────────────────────────────────────────────
 function renderDataTable(rows, name) {
   if (!rows || !rows.length) return;
   const keys = Object.keys(rows[0]);
@@ -244,7 +244,7 @@ function renderDataTable(rows, name) {
   d.className = 'msg data-table-msg';
   d.innerHTML = `
     <div class="data-table-header">
-      <span>ðŸ“Š ${esc(name)} â€” ${rows.length} rows Ã— ${keys.length} cols</span>
+      <span>📊 ${esc(name)} — ${rows.length} rows × ${keys.length} cols</span>
     </div>
     <div class="data-table-wrap">
       <table class="data-table"><thead><tr>${header}</tr></thead><tbody>${bodyRows}</tbody></table>
@@ -281,14 +281,14 @@ function appendAssist(text) {
   msgs().appendChild(d); scrollEnd();
 }
 
-// â”€â”€ STREAMING ASSISTANT MESSAGE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── STREAMING ASSISTANT MESSAGE ──────────────────────────────────────────
 // Creates a live-updating bubble that streams tokens in character by character.
 // Returns { el, update(chunk), finish(fullText) }
 function createStreamingBubble() {
   msgs().querySelector('.empty-state')?.remove();
   const d = document.createElement('div');
   d.className = 'message message-assistant streaming-msg';
-  d.innerHTML = `<div class="msg-bubble"><span class="stream-text"></span><span class="stream-cursor">â–‹</span></div>`;
+  d.innerHTML = `<div class="msg-bubble"><span class="stream-text"></span><span class="stream-cursor">▋</span></div>`;
   msgs().appendChild(d); scrollEnd();
   const span = d.querySelector('.stream-text');
   const cursor = d.querySelector('.stream-cursor');
@@ -299,7 +299,7 @@ function createStreamingBubble() {
     update(chunk) {
       rawText += chunk;
       // md() output is produced by our own renderer with esc() applied to
-      // user-visible text â€” safe to assign as innerHTML here.
+      // user-visible text — safe to assign as innerHTML here.
       span.innerHTML = md(rawText);
       scrollEnd();
     },
@@ -324,7 +324,7 @@ function createStreamingBubble() {
   };
 }
 
-// â”€â”€ STREAMING callAI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── STREAMING callAI ─────────────────────────────────────────────────────
 // Calls the AI with streaming=true and yields text chunks via onChunk callback.
 // Falls back to non-streaming if the provider doesn't support it.
 // Returns the same { type, text, tools } shape as callAI.
@@ -366,10 +366,10 @@ async function callAIStreaming(messages, sys, signal, onChunk) {
   if (!res.ok) {
     const errText = await res.text().catch(() => '');
     // Ollama-specific: 403 means the server rejected the chrome-extension:// origin.
-    // This is a CORS configuration issue â€” don't fall through to backup model logic.
+    // This is a CORS configuration issue — don't fall through to backup model logic.
     if (res.status === 403 && providerKey === 'ollama') {
       throw new Error(
-        'Ollama blocked this request (HTTP 403 â€” CORS).\n\n' +
+        'Ollama blocked this request (HTTP 403 — CORS).\n\n' +
         'Ollama does not allow requests from browser extensions by default.\n\n' +
         'Fix: restart Ollama with the OLLAMA_ORIGINS environment variable:\n\n' +
         '  macOS/Linux:   OLLAMA_ORIGINS="chrome-extension://*" ollama serve\n' +
@@ -379,8 +379,8 @@ async function callAIStreaming(messages, sys, signal, onChunk) {
     }
     if (!state.backupActive && isQuotaError(res.status, errText) && s.backupProvider && s.backupModel && s.backupApiKey) {
       state.backupActive = true;
-      addStep('error', 'âš ï¸', 'Primary quota hit', `Switching to backup: ${s.backupModel}`);
-      toast('Primary model quota exceeded â€” switching to backup model');
+      addStep('error', '⚠️', 'Primary quota hit', `Switching to backup: ${s.backupModel}`);
+      toast('Primary model quota exceeded — switching to backup model');
       return callAIStreaming(messages, sys, signal, onChunk);
     }
     throw new Error(`API ${res.status}: ${errText.substring(0, 400)}`);
@@ -389,7 +389,7 @@ async function callAIStreaming(messages, sys, signal, onChunk) {
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
   let buffer = '';
-  let rawBody = '';  // Raw accumulation â€” fallback if Ollama returns non-SSE JSON
+  let rawBody = '';  // Raw accumulation — fallback if Ollama returns non-SSE JSON
   let fullText = '';
   const toolCalls = [];    // For OpenAI streaming tool accumulation
   let currentToolCall = null;
@@ -397,7 +397,7 @@ async function callAIStreaming(messages, sys, signal, onChunk) {
   // UX: if Ollama takes > 6s with no tokens (model loading), update status bar
   let firstTokenReceived = false;
   const ollamaLoadingHint = (providerKey === 'ollama') ? setTimeout(() => {
-    if (!firstTokenReceived) setStatus('loading', 'Ollama is loading the modelâ€¦');
+    if (!firstTokenReceived) setStatus('loading', 'Ollama is loading the model…');
   }, 6000) : null;
 
   try {
@@ -503,7 +503,7 @@ async function callAIStreaming(messages, sys, signal, onChunk) {
     if (xmlTools) return { type: 'tool_use', tools: xmlTools, text: '' };
   }
 
-  // â”€â”€ Fallback: Ollama (and some providers) sometimes return plain JSON
+  // ── Fallback: Ollama (and some providers) sometimes return plain JSON
   // instead of SSE when stream:true is set but the model buffers the full
   // response before sending (e.g. during initial model load). Try parsing
   // the raw body as a standard chat completion response.
@@ -511,14 +511,14 @@ async function callAIStreaming(messages, sys, signal, onChunk) {
     try {
       const fallbackData = JSON.parse(rawBody.trim());
       return parseAIResponse(fallbackData, req.format);
-    } catch { /* not valid JSON â€” fall through to empty-response error */ }
+    } catch { /* not valid JSON — fall through to empty-response error */ }
   }
 
-  // â”€â”€ Empty stream: surface a clear error instead of silently returning
+  // ── Empty stream: surface a clear error instead of silently returning
   // blank text (which makes the agent stop with no user-visible output).
   if (!fullText && !toolCalls.length) {
     const hint = providerKey === 'ollama'
-      ? 'Ollama returned an empty response. The model may have been unloaded or does not support streaming with tool definitions. Try sending your message again â€” if the problem persists, try a different model (llama3.2 or qwen2.5 work best).'
+      ? 'Ollama returned an empty response. The model may have been unloaded or does not support streaming with tool definitions. Try sending your message again — if the problem persists, try a different model (llama3.2 or qwen2.5 work best).'
       : 'The AI returned an empty response. Please try again.';
     throw new Error(hint);
   }
@@ -564,10 +564,10 @@ function emptyState() {
       <div class="empty-title">OpenBrowser</div>
       <div class="empty-subtitle">Free, open-source AI browser agent. Describe your task below.</div>
       <div class="example-grid" id="eg">
-        <button class="example-item" data-p="Scrape all the data on this page into a CSV file"><span class="example-icon">ðŸ“Š</span>Scrape to CSV</button>
-        <button class="example-item" data-p="Fill out this form using my information"><span class="example-icon">ðŸ“</span>Fill a form</button>
-        <button class="example-item" data-p="Search Google for the best price of this product and compare results"><span class="example-icon">ðŸ›’</span>Compare prices</button>
-        <button class="example-item" data-p="Summarize the main points on this page"><span class="example-icon">ðŸ“–</span>Summarize page</button>
+        <button class="example-item" data-p="Scrape all the data on this page into a CSV file"><span class="example-icon">📊</span>Scrape to CSV</button>
+        <button class="example-item" data-p="Fill out this form using my information"><span class="example-icon">📝</span>Fill a form</button>
+        <button class="example-item" data-p="Search Google for the best price of this product and compare results"><span class="example-icon">🛒</span>Compare prices</button>
+        <button class="example-item" data-p="Summarize the main points on this page"><span class="example-icon">📖</span>Summarize page</button>
       </div>
     </div>`;
   document.querySelectorAll('#eg .example-item').forEach(b => {
@@ -592,10 +592,10 @@ function renderConv(id) {
       const status = res ? (res.ok ? 'success' : 'error') : 'success';
       const resultText = res ? (typeof res.content === 'string' ? res.content : (Array.isArray(res.content) ? res.content.find(b => b.type === 'text')?.text : '')) : '';
       
-      const stepId = addStep(status, TOOL_ICONS[m.name] || 'ðŸ”§', m.name, JSON.stringify(m.input).substring(0, 100));
+      const stepId = addStep(status, TOOL_ICONS[m.name] || '🔧', m.name, JSON.stringify(m.input).substring(0, 100));
       
       if (resultText) {
-        updateStep(stepId, status, TOOL_ICONS[m.name] || 'ðŸ”§', m.name, resultText.substring(0, 200));
+        updateStep(stepId, status, TOOL_ICONS[m.name] || '🔧', m.name, resultText.substring(0, 200));
       }
 
       // Render screenshots if they exist in the result
@@ -626,13 +626,13 @@ function renderHistory() {
     d.className = 'history-item' + (c.id === state.convId ? ' active' : '');
     const dt = new Date(c.updatedAt);
     d.innerHTML = `<div class="history-title">${esc(c.title)}</div>
-      <div class="history-meta">${dt.toLocaleDateString([], { month: 'short', day: 'numeric' })} ${dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} Â· ${c.messages.filter(m => m.role === 'user').length} msgs</div>`;
+      <div class="history-meta">${dt.toLocaleDateString([], { month: 'short', day: 'numeric' })} ${dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · ${c.messages.filter(m => m.role === 'user').length} msgs</div>`;
     d.addEventListener('click', () => { state.convId = c.id; renderConv(c.id); switchView('chat'); });
     list.appendChild(d);
   });
 }
 
-// â”€â”€ SETTINGS UI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── SETTINGS UI ────────────────────────────────────────────────────
 function populateModels() {
   const pKey = el('settings-provider').value;
   const pc = PROVIDERS[pKey];
@@ -675,7 +675,7 @@ function populateBackupModels() {
   const pKey = el('backup-provider').value;
   const pc = PROVIDERS[pKey];
   el('backup-model').innerHTML = pKey === ''
-    ? '<option value="">â€” disabled â€”</option>'
+    ? '<option value="">— disabled —</option>'
     : (pc?.models || []).map(m =>
       `<option value="${m.id}"${m.id === state.settings.backupModel ? ' selected' : ''}>${m.label}</option>`
     ).join('');
@@ -726,7 +726,7 @@ function checkBanner() {
   el('setup-banner').style.display = (pc?.requiresKey && !state.settings.apiKey) ? 'flex' : 'none';
 }
 
-// â”€â”€ VIEW â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── VIEW ───────────────────────────────────────────────────────────
 function switchView(name) {
   state.view = name;
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -758,7 +758,7 @@ function exportConversation() {
     download: `${(conv.title || 'chat').replace(/[^a-z0-9]/gi, '_').substring(0, 40)}.md`
   });
   a.click(); URL.revokeObjectURL(a.href);
-  toast('Conversation exported âœ“');
+  toast('Conversation exported ✓');
 }
 
 function autoH() {
@@ -778,4 +778,4 @@ async function send() {
   await runAgent(msg);
 }
 
-// â”€â”€ BOOT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── BOOT ───────────────────────────────────────────────────────────
