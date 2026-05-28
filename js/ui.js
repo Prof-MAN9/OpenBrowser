@@ -172,23 +172,25 @@ function initTooltips() {
     badge.setAttribute('type', 'button');
     label.appendChild(badge);
 
-    badge.addEventListener('mouseenter', (e) => {
-      tip.textContent = tooltipText;
-      tip.classList.add('visible');
+    // Shared positioning helper — avoids duplicating getBoundingClientRect logic
+    const positionTooltip = () => {
       const r = badge.getBoundingClientRect();
       const panelR = document.getElementById('app').getBoundingClientRect();
-      tip.style.top = (r.bottom - panelR.top + 6) + 'px';
+      tip.style.top  = (r.bottom - panelR.top + 6) + 'px';
       tip.style.left = Math.max(8, r.left - panelR.left - 100) + 'px';
+    };
+
+    badge.addEventListener('mouseenter', () => {
+      tip.textContent = tooltipText;
+      tip.classList.add('visible');
+      positionTooltip();
     });
     badge.addEventListener('mouseleave', () => tip.classList.remove('visible'));
     badge.addEventListener('click', (e) => {
       e.preventDefault(); e.stopPropagation();
       tip.textContent = tooltipText;
       tip.classList.toggle('visible');
-      const r = badge.getBoundingClientRect();
-      const panelR = document.getElementById('app').getBoundingClientRect();
-      tip.style.top = (r.bottom - panelR.top + 6) + 'px';
-      tip.style.left = Math.max(8, r.left - panelR.left - 100) + 'px';
+      positionTooltip();
     });
   });
 
@@ -752,12 +754,10 @@ function exportConversation() {
       if (text) lines.push(`**Assistant:** ${text}\n`);
     }
   });
-  const blob = new Blob([lines.join('\n')], { type: 'text/markdown' });
-  const a = Object.assign(document.createElement('a'), {
-    href: URL.createObjectURL(blob),
-    download: `${(conv.title || 'chat').replace(/[^a-z0-9]/gi, '_').substring(0, 40)}.md`
-  });
-  a.click(); URL.revokeObjectURL(a.href);
+  triggerDownload(
+    new Blob([lines.join('\n')], { type: 'text/markdown' }),
+    `${(conv.title || 'chat').replace(/[^a-z0-9]/gi, '_').substring(0, 40)}.md`
+  );
   toast('Conversation exported ✓');
 }
 

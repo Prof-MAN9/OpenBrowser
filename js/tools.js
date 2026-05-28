@@ -1,3 +1,15 @@
+// ── SHARED HELPERS ───────────────────────────────────────────────
+// Programmatically trigger a file download from a Blob without leaving
+// the panel. Revokes the object URL immediately after click.
+function triggerDownload(blob, filename) {
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(blob),
+    download: filename
+  });
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
 async function executeTool(name, input) {
   setStatus('loading', name + '…');
   try {
@@ -344,12 +356,7 @@ async function executeTool(name, input) {
 
       case 'download_csv': {
         const csv = csvFromJSON(input.data);
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const a = Object.assign(document.createElement('a'), {
-          href: URL.createObjectURL(blob),
-          download: `${input.filename || 'export'}.csv`
-        });
-        a.click(); URL.revokeObjectURL(a.href);
+        triggerDownload(new Blob([csv], { type: 'text/csv' }), `${input.filename || 'export'}.csv`);
         let count = 0;
         try { count = JSON.parse(input.data).length; } catch { }
         return { ok: true, result: `Downloaded ${input.filename || 'export'}.csv (${count} rows)` };
@@ -661,19 +668,12 @@ async function executeTool(name, input) {
         renderDataTable(rows, name);
 
         // Trigger download
-        let blob, mime, ext;
-        if (fmt === 'json') {
-          blob = new Blob([JSON.stringify(rows, null, 2)], { type: 'application/json' });
-          mime = 'application/json'; ext = '.json';
-        } else {
-          blob = new Blob([csvFromJSON(JSON.stringify(rows))], { type: 'text/csv' });
-          mime = 'text/csv'; ext = '.csv';
-        }
-        const a = Object.assign(document.createElement('a'), {
-          href: URL.createObjectURL(blob),
-          download: name + ext
-        });
-        a.click(); URL.revokeObjectURL(a.href);
+        const EXPORT_FORMATS = {
+          json: { content: () => JSON.stringify(rows, null, 2), mime: 'application/json', ext: '.json' },
+          csv:  { content: () => csvFromJSON(JSON.stringify(rows)), mime: 'text/csv',             ext: '.csv'  },
+        };
+        const { content, mime, ext } = EXPORT_FORMATS[fmt] || EXPORT_FORMATS.csv;
+        triggerDownload(new Blob([content()], { type: mime }), name + ext);
         return { ok: true, result: `Exported ${rows.length} rows as "${name}${ext}" and displayed table in chat.` };
       }
 
@@ -880,16 +880,12 @@ async function executeTool(name, input) {
 
         const fmt = input.format || 'url';
         const year = meta.date?.substring(0, 4) || new Date().getFullYear();
-        let formatted = '';
-        if (fmt === 'apa') {
-          formatted = `${meta.author || 'Unknown'}. (${year}). *${meta.title}*. ${meta.site}. ${url}`;
-        } else if (fmt === 'mla') {
-          formatted = `"${meta.title}." *${meta.site}*, ${meta.date || year}, ${url}.`;
-        } else if (fmt === 'chicago') {
-          formatted = `${meta.author || 'Unknown'}. "${meta.title}." ${meta.site}. ${meta.date || year}. ${url}.`;
-        } else {
-          formatted = url;
-        }
+        const CITATION_FORMATS = {
+          apa:     () => `${meta.author || 'Unknown'}. (${year}). *${meta.title}*. ${meta.site}. ${url}`,
+          mla:     () => `"${meta.title}." *${meta.site}*, ${meta.date || year}, ${url}.`,
+          chicago: () => `${meta.author || 'Unknown'}. "${meta.title}." ${meta.site}. ${meta.date || year}. ${url}.`,
+        };
+        const formatted = (CITATION_FORMATS[fmt] ?? (() => url))();
 
         const citation = {
           id: 'c_' + Date.now(),
@@ -911,25 +907,24 @@ async function executeTool(name, input) {
 
         if (input.export_format) {
           const efmt = input.export_format.toLowerCase();
-          let content = '';
-          if (efmt === 'bib') {
-            content = state.citations.map((c, i) => {
-              const key = `ref${i + 1}`;
-              return `@misc{${key},\n  author={${c.author || 'Unknown'}},\n  title={${c.title}},\n  year={${c.date?.substring(0, 4) || ''}},\n  url={${c.url}}\n}`;
-            }).join('\n\n');
-          } else if (efmt === 'md') {
-            content = state.citations.map((c, i) =>
-              `${i + 1}. [${c.title}](${c.url})${c.author ? ' — ' + c.author : ''}${c.date ? ', ' + c.date.substring(0, 10) : ''}${c.note ? '\n   > ' + c.note : ''}`
-            ).join('\n');
-          } else {
-            content = state.citations.map((c, i) => `[${i + 1}] ${c.formatted}`).join('\n');
-          }
-          const blob = new Blob([content], { type: 'text/plain' });
-          const a = Object.assign(document.createElement('a'), {
-            href: URL.createObjectURL(blob),
-            download: `citations.${efmt === 'bib' ? 'bib' : efmt === 'md' ? 'md' : 'txt'}`
-          });
-          a.click(); URL.revokeObjectURL(a.href);
+          const CITATION_EXPORTS = {
+            bib: {
+              ext: 'bib',
+              render: () => state.citations.map((c, i) => {
+                const key = `ref${i + 1}`;
+                return `@misc{${key},\n  author={${c.author || 'Unknown'}},\n  title={${c.title}},\n  year={${c.date?.substring(0, 4) || ''}},\n  url={${c.url}}\n}`;
+              }).join('\n\n'),
+            },
+            md: {
+              ext: 'md',
+              render: () => state.citations.map((c, i) =>
+                `${i + 1}. [${c.title}](${c.url})${c.author ? ' — ' + c.author : ''}${c.date ? ', ' + c.date.substring(0, 10) : ''}${c.note ? '\n   > ' + c.note : ''}`
+              ).join('\n'),
+            },
+          };
+          const { ext = 'txt', render = () => state.citations.map((c, i) => `[${i + 1}] ${c.formatted}`).join('\n') } =
+            CITATION_EXPORTS[efmt] ?? {};
+          triggerDownload(new Blob([render()], { type: 'text/plain' }), `citations.${ext}`);
         }
 
         return { ok: true, result: `Showing ${state.citations.length} citations.` };

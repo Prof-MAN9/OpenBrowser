@@ -1,13 +1,43 @@
 function buildSys(page) {
-  const mem = Object.keys(state.memory).length
-    ? '\n\nMemory (persisted across sessions):\n' +
-    Object.entries(state.memory).map(([k, v]) => '  ' + k + ': ' + v).join('\n')
-    : '';
-  const custom = state.settings.instructions
-    ? '\n\nUser instructions: ' + state.settings.instructions : '';
+  // ── Fixed header ────────────────────────────────────────────────
+  const sections = [
+    'You are OpenBrowser v3.3, an expert AI browser automation agent.',
+    'GitHub: https://github.com/Prof-MAN9/OpenBrowser',
+  ];
 
-  const reasoning = state.settings.reasoningMode ? `
+  if (state.backupActive) {
+    sections.push('[Running on backup model — primary quota exceeded]');
+  }
 
+  // ── Current page context ─────────────────────────────────────────
+  const pageUrl   = (page && page.url)   || 'none';
+  const pageTitle = (page && page.title) || '';
+  sections.push(`\nCurrent page: ${pageUrl} — "${pageTitle}"`);
+
+  // ── Persistent memory ────────────────────────────────────────────
+  const memEntries = Object.entries(state.memory);
+  if (memEntries.length) {
+    const lines = memEntries.map(([k, v]) => `  ${k}: ${v}`).join('\n');
+    sections.push(`\nMemory (persisted across sessions):\n${lines}`);
+  }
+
+  // ── Custom user instructions ─────────────────────────────────────
+  if (state.settings.instructions) {
+    sections.push(`\nUser instructions: ${state.settings.instructions}`);
+  }
+
+  // ── Auto-screenshot note ──────────────────────────────────────────
+  if (state.settings.autoScreenshot) {
+    sections.push(
+      '\nAuto-screenshot: a screenshot is captured 2.5s after each action' +
+      ' and sent to you automatically. You must use this proactive screenshot' +
+      ' to verify your actions.'
+    );
+  }
+
+  // ── Reasoning protocol ───────────────────────────────────────────
+  if (state.settings.reasoningMode) {
+    sections.push(`
 ## Reasoning protocol (always follow this for complex tasks)
 1. UNDERSTAND — restate the goal in one sentence using 'think'
 2. PLAN — list every step needed, identify risks
@@ -16,15 +46,20 @@ function buildSys(page) {
 5. ADAPT — if something fails, reason about alternatives
 6. FINISH — call 'finish' with a complete summary
 
-Break complex tasks into sub-goals. Never guess page state — verify first.` : '';
+Break complex tasks into sub-goals. Never guess page state — verify first.`);
+  }
 
-  const autoNote = state.settings.autoScreenshot
-    ? '\nAuto-screenshot: a screenshot is captured 2.5s after each action and sent to you automatically. You must use this proactive screenshot to verify your actions.'
-    : '';
+  // ── Core rules (always appended last) ───────────────────────────
+  sections.push(`
+## Core rules
+- Prefer visible text when clicking, not CSS selectors
+- Fill all form fields before submitting
+- If one approach fails, try an alternative
+- Always call finish when done
+- You can open tabs, navigate to URLs, and switch between multiple tabs to perform tasks. Use list_tabs to see all open tabs.
+- You control a REAL browser — actions have real effects`);
 
-  const backupNote = state.backupActive ? '\n[Running on backup model — primary quota exceeded]' : '';
-
-  return 'You are OpenBrowser v3.3, an expert AI browser automation agent.\nGitHub: https://github.com/Prof-MAN9/OpenBrowser' + backupNote + '\n\nCurrent page: ' + (page && page.url || 'none') + ' — "' + (page && page.title || '') + '"' + mem + custom + autoNote + reasoning + '\n\n## Core rules\n- Prefer visible text when clicking, not CSS selectors\n- Fill all form fields before submitting\n- If one approach fails, try an alternative\n- Always call finish when done\n- You can open tabs, navigate to URLs, and switch between multiple tabs to perform tasks. Use list_tabs to see all open tabs.\n- You control a REAL browser — actions have real effects';
+  return sections.join('\n');
 }
 
 
@@ -154,7 +189,8 @@ async function runAgent(userMessage) {
           if (state.abort.signal.aborted) break;
 
           const icon = TOOL_ICONS[tool.name] || '🔧';
-          const stepId = addStep('loading', icon, tool.name, JSON.stringify(tool.input).substring(0, 120));
+          const safeInput = tool.input || {};
+          const stepId = addStep('loading', icon, tool.name, JSON.stringify(safeInput).substring(0, 120));
 
           // Record tool_use in message history
           const tuMsg = { type: 'tool_use', role: 'assistant', id: tool.id, name: tool.name, input: tool.input };
@@ -164,19 +200,15 @@ async function runAgent(userMessage) {
           const result = await executeTool(tool.name, tool.input);
 
           // ── Auto-screenshot 2.5 s after action ──────────────────
-          // Happens in background while we process the tool result
           let autoShotData = null;
-          const autoShotPromise = maybeAutoScreenshot(tool.name);
 
           if (result.screenshot) appendScreenshot(result.screenshot);
           updateStep(stepId, result.ok ? 'success' : 'error', icon, tool.name, String(result.result || '').substring(0, 150));
 
           // Resolve auto-screenshot (awaits 2.5 s then captures)
           if (!result.screenshot) {   // don't double-screenshot if tool already returned one
-            autoShotData = await autoShotPromise;
+            autoShotData = await maybeAutoScreenshot(tool.name);
             if (autoShotData) appendScreenshot(autoShotData);
-          } else {
-            autoShotPromise.catch(() => { });  // suppress any errors
           }
 
           // Record tool_result — include auto-screenshot if we got one
@@ -241,7 +273,9 @@ async function generateConversationTitle(convId, firstMessage) {
     if (!providerKey) return;
 
     const sys = "You generate very short, 3-5 word titles for conversations based on the first message. Reply ONLY with the title. Do not use quotes or punctuation.";
-    const req = await buildProviderRequest(providerKey, s.model, s.apiKey, s.baseUrl, s.accountId, [{ role: 'user', content: firstMessage }], sys);
+    const model = state.backupActive ? s.backupModel : s.model;
+    const apiKey = state.backupActive ? s.backupApiKey : s.apiKey;
+    const req = await buildProviderRequest(providerKey, model, apiKey, s.baseUrl, s.accountId, [{ role: 'user', content: firstMessage }], sys);
 
     // Override max_tokens to be very small and drop tools to save money/time
     req.body.max_tokens = 15;

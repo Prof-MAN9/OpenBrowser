@@ -395,16 +395,6 @@ async function boot() {
   // ── VFS init & Files tab ─────────────────────────────────────────────
   VFS.init().catch(console.warn);
 
-  // ── Check for pending prompts (Omnibox / Context Menu) ────────────────
-  const PENDING_OMNIBOX = { message: 'pendingOmniboxMessage', messageId: 'pendingOmniboxMessageId' };
-  chrome.storage.local.get([PENDING_OMNIBOX.message, PENDING_OMNIBOX.messageId]).then(res => {
-    const prompt = res[PENDING_OMNIBOX.message];
-    if (prompt) {
-      chrome.storage.local.remove([PENDING_OMNIBOX.message, PENDING_OMNIBOX.messageId]);
-      el('chat-input').value = prompt; autoH();
-      runAgent(prompt);
-    }
-  });
 
   // ── Ollama: Test Connection + Auto-discover models ───────────────────
   el('btn-ollama-test')?.addEventListener('click', async () => {

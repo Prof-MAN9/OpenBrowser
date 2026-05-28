@@ -1,6 +1,32 @@
 // API LAYER — THREE FORMATS
 // ══════════════════════════════════════════════════════════════════
 
+// ── OPTIONAL PARAMETERS ───────────────────────────────────────────
+// Parameters that are NEVER included in a tool's 'required' list.
+// Single source of truth — referenced by all four format builders.
+const OPTIONAL_PARAMS = new Set([
+  // core nav / interaction
+  'selector', 'amount', 'submit', 'ms', 'world',
+  // scrape_page
+  'include_links', 'include_tables',
+  // type
+  'clear_first',
+  // scroll
+  'direction',
+  // create_task_plan / update_task_step
+  'note',
+  // export_data / show_citations / add_citation
+  'format', 'export_format', 'filename',
+  // summarize_tabs
+  'tab_ids', 'focus',
+  // cross_site_research
+  'question', 'attributes',
+  // auto_highlight
+  'max_highlights',
+  // add_citation (url defaults to current tab)
+  'url',
+]);
+
 // ── ANTHROPIC ─────────────────────────────────────────────────────
 //
 // CRITICAL RULES for Anthropic JSON Schema:
@@ -34,31 +60,7 @@ function buildAnthropicTools(tools) {
       properties[k] = prop;
     }
 
-    // Parameters that are always optional (never go into 'required')
-    // This must stay in sync with tool definitions above.
-    const OPTIONAL = new Set([
-      // core nav/interaction
-      'selector', 'amount', 'submit', 'ms', 'world',
-      // scrape_page
-      'include_links', 'include_tables',
-      // type
-      'clear_first',
-      // scroll
-      'direction',
-      // create_task_plan / update_task_step
-      'note',
-      // export_data / show_citations / add_citation
-      'format', 'export_format', 'filename',
-      // summarize_tabs
-      'tab_ids', 'focus',
-      // cross_site_research
-      'question', 'attributes',
-      // auto_highlight
-      'max_highlights',
-      // add_citation (url is optional — defaults to current tab)
-      'url',
-    ]);
-    const required = entries.map(([k]) => k).filter(k => !OPTIONAL.has(k));
+    const required = entries.map(([k]) => k).filter(k => !OPTIONAL_PARAMS.has(k));
 
     const schema = { type: 'object', properties };
     if (required.length) schema.required = required;
@@ -73,13 +75,12 @@ function buildAnthropicMessages(messages) {
     if (m.role === 'system') continue;
 
     if (m.type === 'tool_result') {
-      // Strip image data — only text reaches Anthropic as a tool_result
-      const text = typeof m.content === 'string'
+      const content = typeof m.content === 'string'
         ? m.content
         : Array.isArray(m.content)
-          ? m.content.filter(p => p.type === 'text').map(p => p.text).join('\n')
+          ? m.content
           : String(m.content);
-      out.push({ role: 'user', content: [{ type: 'tool_result', tool_use_id: m.tool_use_id, content: text }] });
+      out.push({ role: 'user', content: [{ type: 'tool_result', tool_use_id: m.tool_use_id, content: content }] });
 
     } else if (m.type === 'tool_use') {
       out.push({ role: 'assistant', content: [{ type: 'tool_use', id: m.id, name: m.name, input: m.input }] });
@@ -124,10 +125,7 @@ function buildOpenAITools(tools) {
           if (v.enum) prop.enum = v.enum;
           return [k, prop];
         })),
-        required: Object.keys(t.parameters).filter(k =>
-          !['selector', 'amount', 'submit', 'ms', 'world', 'include_links', 'include_tables',
-            'clear_first', 'note', 'format', 'export_format', 'filename', 'tab_ids', 'focus',
-            'question', 'attributes', 'max_highlights', 'url', 'direction'].includes(k))
+        required: Object.keys(t.parameters).filter(k => !OPTIONAL_PARAMS.has(k))
       }
     }
   }));
@@ -147,9 +145,9 @@ function buildOpenAIMessages(messages, sys) {
       const prev = out[out.length - 1];
       if (prev && prev.role === 'assistant') {
         if (!prev.tool_calls) prev.tool_calls = [];
-        prev.tool_calls.push({ id: m.id, type: 'function', function: { name: m.name, arguments: JSON.stringify(m.input) } });
+        prev.tool_calls.push({ id: m.id, type: 'function', function: { name: m.name, arguments: JSON.stringify(m.input || {}) } });
       } else {
-        out.push({ role: 'assistant', content: null, tool_calls: [{ id: m.id, type: 'function', function: { name: m.name, arguments: JSON.stringify(m.input) } }] });
+        out.push({ role: 'assistant', content: null, tool_calls: [{ id: m.id, type: 'function', function: { name: m.name, arguments: JSON.stringify(m.input || {}) } }] });
       }
     } else {
       out.push({ role: m.role, content: m.content || '' });
@@ -182,7 +180,7 @@ function buildGeminiTools(tools) {
           const prop = { type: toGeminiType(v.type), description: v.description || '' };
           if (v.enum) prop.enum = v.enum;
           if (prop.type === 'ARRAY') prop.items = { type: 'STRING' };
-          if (!['selector', 'amount', 'submit', 'ms'].includes(k)) req.push(k);
+          if (!OPTIONAL_PARAMS.has(k)) req.push(k);
           props[k] = prop;
         }
         fn.parameters = { type: 'OBJECT', properties: props };
@@ -220,7 +218,7 @@ function buildGeminiContents(messages) {
 
 function generateXMLToolsSchema() {
   const toolsXML = TOOLS.map(t => {
-    const props = Object.entries(t.parameters).map(([k, v]) => `  "${k}": "${v.type}"${!['selector', 'amount', 'submit', 'ms', 'world', 'include_links', 'include_tables', 'clear_first', 'note', 'format', 'export_format', 'filename', 'tab_ids', 'focus', 'question', 'attributes', 'max_highlights', 'url', 'direction'].includes(k) ? ' (required)' : ''}`).join(',\n');
+    const props = Object.entries(t.parameters).map(([k, v]) => `  "${k}": "${v.type}"${!OPTIONAL_PARAMS.has(k) ? ' (required)' : ''}`).join(',\n');
     return `Tool: ${t.name}\nDescription: ${t.description}\nInput JSON Schema:\n{\n${props}\n}`;
   }).join('\n\n');
   return `\n\n## Tools Available\nYou have access to the following tools. To use a tool, respond ONLY with the following exact format:\n<function=tool_name>{"arg_name": "arg_value"}</function>\n\n${toolsXML}`;
@@ -391,7 +389,8 @@ function resolveNavigationTarget(raw) {
 
   // Partial match: "my gmail" → gmail
   for (const [k, v] of Object.entries(SITE_MAP)) {
-    if (target.includes(k) || k.includes(target.replace(/\s+/g, ''))) return v;
+    const regex = new RegExp(`\\b${k}\\b`, 'i');
+    if (regex.test(target) || k === target.replace(/\s+/g, '')) return v;
   }
 
   // Looks like a bare domain word (one word, no spaces)
@@ -576,13 +575,15 @@ function checkRateLimit() {
 
   if (s.rpmLimit > 0) {
     const perMinute = state.rateLog.filter(t => now - t < 60_000).length;
-    if (perMinute >= s.rpmLimit - BUFFER) {
+    const threshold = s.rpmLimit <= BUFFER ? s.rpmLimit : s.rpmLimit - BUFFER;
+    if (perMinute >= threshold) {
       throw new Error(`RPM limit safety stop: ${perMinute} calls in the last minute (limit ${s.rpmLimit}, buffer ${BUFFER}). Wait a moment or raise the limit in Settings.`);
     }
   }
   if (s.rpdLimit > 0) {
     const perDay = state.rateLog.filter(t => now - t < 86_400_000).length;
-    if (perDay >= s.rpdLimit - BUFFER) {
+    const threshold = s.rpdLimit <= BUFFER ? s.rpdLimit : s.rpdLimit - BUFFER;
+    if (perDay >= threshold) {
       throw new Error(`RPD limit safety stop: ${perDay} calls today (limit ${s.rpdLimit}, buffer ${BUFFER}). Daily limit nearly reached.`);
     }
   }

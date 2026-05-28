@@ -80,7 +80,7 @@ const RAG = {
       mag1 += v1[i] * v1[i];
       mag2 += v2[i] * v2[i];
     }
-    const mag = Math.sqrt(mag1) * Math.sqrt(mag2);
+    const mag = Math.sqrt(mag1 * mag2);
     return mag > 0 ? dot / mag : 0;
   },
   async listUrls() {
@@ -189,12 +189,10 @@ async function renderFileTree() {
     btn.addEventListener('click', async () => {
       const f = await VFS.read(btn.dataset.path);
       if (!f) return;
-      const blob = new Blob([f.content], { type: 'text/plain' });
-      const a = Object.assign(document.createElement('a'), {
-        href: URL.createObjectURL(blob),
-        download: btn.dataset.path.split('/').pop()
-      });
-      a.click(); URL.revokeObjectURL(a.href);
+      triggerDownload(
+        new Blob([f.content], { type: 'text/plain' }),
+        btn.dataset.path.split('/').pop()
+      );
     });
   });
   container.querySelectorAll('.file-del-btn').forEach(btn => {
